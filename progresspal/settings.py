@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'users',
     'workouts',
     'goals',
-    'webpack_loader'
+    'webpack_loader',
+    'corsheaders',
 ]
 
 WEBPACK_LOADER = {
@@ -62,6 +63,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:8000"
 ]
 
 ROOT_URLCONF = 'progresspal.urls'

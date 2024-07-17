@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
 
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name='custom_user_groups',  # Example of a unique related_name
+        related_name='custom_user_groups',
         blank=True,
         verbose_name='groups',
         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
@@ -22,7 +22,7 @@ class CustomUser(AbstractUser):
 
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name='custom_user_permissions',  # Example of a unique related_name
+        related_name='custom_user_permissions',
         blank=True,
         verbose_name='user permissions',
         help_text='Specific permissions for this user.',
