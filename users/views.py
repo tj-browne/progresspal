@@ -22,8 +22,8 @@ def signup(request):
 
         try:
             CustomUser.objects.create_user(username=username, email=email, password=password)
-            return JsonResponse({'message': 'User created successfully'})
+            return JsonResponse({'message': 'User created successfully'}, status=201)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
