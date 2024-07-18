@@ -1,16 +1,23 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
+import {fetchCsrfToken, getCsrfToken} from "../services/csrfService";
 
 const Signup = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const [csrfToken, setCsrfToken] = useState('');
     const [formData, setFormData] = useState({
         email: '',
         username: '',
         password: ''
     });
+
+
+    useEffect(() => {
+        fetchCsrfToken();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value});
@@ -19,11 +26,15 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8000/api/signup', formData);
+            const response = await axios.post('http://localhost:8000/api/signup', formData, {
+                headers: {
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                withCredentials: true
+            });
             console.log(response.data);
             navigate('/dashboard');
         } catch (error) {
-            // TODO: Display (more user-friendly) Error messages on invalid submit
             console.error('Error submitting form:', error);
             setErrorMessage(error.response.data.error);
         }

@@ -68,7 +68,6 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'users.backend.EmailOrUsernameModelBackend',
 )
 
 CORS_ALLOWED_ORIGINS = [
@@ -76,12 +75,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
 ]
 
+
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     "http://localhost:8000",
 ]
 
-CSRF_COOKIE_NAME = 'csrftoken'
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_NAME = 'csrfToken'
+CSRF_COOKIE_HTTPONLY = False  # TODO: CSRF cookie is accessible via JavaScript (only in development, change for production)
 
 
 ROOT_URLCONF = 'progresspal.urls'

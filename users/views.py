@@ -1,6 +1,7 @@
 import json
 
 from django.http import JsonResponse
+from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import CustomUser
@@ -12,7 +13,11 @@ def get_users(request):
     return JsonResponse({'users': user_data})
 
 
-@csrf_exempt
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
+
+
 def signup(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -38,7 +43,6 @@ def signup(request):
     return JsonResponse({'error': 'Method not allowed.'}, status=405)
 
 
-# TODO: Add CSRF
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
