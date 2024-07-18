@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
 import axios from "axios";
 import {useNavigate} from 'react-router-dom';
+import ErrorMessage from "../components/ErrorMessage";
 
 // TODO: Save logged in user
 const Login = () => {
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         identifier: '',
@@ -21,8 +23,9 @@ const Login = () => {
             console.log(response.data);
             navigate('/dashboard');
         } catch (error) {
-            // TODO: Display Error message on invalid submit
+            // TODO: Display (more user-friendly) Error messages on invalid submit
             console.error('Error submitting form:', error);
+            setErrorMessage(error.response.data.error);
         }
     };
 
@@ -34,8 +37,10 @@ const Login = () => {
                     {/*TODO: Create an account width too big (clickable area)*/}
                     <a href='/signup' className="text-white underline">Create an account</a>
                     {/*TODO: Change identifier input type and label*/}
-                    <TextInput name="identifier" label="identifier" type="text" onChange={handleChange}/>
+                    <TextInput name="identifier" label="Username or email address:" type="text"
+                               onChange={handleChange}/>
                     <TextInput name="password" label="Password" type="password" onChange={handleChange}/>
+                    {errorMessage && <ErrorMessage message={errorMessage}/>}
                     <div className="flex justify-center pt-7">
                         <button
                             className="bg-green-500 hover:bg-green-600 black py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52">

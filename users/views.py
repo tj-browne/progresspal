@@ -20,13 +20,22 @@ def signup(request):
         username = data.get('username')
         password = data.get('password')
 
+        if '@' in username:
+            return JsonResponse({'error': 'Invalid username.'}, status=401)
+
+        if CustomUser.objects.filter(email=email).exists():
+            return JsonResponse({'error': 'Email already in use. Please use a different email address.'}, status=409)
+
+        if CustomUser.objects.filter(username=username).exists():
+            return JsonResponse({'error': 'Username already in use. Please use a different username.'}, status=409)
+
         try:
             CustomUser.objects.create_user(username=username, email=email, password=password)
             return JsonResponse({'message': 'User created successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+    return JsonResponse({'error': 'Method not allowed.'}, status=405)
 
 
 # TODO: Add CSRF
@@ -46,8 +55,8 @@ def login(request):
             if user.check_password(password):
                 return JsonResponse({'message': 'Login successful'}, status=200)
             else:
-                return JsonResponse({'error': 'Invalid credentials'}, status=401)
+                return JsonResponse({'error': 'Invalid email or password.'}, status=401)
         except CustomUser.DoesNotExist:
-            return JsonResponse({'error': 'User does not exist'}, status=401)
+            return JsonResponse({'error': 'User does not exist.'}, status=401)
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)

@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import ErrorMessage from "../components/ErrorMessage";
 
 const Signup = () => {
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
@@ -21,8 +23,9 @@ const Signup = () => {
             console.log(response.data);
             navigate('/dashboard');
         } catch (error) {
-            // TODO: Display Error message on invalid submit
+            // TODO: Display (more user-friendly) Error messages on invalid submit
             console.error('Error submitting form:', error);
+            setErrorMessage(error.response.data.error);
         }
     };
 
@@ -34,6 +37,7 @@ const Signup = () => {
                     <TextInput name="email" label="Email Address" type="email" onChange={handleChange}/>
                     <TextInput name="username" label="Username" type="text" onChange={handleChange}/>
                     <TextInput name="password" label="Password" type="password" onChange={handleChange}/>
+                    {errorMessage && <ErrorMessage message={errorMessage}/>}
                     <div className="flex justify-center pt-7">
                         <button
                             className="bg-green-500 hover:bg-green-600 black py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52">

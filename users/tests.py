@@ -51,6 +51,29 @@ class TestSignup(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_login_email_inuse(self):
+        user = CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
+                                              password="password123")
+        url = reverse('signup')
+        data = {'username': 'validtestuser2', 'email': 'validtestuser@example.com', 'password': 'password123'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+    def test_login_username_inuse(self):
+        user = CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
+                                              password="password123")
+        url = reverse('signup')
+        data = {'username': 'validtestuser', 'email': 'validtestuser2@example.com', 'password': 'password123'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+    # TODO: Test if @ is valid in a username
+    def test_valid_username(self):
+        url = reverse('signup')
+        data = {'username': 'test@user', 'email': 'testvalidusername@example.com', 'password': 'password123'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class TestLogin(APITestCase):
 
