@@ -68,7 +68,6 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'users.backend.EmailOrUsernameModelBackend',
 )
 
 CORS_ALLOWED_ORIGINS = [
@@ -81,8 +80,14 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
 ]
 
-CSRF_COOKIE_NAME = 'csrftoken'
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_NAME = 'csrfToken'
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
 
+LOGIN_URL = '/api/login'
 
 ROOT_URLCONF = 'progresspal.urls'
 

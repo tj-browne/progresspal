@@ -1,7 +1,7 @@
 import json
 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.middleware.csrf import get_token
 
 from .models import CustomUser
 
@@ -12,7 +12,11 @@ def get_users(request):
     return JsonResponse({'users': user_data})
 
 
-@csrf_exempt
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
+
+
 def signup(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -38,13 +42,12 @@ def signup(request):
     return JsonResponse({'error': 'Method not allowed.'}, status=405)
 
 
-# TODO: Add CSRF
-@csrf_exempt
 def login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         identifier = data.get('identifier')
         password = data.get('password')
+        remember_me = data.get('rememberMe', False)
 
         try:
             if '@' in identifier:
@@ -53,6 +56,11 @@ def login(request):
                 user = CustomUser.objects.get(username=identifier)
 
             if user.check_password(password):
+                if remember_me:
+                    request.session.set_expiry(1209600)  # 14 days
+                else:
+                    request.session.set_expiry(0)  # Session expires when the user closes the browser
+
                 return JsonResponse({'message': 'Login successful'}, status=200)
             else:
                 return JsonResponse({'error': 'Invalid email or password.'}, status=401)
