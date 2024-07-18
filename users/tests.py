@@ -1,3 +1,4 @@
+import pytest
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -8,7 +9,6 @@ from rest_framework.test import APITestCase
 from users.models import CustomUser
 
 
-# Create your tests here.
 class TestCustomUserModel(TestCase):
     def test_create_user(self):
         user = CustomUser.objects.create_user(username='testuser', email='test@example.com', password='password123')
@@ -19,6 +19,7 @@ class TestCustomUserModel(TestCase):
         invalid_passwords = [
             '',  # Empty password
             'short',  # Too short
+            # TODO: Test more invalid passwords
         ]
 
         for password in invalid_passwords:
@@ -49,3 +50,34 @@ class TestSignup(APITestCase):
         data = {'username': '', 'email': 'invalid', 'password': ''}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestLogin(APITestCase):
+
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(username='testloginuser', email='testloginuser@example.com',
+                                                   password='testlogin123')
+
+    def test_login_success_email(self):
+        url = reverse('login')
+        data = {'identifier': 'testloginuser@example.com', 'password': 'testlogin123'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_login_success_username(self):
+        url = reverse('login')
+        data = {'identifier': 'testloginuser', 'password': 'testlogin123'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_login_fail_email(self):
+        url = reverse('login')
+        data = {'identifier': 'invalid@example.com', 'password': 'wrongpassword'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_fail_username(self):
+        url = reverse('login')
+        data = {'identifier': 'invalid', 'password': 'wrongpassword'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

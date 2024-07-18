@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import logo from '../assets/images/logo.svg'
-import Header from "../components/Header";
+import axios from "axios";
+import {useNavigate} from 'react-router-dom';
 
-const Signup = () => {
+// TODO: Save logged in user
+const Login = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        email: '',
-        username: '',
+        identifier: '',
         password: ''
     });
 
@@ -13,10 +14,16 @@ const Signup = () => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission here, e.g., send data to backend
-        console.log(formData);
+        try {
+            const response = await axios.post('http://localhost:8000/api/login', formData);
+            console.log(response.data);
+            navigate('/dashboard');
+        } catch (error) {
+            // TODO: Display Error message on invalid submit
+            console.error('Error submitting form:', error);
+        }
     };
 
     return (
@@ -24,36 +31,39 @@ const Signup = () => {
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <form className="flex flex-col w-9/12" onSubmit={handleSubmit}>
                     <h1 className="text-5xl mb-2 text-gray-50">Log in</h1>
-                    <TextInput label="Username" type="text"/>
-                    <TextInput label="Password" type="password"/>
-                    <div className="flex justify-center">
+                    {/*TODO: Create an account width too big (clickable area)*/}
+                    <a href='/signup' className="text-white underline">Create an account</a>
+                    {/*TODO: Change identifier input type and label*/}
+                    <TextInput name="identifier" label="identifier" type="text" onChange={handleChange}/>
+                    <TextInput name="password" label="Password" type="password" onChange={handleChange}/>
+                    <div className="flex justify-center pt-7">
                         <button
-                            className="bg-green-500 hover:bg-green-600 black py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52 ">Log in
+                            className="bg-green-500 hover:bg-green-600 black py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52">
+                            Log in
                         </button>
                     </div>
+                    {/* TODO: Add remember me*/}
+                    <a href='#' className="text-white underline">Forgot password?</a>
                 </form>
                 <p className="text-white">or</p>
             </div>
         </div>
-    )
-}
+    );
+};
 
-
-function TextInput({label, type}) {
-    const [value, setValue] = useState('');
-
+function TextInput({name, onChange, label, type}) {
     return (
         <div className="flex flex-col mb-2">
             <label className="text-white mt-1 mb-2">{label}</label>
             <input
                 className="rounded-2xl h-9 p-3"
                 type={type}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                required={true}
+                name={name}
+                onChange={onChange}
+                required
             />
         </div>
     );
 }
 
-export default Signup;
+export default Login;
