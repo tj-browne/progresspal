@@ -1,21 +1,28 @@
-
 import axios from 'axios';
 
-let csrfToken = '';
-
 export const fetchCsrfToken = async () => {
+    const existingToken = localStorage.getItem('csrfToken');
+
+    if (existingToken) {
+        return;
+    }
+
     try {
         const response = await axios.get('http://localhost:8000/api/get_csrf_token', {
             withCredentials: true,
         });
-        csrfToken = response.data.csrfToken;
+        const token = response.data.csrfToken;
+        localStorage.setItem('csrfToken', token);
+        console.log('CSRF token fetched and stored in localStorage.');
     } catch (error) {
         console.error('Error fetching CSRF token:', error);
     }
 };
 
-export const getCsrfToken = () => csrfToken;
+export const getCsrfToken = () => {
+    return localStorage.getItem('csrfToken') || '';
+};
 
 export const setCsrfToken = (token) => {
-    csrfToken = token;
+    localStorage.setItem('csrfToken', token);
 };
