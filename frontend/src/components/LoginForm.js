@@ -3,7 +3,7 @@ import React from "react";
 import TextInput from './TextInput';
 
 
-const LoginForm = ({ formData, handleChange, handleSubmit, errorMessage }) => {
+const LoginForm = ({ handleChange, handleSubmit, errorMessage }) => {
     return (
         <form className="flex flex-col w-9/12" onSubmit={handleSubmit}>
             <h1 className="text-5xl mb-2 text-gray-50">Log in</h1>

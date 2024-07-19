@@ -45,7 +45,6 @@ const Login = () => {
     return (
         <div className="bg-zinc-900 min-h-screen flex items-center justify-center">
             <LoginForm
-                formData={formData}
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
                 errorMessage={errorMessage}
