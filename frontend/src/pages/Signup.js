@@ -3,6 +3,7 @@ import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {fetchCsrfToken, getCsrfToken} from "../services/csrfService";
 import SignupForm from "../components/SignupForm";
+import Header from "../components/Header";
 
 const Signup = () => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -41,6 +42,7 @@ const Signup = () => {
 
     return (
         <div className="bg-zinc-900">
+            <Header />
             <SignupForm
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
