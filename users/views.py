@@ -1,7 +1,11 @@
 import json
 
+from django.contrib.sessions.models import Session
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
+
+from django.contrib.auth import login as auth_login
 
 from .models import CustomUser
 
@@ -17,6 +21,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': token})
 
 
+@csrf_exempt  # Handling CSRF protection manually
 def signup(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -42,6 +47,7 @@ def signup(request):
     return JsonResponse({'error': 'Method not allowed.'}, status=405)
 
 
+@csrf_exempt  # Handling CSRF protection manually
 def login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -56,15 +62,36 @@ def login(request):
                 user = CustomUser.objects.get(username=identifier)
 
             if user.check_password(password):
+                auth_login(request, user)
+
+                print(f"User authenticated: {request.user.username}, Authenticated: {request.user.is_authenticated}")
+
                 if remember_me:
                     request.session.set_expiry(1209600)  # 14 days
                 else:
-                    request.session.set_expiry(0)  # Session expires when the user closes the browser
+                    request.session.set_expiry(3600)  # Session expires when the user closes the browser
 
                 return JsonResponse({'message': 'Login successful'}, status=200)
             else:
-                return JsonResponse({'error': 'Invalid email or password.'}, status=401)
+                return JsonResponse({'error': 'Invalid credentials.'}, status=401)
         except CustomUser.DoesNotExist:
-            return JsonResponse({'error': 'User does not exist.'}, status=401)
+            return JsonResponse({'error': 'Invalid credentials.'}, status=401)
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+def check_auth(request):
+    user = request.user
+
+    if user.is_authenticated:
+        return JsonResponse({'authenticated': True, 'user': {'username': user.username}}, status=200)
+    else:
+        session_key = request.COOKIES.get('sessionid')
+        if session_key:
+            try:
+                session = Session.objects.get(session_key=session_key)
+                print("Session in DB: %s", session.get_decoded())
+            except Session.DoesNotExist:
+                print("Session does not exist in DB")
+
+        return JsonResponse({'authenticated': False}, status=200)

@@ -45,7 +45,15 @@ INSTALLED_APPS = [
     'goals',
     'webpack_loader',
     'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -82,10 +90,10 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_NAME = 'csrfToken'
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_HTTPONLY = False
 
 LOGIN_URL = '/api/login'
 
@@ -119,6 +127,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

@@ -27,9 +27,10 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const csrfToken = await getCsrfToken();
             const response = await axios.post('http://localhost:8000/api/login', formData, {
                 headers: {
-                    'X-CSRFToken': getCsrfToken(),
+                    'X-CSRFToken': csrfToken,
                 },
                 withCredentials: true
             });
@@ -45,6 +46,7 @@ const Login = () => {
     return (
         <div className="bg-zinc-900 min-h-screen flex items-center justify-center">
             <LoginForm
+                formData={formData}
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
                 errorMessage={errorMessage}

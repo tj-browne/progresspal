@@ -4,7 +4,7 @@ import logo from '../assets/images/logo.svg'
 const Landingpage = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900">
-            <a href='/'><img src={logo} alt="ProgressPal logo"/></a>
+            {/*<a href='/'><img src={logo} alt="ProgressPal logo"/></a>*/}
             <h1 className="text-5xl font-bold mt-4 mb-4 text-gray-50 text-center">Welcome to ProgressPal</h1>
             <p className="text-xl mb-8 text-zinc-600">Your friendly fitness and workout tracker.</p>
             <div className="flex flex-col justify-center align-center gap-7 text-center">

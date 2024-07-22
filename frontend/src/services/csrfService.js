@@ -13,14 +13,17 @@ export const fetchCsrfToken = async () => {
         });
         const token = response.data.csrfToken;
         localStorage.setItem('csrfToken', token);
-        console.log('CSRF token fetched and stored in localStorage.');
     } catch (error) {
         console.error('Error fetching CSRF token:', error);
     }
 };
 
-export const getCsrfToken = () => {
-    return localStorage.getItem('csrfToken') || '';
+export const getCsrfToken = async () => {
+    let token = localStorage.getItem('csrfToken');
+    if (!token) {
+        token = await fetchCsrfToken();
+    }
+    return token || '';
 };
 
 export const setCsrfToken = (token) => {

@@ -3,7 +3,7 @@ import React from "react";
 import TextInput from './TextInput';
 
 
-const LoginForm = ({ handleChange, handleSubmit, errorMessage }) => {
+const LoginForm = ({formData, handleChange, handleSubmit, errorMessage}) => {
     return (
         <form className="flex flex-col w-9/12" onSubmit={handleSubmit}>
             <h1 className="text-5xl mb-2 text-gray-50">Log in</h1>
@@ -20,11 +20,15 @@ const LoginForm = ({ handleChange, handleSubmit, errorMessage }) => {
                 </button>
             </div>
             <div className="flex items-center pt-4 pb-3 text-lg text-white">
-                <input className="rounded border-gray-400 mr-2" type="checkbox" name="rememberMe"
+                <input id="rememberMe" className="rounded border-gray-400 mr-2" type="checkbox" name="rememberMe"
+                       checked={formData.rememberMe}
                        onChange={handleChange}/>
-                <label className="cursor-pointer">Remember me</label>
+                <label htmlFor="rememberMe" className="cursor-pointer">Remember me</label>
             </div>
-            <a href='#' className="text-white underline">Forgot password?</a>
+            {/* TODO: Fix link too wide*/}
+            <div>
+                <a href='#' className="text-white underline">Forgot password?</a>
+            </div>
         </form>
     )
 }
