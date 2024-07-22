@@ -22,6 +22,7 @@ const SignupForm = ({handleChange, handleSubmit, errorMessage}) => {
                 </div>
             </form>
             <p className="text-white">or</p>
+        {/*    TODO: Add OAuth sign up*/}
         </div>
     );
 }

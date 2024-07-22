@@ -5,7 +5,6 @@ import LoginForm from '../components/LoginForm';
 import {fetchCsrfToken, getCsrfToken} from "../services/csrfService";
 import Header from "../components/Header";
 
-// TODO: Save logged in user
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
@@ -29,14 +28,13 @@ const Login = () => {
         e.preventDefault();
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.post('http://localhost:8000/api/login', formData, {
+            const response = await axios.post('http://localhost:8000/api/users/login/', formData, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                 },
                 withCredentials: true
             });
             console.log(response.data);
-
             navigate('/dashboard');
         } catch (error) {
             console.error('Error submitting form:', error);

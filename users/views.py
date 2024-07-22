@@ -11,19 +11,20 @@ from django.contrib.auth import logout as auth_logout
 from .models import CustomUser
 
 
-def get_users(request):
-    users = CustomUser.objects.all()
-    user_data = list(users.values())
-    return JsonResponse({'users': user_data})
-
-
-def get_csrf_token(request):
-    token = get_token(request)
-    return JsonResponse({'csrfToken': token})
+# def get_users(request):
+#     if request.method == 'GET':
+#         users = CustomUser.objects.all()
+#         user_data = list(users.values())
+#         return JsonResponse({'users': user_data})
 
 
 @csrf_exempt  # Handling CSRF protection manually
-def signup(request):
+def user_list_create(request):
+    if request.method == 'GET':
+        users = CustomUser.objects.all()
+        user_data = list(users.values())
+        return JsonResponse({'users': user_data})
+
     if request.method == 'POST':
         data = json.loads(request.body)
         email = data.get('email')
@@ -41,6 +42,7 @@ def signup(request):
 
         try:
             CustomUser.objects.create_user(username=username, email=email, password=password)
+            auth_login(request, CustomUser.objects.get(username=username))
             return JsonResponse({'message': 'User created successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
@@ -49,7 +51,7 @@ def signup(request):
 
 
 @csrf_exempt  # Handling CSRF protection manually
-def login(request):
+def login_user(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         identifier = data.get('identifier')
@@ -81,6 +83,12 @@ def login(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
+@csrf_exempt  # Handling CSRF protection manually
+def logout_user(request):
+    auth_logout(request)
+    return JsonResponse({'message': 'Logged out successfully'}, status=200)
+
+
 def check_auth(request):
     user = request.user
 
@@ -98,7 +106,6 @@ def check_auth(request):
         return JsonResponse({'authenticated': False}, status=200)
 
 
-@csrf_exempt
-def logout(request):
-    auth_logout(request)
-    return JsonResponse({'message': 'Logged out successfully'}, status=200)
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})

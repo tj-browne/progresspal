@@ -26,7 +26,7 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8000/api/signup', formData, {
+            const response = await axios.post('http://localhost:8000/api/users/', formData, {
                 headers: {
                     'X-CSRFToken': getCsrfToken(),
                 },

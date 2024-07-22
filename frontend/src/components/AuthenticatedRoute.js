@@ -11,7 +11,7 @@ const AuthenticatedRoute = ({ children }) => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/check_auth', { withCredentials: true });
+                const response = await axios.get('http://localhost:8000/api/auth/check/', { withCredentials: true });
                 if (response.status === 200 && response.data.authenticated) {
                     setIsAuthenticated(true);
                     setUser(response.data.user); // Pass the user data

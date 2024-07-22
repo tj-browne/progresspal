@@ -13,7 +13,7 @@ const UserHeader = ({user}) => {
     const navigate = useNavigate();
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8000/api/logout', {}, { withCredentials: true });
+            await axios.post('http://localhost:8000/api/users/logout/', {}, { withCredentials: true });
             localStorage.removeItem('authToken');
             navigate('/login');
         } catch (error) {

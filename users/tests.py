@@ -40,13 +40,13 @@ class TestCustomUserModel(TestCase):
 
 class TestSignup(APITestCase):
     def test_signup_success(self):
-        url = reverse('signup')
+        url = reverse('user_list_create')
         data = {'username': 'testuser', 'email': 'test@example.com', 'password': 'password123'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_signup_fail(self):
-        url = reverse('signup')
+        url = reverse('user_list_create')
         data = {'username': '', 'email': 'invalid', 'password': ''}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -54,7 +54,7 @@ class TestSignup(APITestCase):
     def test_login_email_inuse(self):
         user = CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
                                               password="password123")
-        url = reverse('signup')
+        url = reverse('user_list_create')
         data = {'username': 'validtestuser2', 'email': 'validtestuser@example.com', 'password': 'password123'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
@@ -62,13 +62,13 @@ class TestSignup(APITestCase):
     def test_login_username_inuse(self):
         user = CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
                                               password="password123")
-        url = reverse('signup')
+        url = reverse('user_list_create')
         data = {'username': 'validtestuser', 'email': 'validtestuser2@example.com', 'password': 'password123'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
     def test_valid_username(self):
-        url = reverse('signup')
+        url = reverse('user_list_create')
         data = {'username': 'test@user', 'email': 'testvalidusername@example.com', 'password': 'password123'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -81,25 +81,25 @@ class TestLogin(APITestCase):
                                                    password='testlogin123')
 
     def test_login_success_email(self):
-        url = reverse('login')
+        url = reverse('login_user')
         data = {'identifier': 'testloginuser@example.com', 'password': 'testlogin123'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_login_success_username(self):
-        url = reverse('login')
+        url = reverse('login_user')
         data = {'identifier': 'testloginuser', 'password': 'testlogin123'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_login_fail_email(self):
-        url = reverse('login')
+        url = reverse('login_user')
         data = {'identifier': 'invalid@example.com', 'password': 'wrongpassword'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_login_fail_username(self):
-        url = reverse('login')
+        url = reverse('login_user')
         data = {'identifier': 'invalid', 'password': 'wrongpassword'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
