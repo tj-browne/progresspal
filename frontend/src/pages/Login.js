@@ -3,6 +3,7 @@ import axios from "axios";
 import {useNavigate} from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import {fetchCsrfToken, getCsrfToken} from "../services/csrfService";
+import Header from "../components/Header";
 
 // TODO: Save logged in user
 const Login = () => {
@@ -45,6 +46,7 @@ const Login = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex items-center justify-center">
+            <Header />
             <LoginForm
                 formData={formData}
                 handleChange={handleChange}

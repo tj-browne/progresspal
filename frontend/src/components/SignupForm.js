@@ -7,9 +7,12 @@ const SignupForm = ({handleChange, handleSubmit, errorMessage}) => {
         <div className="flex flex-col items-center justify-center min-h-screen">
             <form className="flex flex-col w-9/12" onSubmit={handleSubmit}>
                 <h1 className="text-5xl mb-2 text-gray-50">Sign up</h1>
-                <TextInput name="email" label="Email Address" type="email" onChange={handleChange}/>
-                <TextInput name="username" label="Username" type="text" onChange={handleChange}/>
-                <TextInput name="password" label="Password" type="password" onChange={handleChange}/>
+                <div className="mb-4">
+                    <a href='/login' className="text-white underline">Already have an account?</a>
+                </div>
+                <TextInput name="email" label="Email Address:" type="email" onChange={handleChange}/>
+                <TextInput name="username" label="Username:" type="text" onChange={handleChange}/>
+                <TextInput name="password" label="Password:" type="password" onChange={handleChange}/>
                 {errorMessage && <ErrorMessage message={errorMessage}/>}
                 <div className="flex justify-center pt-7">
                     <button

@@ -6,6 +6,7 @@ from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
 
 from .models import CustomUser
 
@@ -95,3 +96,9 @@ def check_auth(request):
                 print("Session does not exist in DB")
 
         return JsonResponse({'authenticated': False}, status=200)
+
+
+@csrf_exempt
+def logout(request):
+    auth_logout(request)
+    return JsonResponse({'message': 'Logged out successfully'}, status=200)
