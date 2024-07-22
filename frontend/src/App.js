@@ -5,6 +5,7 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import React from "react";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
@@ -21,6 +22,7 @@ function App() {
                     <Route path="/signup" element={<UnauthenticatedRoute><Signup /></UnauthenticatedRoute>} />
                     {/* Protected Route */}
                     <Route path="/dashboard" element={<AuthenticatedRoute><Dashboard /></AuthenticatedRoute>} />
+                    <Route path="/profile" element={<AuthenticatedRoute><Profile /></AuthenticatedRoute>} />
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>
             </Router>

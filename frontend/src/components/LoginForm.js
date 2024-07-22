@@ -25,7 +25,6 @@ const LoginForm = ({formData, handleChange, handleSubmit, errorMessage}) => {
                        onChange={handleChange}/>
                 <label htmlFor="rememberMe" className="cursor-pointer">Remember me</label>
             </div>
-            {/* TODO: Fix link too wide*/}
             <div>
                 <a href='#' className="text-white underline">Forgot password?</a>
             </div>
