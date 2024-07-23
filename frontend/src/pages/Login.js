@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import axios from "axios";
+import axios from "../services/axiosConfig";
 import {useNavigate} from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import {fetchCsrfToken, getCsrfToken} from "../services/csrfService";
@@ -13,10 +13,6 @@ const Login = () => {
         password: '',
         rememberMe: false
     });
-
-    useEffect(() => {
-        fetchCsrfToken();
-    }, []);
 
     const handleChange = (e) => {
         const {name, type, checked, value} = e.target;
@@ -44,7 +40,7 @@ const Login = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex items-center justify-center">
-            <Header />
+            <Header/>
             <LoginForm
                 formData={formData}
                 handleChange={handleChange}

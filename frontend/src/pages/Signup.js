@@ -14,11 +14,6 @@ const Signup = () => {
         password: ''
     });
 
-
-    useEffect(() => {
-        fetchCsrfToken();
-    }, []);
-
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
@@ -26,9 +21,10 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const csrfToken = await getCsrfToken();
             const response = await axios.post('http://localhost:8000/api/users/', formData, {
                 headers: {
-                    'X-CSRFToken': getCsrfToken(),
+                    'X-CSRFToken': csrfToken,
                 },
                 withCredentials: true
             });
@@ -42,7 +38,7 @@ const Signup = () => {
 
     return (
         <div className="bg-zinc-900">
-            <Header />
+            <Header/>
             <SignupForm
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
