@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from "../services/axiosConfig";
 
 const AuthenticatedRoute = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +14,7 @@ const AuthenticatedRoute = ({ children }) => {
                 const response = await axios.get('http://localhost:8000/api/auth/check/', { withCredentials: true });
                 if (response.status === 200 && response.data.authenticated) {
                     setIsAuthenticated(true);
-                    setUser(response.data.user); // Pass the user data
+                    setUser(response.data.user);
                 } else {
                     navigate('/login');
                 }

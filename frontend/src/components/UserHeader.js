@@ -3,6 +3,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import defaultProfilePic from '../assets/images/default-profile-pic.svg';
 import logo from "../assets/images/logo.svg";
 import axios from "axios";
+import {getCsrfToken} from "../services/csrfService";
 
 const UserHeader = ({user}) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -13,7 +14,13 @@ const UserHeader = ({user}) => {
     const navigate = useNavigate();
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8000/api/users/logout/', {}, { withCredentials: true });
+            const csrfToken = await getCsrfToken();
+            await axios.post('http://localhost:8000/api/users/logout/', {}, {
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                },
+                withCredentials: true
+            });
             localStorage.removeItem('authToken');
             navigate('/login');
         } catch (error) {
@@ -28,10 +35,8 @@ const UserHeader = ({user}) => {
             }
         };
 
-        // Add event listener for clicks outside the dropdown
         document.addEventListener('mousedown', handleClickOutside);
 
-        // Cleanup the event listener on component unmount
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 

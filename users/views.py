@@ -3,7 +3,7 @@ import json
 from django.contrib.sessions.models import Session
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
@@ -11,14 +11,7 @@ from django.contrib.auth import logout as auth_logout
 from .models import CustomUser
 
 
-# def get_users(request):
-#     if request.method == 'GET':
-#         users = CustomUser.objects.all()
-#         user_data = list(users.values())
-#         return JsonResponse({'users': user_data})
-
-
-@csrf_exempt  # Handling CSRF protection manually
+@csrf_protect
 def user_list_create(request):
     if request.method == 'GET':
         users = CustomUser.objects.all()
@@ -50,7 +43,7 @@ def user_list_create(request):
     return JsonResponse({'error': 'Method not allowed.'}, status=405)
 
 
-@csrf_exempt  # Handling CSRF protection manually
+@csrf_protect
 def login_user(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -83,10 +76,11 @@ def login_user(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
-@csrf_exempt  # Handling CSRF protection manually
+@csrf_protect
 def logout_user(request):
-    auth_logout(request)
-    return JsonResponse({'message': 'Logged out successfully'}, status=200)
+    if request.method == 'POST':
+        auth_logout(request)
+        return JsonResponse({'message': 'Logged out successfully'}, status=200)
 
 
 def check_auth(request):
