@@ -9,6 +9,8 @@ import Profile from "./pages/Profile";
 import React from "react";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
+import PasswordResetRequestPage from "./pages/PasswordResetRequestPage";
+import PasswordResetPage from "./pages/PasswordResetPage";
 
 
 function App() {
@@ -24,6 +26,9 @@ function App() {
                     <Route path="/dashboard" element={<AuthenticatedRoute><Dashboard /></AuthenticatedRoute>} />
                     <Route path="/profile" element={<AuthenticatedRoute><Profile /></AuthenticatedRoute>} />
                     <Route path="*" element={<NotFound/>}/>
+
+                    <Route path="/password-reset-request" element={<PasswordResetRequestPage />} />
+                    {/*<Route path="/password-reset/:token" element={<PasswordResetPage />} />*/}
                 </Routes>
             </Router>
         </div>

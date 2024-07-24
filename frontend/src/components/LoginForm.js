@@ -27,7 +27,7 @@ const LoginForm = ({formData, handleChange, handleSubmit, errorMessage}) => {
             </div>
             <div>
                 {/*TODO: Add forgot password?*/}
-                <a href='#' className="text-white underline">Forgot password?</a>
+                <a href='/password-reset-request' className="text-white underline">Forgot password?</a>
             </div>
             <p className="text-white">or</p>
             {/*    TODO: Add OAuth log in*/}

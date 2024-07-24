@@ -30,7 +30,7 @@ const Profile = ({user}) => {
                             <a href="/#" className="text-white underline">Update Email</a>
                         </div>
                         <div>
-                            <a href="/#" className="text-white underline">Forgot Password?</a>
+                            <a href="/password-reset-request" className="text-white underline">Forgot Password?</a>
                         </div>
                     </div>
 

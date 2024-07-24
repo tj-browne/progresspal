@@ -15,7 +15,7 @@ urlpatterns = [
     # path('api/users/profile/', views.user_profile, name='user_profile'),
 
     # TODO: Password reset
-    # path('api/users/password-reset-request/', views.password_reset_request, name='password_reset_request'),
+    path('api/users/password-reset-request/', views.password_reset_request, name='password_reset_request'),
     # path('api/users/password-reset/<str:token>/', views.password_reset, name='password_reset'),
 
     # OPTIONAL: Activate account (email) - probably easy to do after password reset request

@@ -1,13 +1,17 @@
 import json
+import uuid
 
 from django.contrib.sessions.models import Session
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 
+from progresspal import settings
 from .models import CustomUser
 
 
@@ -103,3 +107,31 @@ def check_auth(request):
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({'csrfToken': token})
+
+
+def password_reset_request(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'error': 'Email address not found.'}, status=401)
+
+        token = uuid.uuid4()
+        user.reset_password_token = token
+        user.reset_password_token_expiry = timezone.now() + timezone.timedelta(hours=1)
+        user.save()
+
+        reset_link = f"{request.scheme}://{request.get_host()}/password-reset/{token}/"
+        send_mail(
+            'Progress Pal - Password Reset Request',
+            f'Click the link below to reset your password:\n{reset_link}',
+            'from@example.com',
+            [user.email],
+            fail_silently=False,
+        )
+
+        return JsonResponse({'message': 'A password reset link has been sent to your email.'})
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
