@@ -19,16 +19,17 @@ function App() {
             <Router>
                 <Routes>
                     {/* Public Routes */}
-                    <Route path="/" element={<UnauthenticatedRoute><Landingpage /></UnauthenticatedRoute>} />
-                    <Route path="/login" element={<UnauthenticatedRoute><Login /></UnauthenticatedRoute>} />
-                    <Route path="/signup" element={<UnauthenticatedRoute><Signup /></UnauthenticatedRoute>} />
+                    <Route path="/" element={<UnauthenticatedRoute><Landingpage/></UnauthenticatedRoute>}/>
+                    <Route path="/login" element={<UnauthenticatedRoute><Login/></UnauthenticatedRoute>}/>
+                    <Route path="/signup" element={<UnauthenticatedRoute><Signup/></UnauthenticatedRoute>}/>
                     {/* Protected Route */}
-                    <Route path="/dashboard" element={<AuthenticatedRoute><Dashboard /></AuthenticatedRoute>} />
-                    <Route path="/profile" element={<AuthenticatedRoute><Profile /></AuthenticatedRoute>} />
+                    <Route path="/dashboard" element={<AuthenticatedRoute><Dashboard/></AuthenticatedRoute>}/>
+                    <Route path="/profile" element={<AuthenticatedRoute><Profile/></AuthenticatedRoute>}/>
                     <Route path="*" element={<NotFound/>}/>
 
-                    <Route path="/password-reset-request" element={<PasswordResetRequestPage />} />
-                    {/*<Route path="/password-reset/:token" element={<PasswordResetPage />} />*/}
+                    {/*TODO: Improve routing - authentication*/}
+                    <Route path="/password-reset-request" element={<PasswordResetRequestPage/>}/>
+                    <Route path="/password-reset/:token" element={<PasswordResetPage/>}/>
                 </Routes>
             </Router>
         </div>

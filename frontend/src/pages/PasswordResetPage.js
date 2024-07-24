@@ -1,46 +1,48 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import logo from '../assets/images/logo.svg';
+import React, {useState} from 'react';
+import {useParams, useNavigate} from 'react-router-dom';
 
 const PasswordResetPage = () => {
-    const { token } = useParams();
+    const {token} = useParams();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        if (e.target.name === 'password') {
-            setPassword(e.target.value);
-        } else {
-            setConfirmPassword(e.target.value);
-        }
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (password !== confirmPassword) {
             setMessage('Passwords do not match.');
             return;
         }
+
         try {
-            // Make API call to reset password
-            // Replace with your actual API call
-            const response = await fetch(`http://localhost:8000/api/password-reset/${token}/`, {
+            const response = await fetch(`http://localhost:8000/api/users/password-reset/${token}/`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ password })
+                body: JSON.stringify({new_password: password})
             });
+
             if (response.ok) {
-                setMessage('Your password has been reset successfully.');
-                navigate('/login');
+                setMessage('Password has been reset successfully.');
+                setTimeout(() => navigate('/login'), 2000); // Redirect to login page after success
             } else {
-                setMessage('Failed to reset password.');
+                const errorData = await response.json();
+                setMessage(errorData.error || 'An error occurred.');
             }
         } catch (error) {
-            setMessage('An error occurred. Please try again.');
+            console.error('Error:', error);
+            setMessage('An error occurred.');
         }
     };
 
@@ -52,7 +54,7 @@ const PasswordResetPage = () => {
                     type="password"
                     name="password"
                     value={password}
-                    onChange={handleChange}
+                    onChange={handlePasswordChange}
                     className="mb-4 p-2 rounded"
                     placeholder="Enter new password"
                     required
@@ -61,7 +63,7 @@ const PasswordResetPage = () => {
                     type="password"
                     name="confirmPassword"
                     value={confirmPassword}
-                    onChange={handleChange}
+                    onChange={handleConfirmPasswordChange}
                     className="mb-4 p-2 rounded"
                     placeholder="Confirm new password"
                     required

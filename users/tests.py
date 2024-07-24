@@ -103,3 +103,5 @@ class TestLogin(APITestCase):
         data = {'identifier': 'invalid', 'password': 'wrongpassword'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+# TODO: Add forgot password tests

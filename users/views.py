@@ -5,6 +5,7 @@ from django.contrib.sessions.models import Session
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
@@ -123,7 +124,7 @@ def password_reset_request(request):
         user.reset_password_token_expiry = timezone.now() + timezone.timedelta(hours=1)
         user.save()
 
-        reset_link = f"{request.scheme}://{request.get_host()}/password-reset/{token}/"
+        reset_link = f"http://localhost:3000/password-reset/{token}/"
         send_mail(
             'Progress Pal - Password Reset Request',
             f'Click the link below to reset your password:\n{reset_link}',
@@ -133,5 +134,29 @@ def password_reset_request(request):
         )
 
         return JsonResponse({'message': 'A password reset link has been sent to your email.'})
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@csrf_exempt
+def password_reset(request, token):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            new_password = data.get('new_password')
+
+            user = get_object_or_404(CustomUser, reset_password_token=token)
+
+            if user.reset_password_token_expiry < timezone.now():
+                return JsonResponse({'error': 'Token has expired.'}, status=400)
+
+            user.set_password(new_password)
+            user.reset_password_token = None
+            user.reset_password_token_expiry = None
+            user.save()
+
+            return JsonResponse({'message': 'Password has been reset successfully.'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method.'}, status=400)

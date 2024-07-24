@@ -26,7 +26,6 @@ const LoginForm = ({formData, handleChange, handleSubmit, errorMessage}) => {
                 <label htmlFor="rememberMe" className="cursor-pointer">Remember me</label>
             </div>
             <div>
-                {/*TODO: Add forgot password?*/}
                 <a href='/password-reset-request' className="text-white underline">Forgot password?</a>
             </div>
             <p className="text-white">or</p>
