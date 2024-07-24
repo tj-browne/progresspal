@@ -1,6 +1,7 @@
 import ErrorMessage from "./ErrorMessage";
 import React from "react";
 import TextInput from './TextInput';
+import GoogleOAuthButton from "./GoogleOAuthButton";
 
 
 const LoginForm = ({formData, handleChange, handleSubmit, errorMessage}) => {
@@ -28,8 +29,11 @@ const LoginForm = ({formData, handleChange, handleSubmit, errorMessage}) => {
             <div>
                 <a href='/password-reset-request' className="text-white underline">Forgot password?</a>
             </div>
-            <p className="text-white">or</p>
-            {/*    TODO: Add OAuth log in*/}
+            <div className="flex flex-col align-center justify-center items-center gap-7">
+                <p className="text-white">or</p>
+                {/*    TODO: Add OAuth log in*/}
+                < GoogleOAuthButton/>
+            </div>
         </form>
     )
 }

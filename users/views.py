@@ -9,8 +9,10 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, login
 from django.contrib.auth import logout as auth_logout
+from google.auth.transport import requests
+from google.oauth2 import id_token
 
 from progresspal import settings
 from .models import CustomUser
@@ -160,3 +162,45 @@ def password_reset(request, token):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@csrf_exempt
+def google_auth_callback(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        id_token_str = data.get('idToken')
+        idinfo = verify_google_token(id_token_str)
+
+        if idinfo:
+            email = idinfo.get('email')
+            name = idinfo.get('name')
+            user_id = idinfo.get('sub')
+
+            user, created = CustomUser.objects.get_or_create(email=email)
+            if created:
+                user.username = name
+                user.save()
+
+            auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+            return JsonResponse({
+                'message': 'Authentication successful',
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email
+            })
+        else:
+            return JsonResponse({'error': 'Invalid token'}, status=400)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+def verify_google_token(id_token_str):
+    try:
+        client_id = settings.SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID  # or CLIENT_ID from your settings
+        idinfo = id_token.verify_oauth2_token(id_token_str, requests.Request(), client_id)
+        print(f"Token verified successfully: {idinfo}")
+        return idinfo
+    except ValueError as e:
+        print(f"Token verification failed: {e}")
+        return None

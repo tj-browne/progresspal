@@ -20,11 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jt2ol)$$&n)pglf6x-rhk$zh7z*4q$(cm64f2f5m+qnj97hwdq'
-
 env = environ.Env()
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent, '.env'))
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env('SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=True)
@@ -44,6 +45,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'debug_toolbar',
     'users',
     'workouts',
@@ -75,12 +81,14 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 CORS_ALLOWED_ORIGINS = [
@@ -101,7 +109,13 @@ CSRF_COOKIE_SAMESITE = 'Strict'
 SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_HTTPONLY = False
 
-LOGIN_URL = '/api/login'
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Google OAuth settings
+SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID = env('SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID')
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

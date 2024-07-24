@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import google_auth_callback
 
 urlpatterns = [
     path('api/users/', views.user_list_create, name='user_list_create'),
@@ -23,4 +24,5 @@ urlpatterns = [
     path('api/csrf-token/', views.get_csrf_token, name='get_csrf_token'),
     path('api/auth/check/', views.check_auth, name='check_auth'),
 
+    path('api/auth/google/', google_auth_callback, name='google_auth_callback'),
 ]

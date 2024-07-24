@@ -30,6 +30,7 @@ function App() {
                     {/*TODO: Improve routing - authentication*/}
                     <Route path="/password-reset-request" element={<PasswordResetRequestPage/>}/>
                     <Route path="/password-reset/:token" element={<PasswordResetPage/>}/>
+
                 </Routes>
             </Router>
         </div>

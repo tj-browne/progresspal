@@ -16,6 +16,7 @@ const Profile = ({user}) => {
                         <p className="text-white">{user.username}</p>
                     </div>
 
+                    {/*TODO: Get profile details (email, height, date joined)*/}
                     <div className="flex items-center mb-6">
                         <h3 className="text-lg text-white underline mr-2">Email:</h3>
                         <p className="text-white">{user.email}</p>
@@ -26,7 +27,8 @@ const Profile = ({user}) => {
                     <h2 className="text-3xl text-white underline mb-4">Settings</h2>
 
                     <div className="flex flex-col space-y-2 mb-6">
-                    <div>
+                        <div>
+                            {/*TODO: Add update email*/}
                             <a href="/#" className="text-white underline">Update Email</a>
                         </div>
                         <div>
