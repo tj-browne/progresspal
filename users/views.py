@@ -42,7 +42,8 @@ def user_list_create(request):
 
         try:
             CustomUser.objects.create_user(username=username, email=email, password=password)
-            auth_login(request, CustomUser.objects.get(username=username))
+            auth_login(request, CustomUser.objects.get(username=username),
+                       backend='django.contrib.auth.backends.ModelBackend')
             return JsonResponse({'message': 'User created successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
@@ -65,7 +66,7 @@ def login_user(request):
                 user = CustomUser.objects.get(username=identifier)
 
             if user.check_password(password):
-                auth_login(request, user)
+                auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
                 print(f"User authenticated: {request.user.username}, Authenticated: {request.user.is_authenticated}")
 
