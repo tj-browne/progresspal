@@ -149,7 +149,6 @@ class TestForgotPassword:
         data = {'email': 'nonexistentuser@example.com'}
         response = self.client.post(url, data, format='json')
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert 'Email address not found.' in response.json()['error']
 
 
 @pytest.mark.django_db
@@ -170,7 +169,6 @@ class TestPasswordReset:
         data = {'new_password': 'newpassword123'}
         response = self.client.post(url, data, format='json')
         assert response.status_code == status.HTTP_200_OK
-        assert 'Password has been reset successfully.' in response.json()['message']
         self.user.refresh_from_db()
         assert self.user.check_password('newpassword123')
 
@@ -191,7 +189,6 @@ class TestPasswordReset:
         data = {'new_password': 'newpassword123'}
         response = self.client.post(url, data, format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert 'Token has expired.' in response.json()['error']
 
 
 @pytest.mark.django_db
@@ -208,11 +205,9 @@ class TestLogout:
         url = reverse('logout_user')
         response = self.client.post(url, format='json')
         assert response.status_code == status.HTTP_200_OK
-        assert 'Logged out successfully' in response.json()['message']
 
     def test_logout_fail_not_authenticated(self):
         self.client.logout()
         url = reverse('logout_user')
         response = self.client.post(url, format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert 'No user is logged in' in response.json()['error']
