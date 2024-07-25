@@ -1,6 +1,7 @@
 import ErrorMessage from "./ErrorMessage";
 import React from "react";
 import TextInput from "./TextInput";
+import GoogleOAuthButton from "./GoogleOAuthButton";
 
 const SignupForm = ({handleChange, handleSubmit, errorMessage}) => {
     return (
@@ -21,8 +22,11 @@ const SignupForm = ({handleChange, handleSubmit, errorMessage}) => {
                     </button>
                 </div>
             </form>
-            <p className="text-white">or</p>
-        {/*    TODO: Add OAuth sign up*/}
+            <div className="flex flex-col align-center justify-center items-center gap-7">
+                <p className="text-white">or</p>
+                {/*    TODO: Add OAuth log in*/}
+                < GoogleOAuthButton/>
+            </div>
         </div>
     );
 }

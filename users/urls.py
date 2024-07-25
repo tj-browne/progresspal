@@ -8,11 +8,10 @@ urlpatterns = [
     path('api/users/login/', views.login_user, name='login_user'),
     path('api/users/logout/', views.logout_user, name='logout_user'),
 
+    path('api/users/profile/', views.profile, name='profile'),
+
     # TODO: GET, UPDATE, DELETE User by ID
     # path('api/users/<int:id>/', views.user_detail, name='user_detail'),
-
-    # TODO: GET users profiles
-    # path('api/users/profile/', views.user_profile, name='user_profile'),
 
     path('api/users/password-reset-request/', views.password_reset_request, name='password_reset_request'),
     path('api/users/password-reset/<uuid:token>/', views.password_reset, name='password_reset'),

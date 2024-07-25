@@ -1,6 +1,7 @@
 import json
 import uuid
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.models import Session
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -49,6 +50,16 @@ def user_list_create(request):
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Method not allowed.'}, status=405)
+
+
+@login_required
+def profile(request):
+    user = request.user
+    profile_data = {
+        'username': user.username,
+        'email': user.email,
+    }
+    return JsonResponse(profile_data)
 
 
 @csrf_protect
