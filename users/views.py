@@ -98,8 +98,16 @@ def login_user(request):
 @csrf_protect
 def logout_user(request):
     if request.method == 'POST':
-        auth_logout(request)
-        return JsonResponse({'message': 'Logged out successfully'}, status=200)
+        if request.user.is_authenticated:
+            try:
+                auth_logout(request)
+                return JsonResponse({'message': 'Logged out successfully'}, status=200)
+            except Exception as e:
+                return JsonResponse({'error': 'An error occurred during logout'}, status=500)
+        else:
+            return JsonResponse({'error': 'No user is logged in'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method. Use POST.'}, status=405)
 
 
 def check_auth(request):
