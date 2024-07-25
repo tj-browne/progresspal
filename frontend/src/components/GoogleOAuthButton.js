@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import axios from '../services/axiosConfig';
 import { getCsrfToken } from '../services/csrfService';
-import { useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 const GoogleOAuthButton = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSuccess = async (response) => {
         const idToken = response.credential;
@@ -38,11 +39,14 @@ const GoogleOAuthButton = () => {
         setErrorMessage('Google OAuth failed. Please try again.');
     };
 
+    const buttonText = location.pathname === '/signup' ? 'signup_with' : 'signin_with';
+
     return (
         <div>
             <GoogleLogin
                 onSuccess={handleSuccess}
                 onError={handleError}
+                text={buttonText}
             />
             {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>

@@ -1,6 +1,7 @@
 import json
 import uuid
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.models import Session
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -49,6 +50,16 @@ def user_list_create(request):
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Method not allowed.'}, status=405)
+
+
+@login_required
+def profile(request):
+    user = request.user
+    profile_data = {
+        'username': user.username,
+        'email': user.email,
+    }
+    return JsonResponse(profile_data)
 
 
 @csrf_protect
@@ -200,7 +211,6 @@ def verify_google_token(id_token_str):
     try:
         client_id = settings.SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID  # or CLIENT_ID from your settings
         idinfo = id_token.verify_oauth2_token(id_token_str, requests.Request(), client_id)
-        print(f"Token verified successfully: {idinfo}")
         return idinfo
     except ValueError as e:
         print(f"Token verification failed: {e}")

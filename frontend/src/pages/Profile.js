@@ -1,8 +1,44 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
+import axios from "axios";
+import {getCsrfToken} from "../services/csrfService";
 
-const Profile = ({user}) => {
+const Profile = () => {
+    const [profileData, setProfileData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const csrfToken = await getCsrfToken();
+                const response = await axios.get('http://localhost:8000/api/users/profile/', {
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true,
+                });
+                setProfileData(response.data);
+            } catch (error) {
+                setError('Failed to load profile data.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfileData();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
             <UserHeader/>
@@ -13,13 +49,12 @@ const Profile = ({user}) => {
 
                     <div className="flex items-center mb-1">
                         <h3 className="text-lg text-white underline mr-2">Username:</h3>
-                        <p className="text-white">{user.username}</p>
+                        <p className="text-white">{profileData.username}</p>
                     </div>
 
-                    {/*TODO: Get profile details (email, height, date joined)*/}
-                    <div className="flex items-center mb-6">
+                    <div className="flex items-center mb-4">
                         <h3 className="text-lg text-white underline mr-2">Email:</h3>
-                        <p className="text-white">{user.email}</p>
+                        <p className="text-white">{profileData.email}</p>
                     </div>
 
                     <hr className="my-4 border-gray-600"/>
@@ -29,13 +64,14 @@ const Profile = ({user}) => {
                     <div className="flex flex-col space-y-2 mb-6">
                         <div>
                             {/*TODO: Add update email*/}
-                            <a href="/#" className="text-white underline">Update Email</a>
+                            <a href="#" className="text-white underline">Update Email</a>
                         </div>
                         <div>
                             <a href="/password-reset-request" className="text-white underline">Forgot Password?</a>
                         </div>
                     </div>
 
+                            {/*TODO: Add delete account*/}
                     <button
                         className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
                     >

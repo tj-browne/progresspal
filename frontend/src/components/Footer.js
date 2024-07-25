@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
     return (
-        <footer className="bg-[#2C2C2C] py-2">
+        <footer className="bg-[#2C2C2C] py-2 fixed bottom-0 inset-x-0">
             <div className="flex justify-center items-center space-x-16">
                 <a href="/goals" className="flex flex-col items-center">
                     <button
