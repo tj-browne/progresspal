@@ -11,7 +11,7 @@ def get_exercises(request):
         exercises = response.json()
 
         exercises = [exercise for exercise in exercises if exercise.get('category') in ['cardio', 'strength']]
-        limit = 10
+        limit = 20
         limited_exercises = exercises[:limit]
 
         return JsonResponse(limited_exercises, safe=False)

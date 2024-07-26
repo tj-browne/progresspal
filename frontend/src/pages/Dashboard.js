@@ -1,16 +1,31 @@
-import React from 'react';
+import React, {useState, useRef} from 'react';
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
+import ChooseWorkoutModal from "../components/ChooseWorkoutModal";
 
-const Dashboard = ({user}) => {
+const Dashboard = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const modalButtonRef = useRef(null);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
             <UserHeader/>
             <div className="flex flex-col items-center text-center flex-grow">
-                <a href="#"
-                   className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-3xl mt-[25vh] mb-2 text-2xl w-52">
+                <button
+                    onClick={openModal}
+                    ref={modalButtonRef}
+                    className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-3xl mt-[25vh] mb-2 text-2xl w-52"
+                >
                     Start Workout
-                </a>
+                </button>
                 <h3 className="text-left text-white underline mb-4">
                     History
                 </h3>
@@ -27,6 +42,7 @@ const Dashboard = ({user}) => {
                 </div>
             </div>
             <Footer/>
+            <ChooseWorkoutModal isOpen={isModalOpen} onRequestClose={closeModal}/>
         </div>
     );
 };
