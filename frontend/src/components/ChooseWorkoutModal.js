@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 import Modal from 'react-modal';
 
- Modal.setAppElement('#root');
+Modal.setAppElement('#root');
 
-const ChooseWorkoutModal = ({ isOpen, onRequestClose }) => {
+const ChooseWorkoutModal = ({isOpen, onRequestClose}) => {
     const closeButtonRef = useRef(null);
 
     useEffect(() => {

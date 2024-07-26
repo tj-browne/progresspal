@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Modal from 'react-modal';
 import axios from "axios";
-import { getCsrfToken } from "../services/csrfService";
+import {getCsrfToken} from "../services/csrfService";
 
 Modal.setAppElement('#root');
 
-const AddExercisesModal = ({ isOpen, onRequestClose }) => {
+const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
     const closeButtonRef = useRef(null);
     const [exercisesData, setExercisesData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -43,6 +43,10 @@ const AddExercisesModal = ({ isOpen, onRequestClose }) => {
         }
     }, [isOpen]);
 
+    const handleAddExercise = (exercise) => {
+        onAddExercise(exercise);
+    };
+
     const customStyles = {
         content: {
             top: '50%',
@@ -56,8 +60,8 @@ const AddExercisesModal = ({ isOpen, onRequestClose }) => {
             padding: '20px',
             width: '80%',
             // maxWidth: '400px',
-            maxHeight: '80vh', // Adjust to ensure it fits within the viewport
-            overflowY: 'auto',  // Enable vertical scrolling if content exceeds maxHeight
+            maxHeight: '80vh',
+            overflowY: 'auto',
             color: 'white',
         },
         overlay: {
@@ -86,9 +90,12 @@ const AddExercisesModal = ({ isOpen, onRequestClose }) => {
                     <div>
                         {exercisesData.length > 0 ? (
                             exercisesData.map((exercise) => (
-                                <div className="flex justify-between items-center rounded-2xl w-full mb-4 p-2 bg-gray-800" key={exercise.id}>
+                                <div
+                                    className="flex justify-between items-center rounded-2xl w-full mb-4 p-2 bg-gray-800"
+                                    key={exercise.id}>
                                     <h2>{exercise.name}</h2>
-                                    <button className="bg-green-500 hover:bg-green-600  text-center py-2 px-4 rounded-3xl text-sm w-16">
+                                    <button onClick={() => handleAddExercise(exercise)}
+                                            className="bg-green-500 hover:bg-green-600  text-center py-2 px-4 rounded-3xl text-sm w-16">
                                         ADD
                                     </button>
                                 </div>

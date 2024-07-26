@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import get_exercises
+
+from workouts import views
 
 urlpatterns = [
-    path('api/exercises/', get_exercises, name='get_exercises'),
+    path('api/exercises/', views.get_exercises, name='get_exercises'),
+    path('api/workouts/', views.workouts_list_create, name='workouts_list_create'),
 ]

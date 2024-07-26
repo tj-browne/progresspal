@@ -17,9 +17,9 @@ class Exercise(models.Model):
 class Workout(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    date = models.DateField()
-    duration = models.IntegerField()
-    calories_burned = models.IntegerField()
+    date = models.DateField(auto_now_add=True)
+    duration = models.IntegerField(blank=True, null=True)
+    calories_burned = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -28,8 +28,8 @@ class Workout(models.Model):
 class UserWorkout(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
