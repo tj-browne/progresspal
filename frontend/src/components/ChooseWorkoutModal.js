@@ -1,9 +1,13 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Modal from 'react-modal';
+import {getCsrfToken} from "../services/csrfService";
+import axios from "axios";
+import useFetchRoutines from "../hooks/useFetchRoutines";
 
 Modal.setAppElement('#root');
 
 const ChooseWorkoutModal = ({isOpen, onRequestClose}) => {
+    const {data: routinesData, loading, error} = useFetchRoutines();
     const closeButtonRef = useRef(null);
 
     useEffect(() => {
@@ -51,10 +55,25 @@ const ChooseWorkoutModal = ({isOpen, onRequestClose}) => {
             <div>
                 <h2 id="modalTitle" className="text-xl mb-4">Choose Workout Routine:</h2>
                 <ul className="space-y-2">
-                    <li><a href="/new-workout" className="text-blue-400 hover:underline">Create Empty Workout</a></li>
-                    <li><a href="#" className="text-blue-400 hover:underline">Push</a></li>
-                    <li><a href="#" className="text-blue-400 hover:underline">Pull</a></li>
-                    <li><a href="#" className="text-blue-400 hover:underline">Legs</a></li>
+                    {loading ? (
+                        <div>Loading...</div>
+                    ) : error ? (
+                        <div>{error}</div>
+                    ) : (
+                        <div className="w-8/12">
+                            <li><a href="/new-workout" className="text-blue-400 hover:underline">+Create New Routine</a>
+                            </li>
+                            {routinesData.length > 0 ? (
+                                routinesData.map((workout) => (
+                                    <li key={workout.id}><a href="#"
+                                                            className="text-blue-400 hover:underline">{workout.name}</a>
+                                    </li>
+                                ))
+                            ) : (
+                                <p>No workout templates available.</p>
+                            )}
+                        </div>
+                    )}
                 </ul>
                 <button
                     onClick={onRequestClose}

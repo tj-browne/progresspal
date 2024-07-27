@@ -4,5 +4,6 @@ from workouts import views
 
 urlpatterns = [
     path('api/exercises/', views.get_exercises, name='get_exercises'),
-    path('api/workouts/', views.workouts_list_create, name='workouts_list_create'),
+    path('api/routines/', views.routines_list_create, name='routines_list_create'),
+    path('api/routines/<int:routine_id>/', views.delete_routine, name='delete_routine'),
 ]

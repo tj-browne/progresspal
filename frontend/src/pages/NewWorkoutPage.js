@@ -32,7 +32,7 @@ const NewWorkoutPage = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/api/workouts/', {
+            const response = await fetch('http://localhost:8000/api/routines/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,7 +42,6 @@ const NewWorkoutPage = () => {
 
             if (response.ok) {
                 console.log('Workout saved successfully');
-                // Optionally, handle the response to update the UI
             } else {
                 console.error('Failed to save workout');
             }
@@ -60,7 +59,7 @@ const NewWorkoutPage = () => {
                     className="text-3xl rounded-xl text-black mb-2 w-8/12 p-2"
                     value={workoutName}
                     onChange={(e) => setWorkoutName(e.target.value)}
-                    placeholder="Enter workout name"
+                    placeholder="Routine Name"
                 />
                 <div>
                     {exercises.map((exercise, index) => (

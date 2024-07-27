@@ -1,13 +1,14 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import defaultProfilePic from '../assets/images/default-profile-pic.svg';
 import logo from "../assets/images/logo.svg";
 import axios from "axios";
-import {getCsrfToken} from "../services/csrfService";
+import { getCsrfToken } from "../services/csrfService";
 
-const UserHeader = ({user}) => {
+const UserHeader = ({ user }) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const location = useLocation();
 
     const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
 
@@ -40,17 +41,20 @@ const UserHeader = ({user}) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const isProfilePath = location.pathname === '/profile';
+    const profileImgClass = isDropdownOpen || isProfilePath ? 'brightness-200' : 'brightness-100';
+
     return (
         <div className="relative">
             <div className="absolute top-6 left-6">
                 <a href='/dashboard' className="inline-block">
-                    <img src={logo} className="w-16" alt="ProgressPal logo"/>
+                    <img src={logo} className="w-16" alt="ProgressPal logo" />
                 </a>
             </div>
             <div className="absolute top-6 right-6" ref={dropdownRef}>
                 <img
                     src={defaultProfilePic}
-                    className="w-10 h-10 rounded-full cursor-pointer hover:rounded-lg transition-all duration-300"
+                    className={`w-10 h-10 rounded-full cursor-pointer hover:rounded-lg transition-all duration-300 ${profileImgClass}`}
                     alt="User profile"
                     onClick={toggleDropdown}
                 />

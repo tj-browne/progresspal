@@ -116,14 +116,6 @@ def check_auth(request):
     if user.is_authenticated:
         return JsonResponse({'authenticated': True, 'user': {'username': user.username}}, status=200)
     else:
-        session_key = request.COOKIES.get('sessionid')
-        if session_key:
-            try:
-                session = Session.objects.get(session_key=session_key)
-                print("Session in DB: %s", session.get_decoded())
-            except Session.DoesNotExist:
-                print("Session does not exist in DB")
-
         return JsonResponse({'authenticated': False}, status=200)
 
 

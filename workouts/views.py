@@ -2,11 +2,11 @@ import json
 
 import requests
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from users.models import CustomUser
-from workouts.models import Workout, Exercise
+from workouts.models import Routine, Exercise
 
 
 def get_exercises(request):
@@ -27,11 +27,11 @@ def get_exercises(request):
 
 
 @csrf_exempt
-def workouts_list_create(request):
+def routines_list_create(request):
     if request.method == 'GET':
-        workouts = Workout.objects.all()
-        workouts_data = list(workouts.values())
-        return JsonResponse({'workouts': workouts_data})
+        routines = Routine.objects.all()
+        routines_data = list(routines.values())
+        return JsonResponse({'routines': routines_data})
 
     if request.method == 'POST':
         try:
@@ -39,7 +39,7 @@ def workouts_list_create(request):
 
             user = CustomUser.objects.get(id=data['user_id'])
 
-            workout = Workout.objects.create(
+            routines = Routine.objects.create(
                 user=user,
                 name=data['name'],
                 duration=data.get('duration'),
@@ -60,7 +60,16 @@ def workouts_list_create(request):
             #         calories_burned=exercise_data.get('calories_burned')
             #     )
 
-            return JsonResponse({'message': 'Workout created successfully'}, status=201)
+            return JsonResponse({'message': 'Routine created successfully'}, status=201)
         except Exception as e:
-            print(f"Error creating workout: {e}")
-            return JsonResponse({'error': 'Failed to create workout'}, status=500)
+            print(f"Error creating routine: {e}")
+            return JsonResponse({'error': 'Failed to create routine'}, status=500)
+
+
+@csrf_exempt
+def delete_routine(request, routine_id):
+    if request.method == 'DELETE':
+        routine = get_object_or_404(Routine, id=routine_id)
+        routine.delete()
+        return JsonResponse({'message': 'Routine deleted successfully'}, status=204)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
