@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { getCsrfToken } from "../services/csrfService";
+import {useState} from 'react';
+import {getCsrfToken} from "../services/csrfService";
 import axios from "axios";
 
-const useDeleteRoutine = () => {
+const useDeleteUser = () => {
     const [error, setError] = useState(null);
 
-    const deleteRoutine = async (routineId) => {
+    const deleteUser = async (userId) => {
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.delete(`http://localhost:8000/api/routines/${routineId}/`, {
+            const response = await axios.delete(`http://localhost:8000/api/users/${userId}/`, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json',
@@ -17,18 +17,19 @@ const useDeleteRoutine = () => {
             });
 
             if (response.status === 204) {
+                console.log(response.status)
                 return true;
             } else {
-                setError('Failed to delete routine');
+                setError('Failed to delete user');
                 return false;
             }
         } catch (error) {
-            setError('Error deleting routine');
+            setError('Error deleting user');
             return false;
         }
     };
 
-    return { deleteRoutine, error };
+    return {deleteUser, error};
 };
 
-export default useDeleteRoutine;
+export default useDeleteUser;

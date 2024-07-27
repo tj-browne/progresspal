@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from "../assets/images/logo.svg";
 
-const Header = () => {
+const Header = React.memo(() => {
     return (
         <div className="absolute top-6 left-6">
             <a href='/' className="inline-block">
@@ -9,6 +9,6 @@ const Header = () => {
             </a>
         </div>
     )
-}
+});
 
 export default Header;

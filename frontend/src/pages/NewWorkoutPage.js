@@ -7,7 +7,6 @@ const NewWorkoutPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
-    const userId = 1;
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -23,12 +22,13 @@ const NewWorkoutPage = () => {
     };
 
     const handleSaveWorkout = async () => {
+        // TODO: Add user_id
         const workoutData = {
             name: workoutName,
             exercises: exercises.map(exercise => exercise.id),
-            duration: 60,
-            calories_burned: 500,
-            user_id: userId
+            duration: 0,
+            calories_burned: 0,
+            user_id: 3,
         };
 
         try {

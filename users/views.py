@@ -26,6 +26,9 @@ def user_list_create(request):
         user_data = list(users.values())
         return JsonResponse({'users': user_data})
 
+    if request.method == 'DELETE':
+        pass
+
     if request.method == 'POST':
         data = json.loads(request.body)
         email = data.get('email')
@@ -56,6 +59,7 @@ def user_list_create(request):
 def profile(request):
     user = request.user
     profile_data = {
+        'id': user.id,
         'username': user.username,
         'email': user.email,
     }
@@ -215,3 +219,14 @@ def verify_google_token(id_token_str):
     except ValueError as e:
         print(f"Token verification failed: {e}")
         return None
+
+
+def user_detail(request, user_id):
+    if request.method == 'DELETE':
+        try:
+            user = get_object_or_404(CustomUser, id=user_id)
+            user.delete()
+            return JsonResponse({'message': 'User deleted successfully'}, status=204)
+        except Exception as e:
+            print(e)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

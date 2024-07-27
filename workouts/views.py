@@ -37,7 +37,12 @@ def routines_list_create(request):
         try:
             data = json.loads(request.body)
 
-            user = CustomUser.objects.get(id=data['user_id'])
+            user_id = data.get('user_id')
+
+            if not CustomUser.objects.filter(id=user_id).exists():
+                return JsonResponse({'error': 'User does not exist'}, status=404)
+
+            user = CustomUser.objects.get(id=user_id)
 
             routines = Routine.objects.create(
                 user=user,

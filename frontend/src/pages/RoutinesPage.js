@@ -5,8 +5,8 @@ import useFetchRoutines from "../hooks/useFetchRoutines";
 import useDeleteRoutine from "../hooks/useDeleteRoutine";
 
 const RoutinesPage = () => {
-    const { data: initialRoutinesData = [], loading, error } = useFetchRoutines();
-    const { deleteRoutine, error: deleteError } = useDeleteRoutine();
+    const {data: initialRoutinesData = [], loading, error} = useFetchRoutines();
+    const {deleteRoutine, error: deleteError} = useDeleteRoutine();
 
     const [routines, setRoutines] = useState(initialRoutinesData);
 
@@ -23,7 +23,7 @@ const RoutinesPage = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader />
+            <UserHeader/>
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 {loading ? (
                     <div>Loading...</div>
@@ -46,7 +46,7 @@ const RoutinesPage = () => {
                                             Delete
                                         </button>
                                     </div>
-                                    <hr />
+                                    <hr/>
                                     <p>Date Created: {routine.date}</p>
                                     <p>Duration: {routine.duration}</p>
                                     <p>Calories Burned: {routine.calories_burned}</p>
@@ -59,7 +59,7 @@ const RoutinesPage = () => {
                     </div>
                 )}
             </div>
-            <Footer />
+            <Footer/>
         </div>
     );
 };

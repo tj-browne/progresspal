@@ -24,7 +24,6 @@ const SignupForm = ({handleChange, handleSubmit, errorMessage}) => {
             </form>
             <div className="flex flex-col align-center justify-center items-center gap-7">
                 <p className="text-white">or</p>
-                {/*    TODO: Add OAuth log in*/}
                 < GoogleOAuthButton/>
             </div>
         </div>

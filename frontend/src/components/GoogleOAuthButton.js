@@ -12,7 +12,6 @@ const GoogleOAuthButton = () => {
     const handleSuccess = async (response) => {
         const idToken = response.credential;
 
-        // TODO: This code is repeated in login (refactor)
         try {
             const csrfToken = await getCsrfToken();
             const serverResponse = await axios.post('http://localhost:8000/api/auth/google/',

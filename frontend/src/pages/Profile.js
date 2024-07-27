@@ -3,11 +3,14 @@ import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import axios from "axios";
 import {getCsrfToken} from "../services/csrfService";
+import useDeleteUser from "../hooks/useDeleteUser";
 
 const Profile = () => {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const {deleteUser, error: deleteError} = useDeleteUser();
+
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -30,6 +33,19 @@ const Profile = () => {
 
         fetchProfileData();
     }, []);
+
+    const handleDelete = async () => {
+        if (profileData && profileData.id) {
+            const success = await deleteUser(profileData.id);
+            if (success) {
+                console.log("User deleted successfully");
+            } else {
+                setError('Failed to delete account.');
+            }
+        } else {
+            setError('User ID is missing.');
+        }
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -71,9 +87,9 @@ const Profile = () => {
                         </div>
                     </div>
 
-                            {/*TODO: Add delete account*/}
+                    {/*TODO: Add delete account modal*/}
                     <button
-                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
+                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg" onClick={handleDelete}
                     >
                         Delete Account
                     </button>

@@ -11,7 +11,7 @@ urlpatterns = [
     path('api/users/profile/', views.profile, name='profile'),
 
     # TODO: GET, UPDATE, DELETE User by ID
-    # path('api/users/<int:id>/', views.user_detail, name='user_detail'),
+    path('api/users/<int:user_id>/', views.user_detail, name='user_detail'),
 
     path('api/users/password-reset-request/', views.password_reset_request, name='password_reset_request'),
     path('api/users/password-reset/<uuid:token>/', views.password_reset, name='password_reset'),
