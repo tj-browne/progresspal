@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
@@ -9,7 +9,6 @@ const NewWorkoutPage = () => {
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
     const { userId } = useFetchCurrentUser();
-
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -32,9 +31,7 @@ const NewWorkoutPage = () => {
 
         const workoutData = {
             name: workoutName,
-            exercises: exercises.map(exercise => exercise.id),
-            duration: 0,
-            calories_burned: 0,
+            exercises: exercises.map(exercise => exercise.name),
             user_id: userId,
         };
 
@@ -51,6 +48,8 @@ const NewWorkoutPage = () => {
                 console.log('Workout saved successfully');
             } else {
                 console.error('Failed to save workout');
+                const errorData = await response.json();
+                console.error('Error details:', errorData);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -59,7 +58,7 @@ const NewWorkoutPage = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader/>
+            <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <input
                     type="text"
@@ -90,8 +89,8 @@ const NewWorkoutPage = () => {
                     </button>
                 </div>
             </div>
-            <Footer/>
-            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise}/>
+            <Footer />
+            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise} />
         </div>
     );
 };

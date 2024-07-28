@@ -47,9 +47,28 @@ const RoutinesPage = () => {
                                 </button>
                             </div>
                             <hr/>
-                            <p>Date Created: {routine.date}</p>
-                            <p>Duration: {routine.duration}</p>
-                            <p>Calories Burned: {routine.calories_burned}</p>
+                            <p className="text-xs">Date Created: {routine.date_created}</p>
+                            <div className="text-xs">
+                                <p>Exercises:</p>
+                                {routine.exercises && routine.exercises.length > 0 ? (
+                                    <ul>
+                                        {routine.exercises.map((exercise, index) => (
+                                            <li key={index}>
+                                                {exercise.name}
+                                                {exercise.sets && <span> - Sets: {exercise.sets}</span>}
+                                                {exercise.reps && <span> - Reps: {exercise.reps}</span>}
+                                                {exercise.weight && <span> - Weight: {exercise.weight}kg</span>}
+                                                {exercise.distance && <span> - Distance: {exercise.distance}km</span>}
+                                                {exercise.time && <span> - Time: {exercise.time}</span>}
+                                                {exercise.calories_burned &&
+                                                    <span> - Calories Burned: {exercise.calories_burned}</span>}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>No exercises available.</p>
+                                )}
+                            </div>
                         </div>
                     ))
                 ) : (
