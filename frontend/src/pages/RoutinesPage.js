@@ -47,13 +47,12 @@ const RoutinesPage = () => {
                                 </button>
                             </div>
                             <hr/>
-                            <p className="text-xs">Date Created: {routine.date_created}</p>
-                            <div className="text-xs">
-                                <p>Exercises:</p>
+                            <p className="text-xs">Created: {routine.date_created}</p>
+                            <div>
                                 {routine.exercises && routine.exercises.length > 0 ? (
                                     <ul>
                                         {routine.exercises.map((exercise, index) => (
-                                            <li key={index}>
+                                            <li className="text-sm list-disc" key={index}>
                                                 {exercise.name}
                                                 {exercise.sets && <span> - Sets: {exercise.sets}</span>}
                                                 {exercise.reps && <span> - Reps: {exercise.reps}</span>}
