@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
@@ -8,7 +8,7 @@ const NewWorkoutPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
-    const { userId } = useFetchCurrentUser();
+    const {userId} = useFetchCurrentUser();
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -58,7 +58,7 @@ const NewWorkoutPage = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader />
+            <UserHeader/>
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <input
                     type="text"
@@ -69,8 +69,25 @@ const NewWorkoutPage = () => {
                 />
                 <div>
                     {exercises.map((exercise, index) => (
-                        <div key={index}>
-                            <h3>{exercise.name}</h3>
+                        <div key={index} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C]">
+                            <h2 className="text-xl">{exercise.name}</h2>
+                            <div className="flex items-center justify-center">
+                                <div>
+                                    <p>Set</p>
+                                    <input className="w-2/12" placeholder="1"/>
+                                </div>
+                                <div>
+                                    <p>kg</p>
+                                    <input className="w-2/12" placeholder="20"/>
+                                </div>
+                                <div>
+                                    <p>Reps</p>
+                                    <input className="w-2/12" placeholder="5"/>
+                                </div>
+                                <div>
+                                    <button className="bg-green-700">Accept</button>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -83,14 +100,16 @@ const NewWorkoutPage = () => {
                     </button>
                 </div>
                 <div className="flex justify-center pt-7">
+                    {/*TODO: Modal to specify to save as new template or update existing one (not for empty workout)*/}
+                    {/*TODO: Handle different save - 1. Save template to routines, 2. Save workout to workouts, and display in history*/}
                     <button onClick={handleSaveWorkout}
                             className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52">
                         Save
                     </button>
                 </div>
             </div>
-            <Footer />
-            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise} />
+            <Footer/>
+            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise}/>
         </div>
     );
 };

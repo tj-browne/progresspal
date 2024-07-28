@@ -12,7 +12,6 @@ urlpatterns = [
 
     path('api/auth/current_user/', views.current_user, name='current_user'),
 
-    # TODO: GET, UPDATE User by ID
     path('api/users/<int:user_id>/', views.user_detail, name='user_detail'),
 
     path('api/users/password-reset-request/', views.password_reset_request, name='password_reset_request'),

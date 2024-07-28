@@ -29,7 +29,6 @@ function App() {
                     <Route path="/profile" element={<AuthenticatedRoute><Profile/></AuthenticatedRoute>}/>
                     <Route path="*" element={<NotFound/>}/>
 
-                    {/*TODO: Improve routing - authentication*/}
                     <Route path="/password-reset-request" element={<PasswordResetRequestPage/>}/>
                     <Route path="/password-reset/:token" element={<PasswordResetPage/>}/>
 

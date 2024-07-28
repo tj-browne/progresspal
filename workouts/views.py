@@ -10,20 +10,10 @@ from workouts.models import Routine, Exercise, RoutineExercise
 
 
 def get_exercises(request):
-    url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json'
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        exercises = response.json()
-
-        exercises = [exercise for exercise in exercises if exercise.get('category') in ['cardio', 'strength']]
-        limit = 20
-        limited_exercises = exercises[:limit]
-
-        return JsonResponse(limited_exercises, safe=False)
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching exercises: {e}")
-        return JsonResponse({'error': 'Failed to fetch exercises'}, status=500)
+    if request.method == 'GET':
+        exercises = Exercise.objects.all()
+        exercises_data = list(exercises.values())
+        return JsonResponse({'exercises': exercises_data})
 
 
 @csrf_exempt
@@ -116,7 +106,7 @@ def routines_list_by_user(request, user_id):
                     {
                         'id': exercise.id,
                         'name': exercise.name,
-                        'description': exercise.description,
+                        'instructions': exercise.instructions,
                         'muscle_worked': exercise.muscle_worked,
                         'exercise_type': exercise.exercise_type
                     }

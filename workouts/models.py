@@ -6,9 +6,9 @@ from users.models import CustomUser
 
 class Exercise(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    muscle_worked = models.CharField(max_length=100, blank=True, null=True)
-    exercise_type = models.CharField(max_length=50)  # Cardio or Strength
+    instructions = models.TextField(blank=True, null=True)
+    muscle_worked = models.JSONField(default=list, blank=True, null=True)
+    exercise_type = models.CharField(max_length=50, choices=[('strength', 'Strength'), ('cardio', 'Cardio')])
 
     def __str__(self):
         return self.name

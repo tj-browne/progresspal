@@ -22,15 +22,14 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
     useEffect(() => {
         const fetchExercises = async () => {
             try {
-                const csrfToken = await getCsrfToken();
                 const response = await axios.get('http://localhost:8000/api/exercises/', {
                     headers: {
-                        'X-CSRFToken': csrfToken,
                         'Content-Type': 'application/json',
                     },
                     withCredentials: true,
                 });
-                setExercisesData(response.data);
+                console.log(response.data);
+                setExercisesData(response.data.exercises || response.data);
             } catch (error) {
                 setError('Failed to load exercises data.');
             } finally {

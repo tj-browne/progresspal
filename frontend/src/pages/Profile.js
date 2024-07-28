@@ -77,10 +77,6 @@ const Profile = () => {
 
                     <div className="flex flex-col space-y-2 mb-6">
                         <div>
-                            {/*TODO: Add update email*/}
-                            <a href="#" className="text-white underline">Update Email</a>
-                        </div>
-                        <div>
                             <a href="/password-reset-request" className="text-white underline">Forgot Password?</a>
                         </div>
                     </div>
