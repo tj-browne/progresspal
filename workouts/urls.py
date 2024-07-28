@@ -6,4 +6,5 @@ urlpatterns = [
     path('api/exercises/', views.get_exercises, name='get_exercises'),
     path('api/routines/', views.routines_list_create, name='routines_list_create'),
     path('api/routines/<int:routine_id>/', views.delete_routine, name='delete_routine'),
+    path('api/routines/user/<int:user_id>/', views.routines_list_by_user, name='routines_list_by_user'),
 ]

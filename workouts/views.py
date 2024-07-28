@@ -78,3 +78,11 @@ def delete_routine(request, routine_id):
         routine.delete()
         return JsonResponse({'message': 'Routine deleted successfully'}, status=204)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+def routines_list_by_user(request, user_id):
+    if request.method == 'GET':
+        routines = Routine.objects.filter(user_id=user_id)
+        routines_data = list(routines.values())
+        return JsonResponse({'routines': routines_data})
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

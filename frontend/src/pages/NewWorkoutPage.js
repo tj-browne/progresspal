@@ -2,11 +2,14 @@ import React, {useState} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
+import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 const NewWorkoutPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
+    const { userId } = useFetchCurrentUser();
+
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -22,13 +25,17 @@ const NewWorkoutPage = () => {
     };
 
     const handleSaveWorkout = async () => {
-        // TODO: Add user_id
+        if (!userId) {
+            console.error('User ID is not available');
+            return;
+        }
+
         const workoutData = {
             name: workoutName,
             exercises: exercises.map(exercise => exercise.id),
             duration: 0,
             calories_burned: 0,
-            user_id: 3,
+            user_id: userId,
         };
 
         try {

@@ -15,10 +15,8 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const csrfToken = await getCsrfToken();
                 const response = await axios.get('http://localhost:8000/api/users/profile/', {
                     headers: {
-                        'X-CSRFToken': csrfToken,
                         'Content-Type': 'application/json',
                     },
                     withCredentials: true,

@@ -1,7 +1,7 @@
 import React, {useState, useRef} from 'react';
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
-import ChooseWorkoutModal from "../components/ChooseWorkoutModal";
+import ChooseRoutineModal from "../components/ChooseRoutineModal";
 
 const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,7 +42,7 @@ const Dashboard = () => {
                 </div>
             </div>
             <Footer/>
-            <ChooseWorkoutModal isOpen={isModalOpen} onRequestClose={closeModal}/>
+            <ChooseRoutineModal isOpen={isModalOpen} onRequestClose={closeModal}/>
         </div>
     );
 };

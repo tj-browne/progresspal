@@ -230,3 +230,9 @@ def user_detail(request, user_id):
         except Exception as e:
             print(e)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+def current_user(request):
+    user = request.user
+    return JsonResponse({'id': user.id, 'username': user.username})

@@ -1,13 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef } from 'react';
 import Modal from 'react-modal';
-import {getCsrfToken} from "../services/csrfService";
-import axios from "axios";
-import useFetchRoutines from "../hooks/useFetchRoutines";
+import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
 
 Modal.setAppElement('#root');
 
-const ChooseWorkoutModal = ({isOpen, onRequestClose}) => {
-    const {data: routinesData, loading, error} = useFetchRoutines();
+const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
+    const { routines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
     const closeButtonRef = useRef(null);
 
     useEffect(() => {
@@ -55,24 +53,25 @@ const ChooseWorkoutModal = ({isOpen, onRequestClose}) => {
             <div>
                 <h2 id="modalTitle" className="text-xl mb-4">Choose Workout Routine:</h2>
                 <ul className="space-y-2">
-                    {loading ? (
+                    {userLoading || routinesLoading ? (
                         <div>Loading...</div>
-                    ) : error ? (
-                        <div>{error}</div>
+                    ) : userError ? (
+                        <div>{userError}</div>
+                    ) : routinesError ? (
+                        <div>{routinesError}</div>
                     ) : (
-                        <div className="w-8/12">
-                            <li><a href="/new-workout" className="text-blue-400 hover:underline">+Create New Routine</a>
-                            </li>
-                            {routinesData.length > 0 ? (
-                                routinesData.map((workout) => (
-                                    <li key={workout.id}><a href="#"
-                                                            className="text-blue-400 hover:underline">{workout.name}</a>
+                        <>
+                            <li><a href="/new-workout" className="text-blue-400 hover:underline">+Create New Routine</a></li>
+                            {routines.length > 0 ? (
+                                routines.map((workout) => (
+                                    <li key={workout.id}>
+                                        <a href="#" className="text-blue-400 hover:underline">{workout.name}</a>
                                     </li>
                                 ))
                             ) : (
                                 <p>No workout templates available.</p>
                             )}
-                        </div>
+                        </>
                     )}
                 </ul>
                 <button
@@ -87,4 +86,4 @@ const ChooseWorkoutModal = ({isOpen, onRequestClose}) => {
     );
 };
 
-export default ChooseWorkoutModal;
+export default ChooseRoutineModal;
