@@ -4,9 +4,11 @@ import requests
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
 
 from users.models import CustomUser
-from workouts.models import Routine, Exercise, RoutineExercise
+from workouts.models import Routine, Exercise, RoutineExercise, Workout
+from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCreateSerializer
 
 
 def get_exercises(request):
@@ -31,55 +33,17 @@ EXERCISE_API_URL = 'http://localhost:8000/api/exercises/'
 def routines_list_create(request):
     if request.method == 'GET':
         routines = Routine.objects.prefetch_related('exercises').all()
-
-        routines_data = []
-        for routine in routines:
-            routine_data = {
-                'id': routine.id,
-                'user_id': routine.user_id,
-                'name': routine.name,
-                'date_created': routine.date_created.isoformat(),
-                'exercises': [
-                    {
-                        'id': exercise.id,
-                        'name': exercise.name,
-                        'description': exercise.description,
-                        'muscle_worked': exercise.muscle_worked,
-                        'exercise_type': exercise.exercise_type
-                    }
-                    for exercise in routine.exercises.all()
-                ]
-            }
-            routines_data.append(routine_data)
-
-        return JsonResponse({'routines': routines_data})
+        serializer = RoutineSerializer(routines, many=True)
+        return JsonResponse({'routines': serializer.data})
 
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            print(f"Received data: {data}")
-
-            user_id = data.get('user_id')
-            if not CustomUser.objects.filter(id=user_id).exists():
-                return JsonResponse({'error': 'User does not exist'}, status=404)
-
-            user = CustomUser.objects.get(id=user_id)
-
-            exercise_names = data.get('exercises', [])
-            if not exercise_names:
-                return JsonResponse({'error': 'No exercises provided'}, status=400)
-
-            routine = Routine.objects.create(user=user, name=data['name'])
-
-            for exercise_name in exercise_names:
-                exercise, created = Exercise.objects.get_or_create(name=exercise_name)
-
-                RoutineExercise.objects.create(routine=routine, exercise=exercise)
-
+        serializer = RoutineCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            user = get_object_or_404(CustomUser, id=serializer.validated_data['user'])
+            serializer.save(user=user)
             return JsonResponse({'message': 'Routine created successfully'}, status=201)
-        except Exception as e:
-            print(f"Error creating routine: {e}")
-            return JsonResponse({'error': 'Failed to create routine'}, status=500)
+
+        return JsonResponse(serializer.errors, status=400)
 
 
 @csrf_exempt
@@ -94,25 +58,28 @@ def delete_routine(request, routine_id):
 def routines_list_by_user(request, user_id):
     if request.method == 'GET':
         routines = Routine.objects.filter(user_id=user_id).prefetch_related('exercises')
-
-        routines_data = []
-        for routine in routines:
-            routine_data = {
-                'id': routine.id,
-                'user_id': routine.user_id,
-                'name': routine.name,
-                'date_created': routine.date_created.isoformat(),
-                'exercises': [
-                    {
-                        'id': exercise.id,
-                        'name': exercise.name,
-                        'instructions': exercise.instructions,
-                        'muscle_worked': exercise.muscle_worked,
-                        'exercise_type': exercise.exercise_type
-                    }
-                    for exercise in routine.exercises.all()
-                ]
-            }
-            routines_data.append(routine_data)
-        return JsonResponse({'routines': routines_data})
+        serializer = RoutineSerializer(routines, many=True)
+        return JsonResponse({'routines': serializer.data})
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+def workouts_list_create(request):
+    if request.method == 'GET':
+        workouts = Workout.objects.all()
+        serializer = WorkoutSerializer(workouts, many=True)
+        return JsonResponse(serializer.data, safe=False, status=200)
+    if request.method == 'POST':
+        user_id = request.data.get('user_id')
+        routine_id = request.data.get('routine_id')
+
+        user = get_object_or_404(CustomUser, id=user_id)
+        routine = get_object_or_404(Routine, id=routine_id)
+        serializer = WorkoutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=user, routine=routine)
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+def workout_detail(request, workout_id):
+    return None

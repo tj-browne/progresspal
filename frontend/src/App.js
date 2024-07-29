@@ -11,8 +11,9 @@ import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 import PasswordResetRequestPage from "./pages/PasswordResetRequestPage";
 import PasswordResetPage from "./pages/PasswordResetPage";
-import NewWorkoutPage from "./pages/NewWorkoutPage";
 import RoutinesPage from "./pages/RoutinesPage";
+import WorkoutPage from "./pages/WorkoutPage";
+import CreateRoutinePage from "./pages/CreateRoutinePage";
 
 
 function App() {
@@ -32,8 +33,10 @@ function App() {
                     <Route path="/password-reset-request" element={<PasswordResetRequestPage/>}/>
                     <Route path="/password-reset/:token" element={<PasswordResetPage/>}/>
 
-                    <Route path="/new-workout" element={<AuthenticatedRoute><NewWorkoutPage/></AuthenticatedRoute>}/>
+                    <Route path="/create-routine" element={<AuthenticatedRoute><CreateRoutinePage/></AuthenticatedRoute>}/>
                     <Route path="/routines" element={<AuthenticatedRoute><RoutinesPage/></AuthenticatedRoute>}/>
+
+                    <Route path="/workout" element={<AuthenticatedRoute><WorkoutPage/></AuthenticatedRoute>}/>
                 </Routes>
             </Router>
         </div>

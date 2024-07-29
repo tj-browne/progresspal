@@ -61,7 +61,7 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
                         <div>{routinesError}</div>
                     ) : (
                         <>
-                            <li><a href="/new-workout" className="text-blue-400 hover:underline">+Create New Routine</a></li>
+                            <li><a href="/create-routine" className="text-blue-400 hover:underline">+Create New Routine</a></li>
                             {routines.length > 0 ? (
                                 routines.map((workout) => (
                                     <li key={workout.id}>

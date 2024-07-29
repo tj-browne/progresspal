@@ -23,7 +23,7 @@ const NewWorkoutPage = () => {
         setIsModalOpen(false);
     };
 
-    const handleSaveWorkout = async () => {
+    const handleSaveRoutine = async () => {
         if (!userId) {
             console.error('User ID is not available');
             return;
@@ -102,7 +102,7 @@ const NewWorkoutPage = () => {
                 <div className="flex justify-center pt-7">
                     {/*TODO: Modal to specify to save as new template or update existing one (not for empty workout)*/}
                     {/*TODO: Handle different save - 1. Save template to routines, 2. Save workout to workouts, and display in history*/}
-                    <button onClick={handleSaveWorkout}
+                    <button onClick={handleSaveRoutine}
                             className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52">
                         Save
                     </button>
