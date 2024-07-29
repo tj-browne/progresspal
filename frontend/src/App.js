@@ -13,6 +13,7 @@ import PasswordResetRequestPage from "./pages/PasswordResetRequestPage";
 import PasswordResetPage from "./pages/PasswordResetPage";
 import NewWorkoutPage from "./pages/NewWorkoutPage";
 import RoutinesPage from "./pages/RoutinesPage";
+import WorkoutPage from "./pages/WorkoutPage";
 
 
 function App() {
@@ -34,6 +35,8 @@ function App() {
 
                     <Route path="/new-workout" element={<AuthenticatedRoute><NewWorkoutPage/></AuthenticatedRoute>}/>
                     <Route path="/routines" element={<AuthenticatedRoute><RoutinesPage/></AuthenticatedRoute>}/>
+
+                    <Route path="/workout" element={<AuthenticatedRoute><WorkoutPage/></AuthenticatedRoute>}/>
                 </Routes>
             </Router>
         </div>
