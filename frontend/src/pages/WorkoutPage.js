@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
-import AddExercisesModal from "../components/AddExercisesModal";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
+import {useParams} from "react-router-dom";
 
 const WorkoutPage = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
+    const { workoutId } = useParams();
     const {userId} = useFetchCurrentUser();
 
 
@@ -33,7 +33,7 @@ const WorkoutPage = () => {
             });
 
             if (response.ok) {
-                console.log('Workout saved successfully');
+                console.log('Workout started successfully');
             } else {
                 console.error('Failed to save workout');
                 const errorData = await response.json();
@@ -50,7 +50,7 @@ const WorkoutPage = () => {
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <h1
                     className="text-3xl mb-2 w-8/12 p-2 text-center">
-                    workoutName
+                    {workoutName} Details for ID: {workoutId}
                 </h1>
                 <div>
                     {exercises.map((exercise, index) => (

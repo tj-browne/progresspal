@@ -36,7 +36,7 @@ function App() {
                     <Route path="/create-routine" element={<AuthenticatedRoute><CreateRoutinePage/></AuthenticatedRoute>}/>
                     <Route path="/routines" element={<AuthenticatedRoute><RoutinesPage/></AuthenticatedRoute>}/>
 
-                    <Route path="/workout" element={<AuthenticatedRoute><WorkoutPage/></AuthenticatedRoute>}/>
+                    <Route path="/workout/:workoutId" element={<AuthenticatedRoute><WorkoutPage/></AuthenticatedRoute>}/>
                 </Routes>
             </Router>
         </div>

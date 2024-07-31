@@ -1,12 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
+import { useNavigate } from 'react-router-dom';
+import useFetchCurrentUser from "../hooks/useFetchCurrentUser"; // Import the hook
 
 Modal.setAppElement('#root');
 
 const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
+    const [selectedRoutineId, setSelectedRoutineId] = useState(null);
     const { routines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
+    const { userId } = useFetchCurrentUser(); // Use the hook to get the userId
     const closeButtonRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (isOpen) {
@@ -15,6 +20,51 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
             }, 0);
         }
     }, [isOpen]);
+
+    const handleRoutineSelection = async (routineId) => {
+        setSelectedRoutineId(routineId);
+
+        if (!userId) {
+            console.error('User ID is not available');
+            return;
+        }
+
+        const workoutData = {
+            user: userId,        // Integer user ID
+            routine: routineId,  // Integer routine ID
+            exercises: []        // Array of exercises or empty array if no exercises are provided
+        };
+
+        try {
+            const response = await fetch('http://localhost:8000/api/workouts/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(workoutData), // Correctly stringified data
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.id) {
+                    navigate(`/workout/${data.id}`); // Redirect to the new workout
+                } else {
+                    console.error('Unexpected response format:', data);
+                }
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to create workout. Status:', response.status);
+                console.error('Error details:', errorData);
+                if (response.status === 400) {
+                    console.error('Bad Request - Possibly invalid data:', errorData);
+                }
+            }
+        } catch (error) {
+            console.error('Network or server error:', error);
+        }
+    };
+
+
 
     const customStyles = {
         content: {
@@ -63,9 +113,14 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
                         <>
                             <li><a href="/create-routine" className="text-blue-400 hover:underline">+Create New Routine</a></li>
                             {routines.length > 0 ? (
-                                routines.map((workout) => (
-                                    <li key={workout.id}>
-                                        <a href="#" className="text-blue-400 hover:underline">{workout.name}</a>
+                                routines.map((routine) => (
+                                    <li key={routine.id}>
+                                        <button
+                                            onClick={() => handleRoutineSelection(routine.id)}
+                                            className="text-blue-400 hover:underline"
+                                        >
+                                            {routine.name}
+                                        </button>
                                     </li>
                                 ))
                             ) : (

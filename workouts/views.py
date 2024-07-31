@@ -4,11 +4,12 @@ import requests
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from users.models import CustomUser
-from workouts.models import Routine, Exercise, RoutineExercise, Workout
-from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCreateSerializer
+from workouts.models import Routine, Exercise, RoutineExercise, Workout, WorkoutExercise
+from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCreateSerializer, WorkoutCreateSerializer
 
 
 def get_exercises(request):
@@ -63,23 +64,34 @@ def routines_list_by_user(request, user_id):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
+@csrf_exempt
 def workouts_list_create(request):
     if request.method == 'GET':
-        workouts = Workout.objects.all()
+        workouts = Workout.objects.prefetch_related('workout_exercises__exercise').all()
         serializer = WorkoutSerializer(workouts, many=True)
-        return JsonResponse(serializer.data, safe=False, status=200)
+        return JsonResponse({'workouts': serializer.data}, safe=False, status=200)
     if request.method == 'POST':
-        user_id = request.data.get('user_id')
-        routine_id = request.data.get('routine_id')
+        try:
+            data = json.loads(request.body)
+            print('Received data: %s', data)  # Log received data
 
-        user = get_object_or_404(CustomUser, id=user_id)
-        routine = get_object_or_404(Routine, id=routine_id)
-        serializer = WorkoutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=user, routine=routine)
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            serializer = WorkoutCreateSerializer(data=data)
+            if serializer.is_valid():
+                workout = serializer.save()
+                return JsonResponse(WorkoutSerializer(workout).data, status=201)
+            else:
+                print('Serializer errors: %s', serializer.errors)  # Log serializer errors
+                return JsonResponse(serializer.errors, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
 
 def workout_detail(request, workout_id):
-    return None
+    if request.method == 'GET':
+        try:
+            workout = Workout.objects.prefetch_related('workout_exercises__exercise').get(id=workout_id)
+            serializer = WorkoutSerializer(workout)
+            return JsonResponse({'workout': serializer.data}, safe=False, status=200)
+        except Workout.DoesNotExist:
+            return JsonResponse({'error': 'Workout not found'}, status=404)

@@ -29,7 +29,7 @@ class Routine(models.Model):
 # It captures the default sets,reps, weight, etc., for each exercise in the routine.
 # TODO: Decide how defaults will be saved/represented - saved as last/ set in routines?
 class RoutineExercise(models.Model):
-    routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+    routine = models.ForeignKey(Routine, on_delete=models.CASCADE, related_name='routine_exercises')
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     default_sets = models.IntegerField(blank=True, null=True)
     default_reps = models.IntegerField(blank=True, null=True)
@@ -59,7 +59,7 @@ class Workout(models.Model):
 # Represents the actual performance of each exercise during a specific workout session.
 # Capturing details like sets, reps, weight, etc., specific to that session.
 class WorkoutExercise(models.Model):
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name='workout_exercises')
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     sets = models.IntegerField(blank=True, null=True)
     reps = models.IntegerField(blank=True, null=True)
