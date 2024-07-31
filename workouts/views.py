@@ -83,3 +83,18 @@ def workout_detail(request, workout_id):
         return Response(serializer.data)
     except Workout.DoesNotExist:
         return Response({'error': 'Workout not found'}, status=404)
+
+
+@api_view(['GET'])
+def workouts_list_by_user(request, user_id):
+    if request.method == 'GET':
+        workouts = Workout.objects.filter(user_id=user_id).prefetch_related(
+            'workout_exercises__exercise',
+            'routine__routine_exercises__exercise'
+        )
+        if workouts.exists():
+            serializer = WorkoutSerializer(workouts, many=True)
+            data = serializer.data
+            return Response(data)
+        else:
+            return Response({'error': 'No workouts found for this user.'}, status=404)

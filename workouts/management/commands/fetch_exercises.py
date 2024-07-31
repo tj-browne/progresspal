@@ -20,7 +20,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f'Failed to parse JSON: {e}'))
             return
 
-        # TODO: Filter data further (category - strength/cardio only)
+        # TODO: Filter data further (category - strength/cardio only) - remove instructions for now
         for item in data:
             name = item.get('name')
             instructions = " ".join(item.get('instructions', []))

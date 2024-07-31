@@ -69,7 +69,7 @@ const WorkoutPage = () => {
     if (workoutError) {
         return <div>{workoutError}</div>;
     }
-
+    // TODO: NEXT - Delete workout if not saved. Save workout on submit and PUT new details.
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
             <UserHeader/>

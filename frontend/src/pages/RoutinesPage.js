@@ -53,8 +53,7 @@ const RoutinesPage = () => {
                                 </button>
                             </div>
                             <hr/>
-                            {/*TODO: Change date format*/}
-                            <p className="text-xs">{routine.date_created}</p>
+                            <p className="text-xs">{new Date(routine.date_created).toLocaleDateString()}</p>
                             <div>
                                 {routine.exercises && routine.exercises.length > 0 ? (
                                     <ul>
