@@ -47,7 +47,7 @@ class RoutineExercise(models.Model):
 # It keeps track of when the workout started and completed.
 class Workout(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    routine = models.ForeignKey(Routine, on_delete=models.SET_NULL, null=True, blank=True)
+    routine = models.ForeignKey(Routine, on_delete=models.SET_NULL, null=True, blank=True, related_name='routines')
     date_started = models.DateTimeField(auto_now_add=True)
     date_completed = models.DateTimeField(blank=True, null=True)
 

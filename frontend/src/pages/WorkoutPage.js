@@ -1,14 +1,23 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 import {useParams} from "react-router-dom";
+import useFetchWorkout from "../hooks/useFetchWorkout";
 
 const WorkoutPage = () => {
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
-    const { workoutId } = useParams();
+    const {workoutId} = useParams();
     const {userId} = useFetchCurrentUser();
+    const {data, loading, error} = useFetchWorkout(workoutId);
+
+    useEffect(() => {
+        if (data) {
+            setWorkoutName(data.routine?.name || 'No Routine Name');
+            setExercises(data.routine?.exercises || []);
+        }
+    }, [data]);
 
 
     const handleSaveWorkout = async () => {
@@ -50,27 +59,24 @@ const WorkoutPage = () => {
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <h1
                     className="text-3xl mb-2 w-8/12 p-2 text-center">
-                    {workoutName} Details for ID: {workoutId}
+                    {workoutName}
                 </h1>
                 <div>
                     {exercises.map((exercise, index) => (
                         <div key={index} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C]">
-                            <h2 className="text-xl">{exercise.name}</h2>
+                            <h2 className="text-xl">{exercise.exercise.name}</h2>
                             <div className="flex items-center justify-center">
                                 <div>
                                     <p>Set</p>
-                                    <input className="w-2/12" placeholder="1"/>
+                                    <input className="w-2/12" placeholder={exercise.default_sets || 0}/>
                                 </div>
                                 <div>
                                     <p>kg</p>
-                                    <input className="w-2/12" placeholder="20"/>
+                                    <input className="w-2/12" placeholder={exercise.default_weight || 0}/>
                                 </div>
                                 <div>
                                     <p>Reps</p>
-                                    <input className="w-2/12" placeholder="5"/>
-                                </div>
-                                <div>
-                                    <button className="bg-green-700">Accept</button>
+                                    <input className="w-2/12" placeholder={exercise.default_reps || 0}/>
                                 </div>
                             </div>
                         </div>

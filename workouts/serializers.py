@@ -56,6 +56,7 @@ class WorkoutExerciseSerializer(serializers.ModelSerializer):
 
 class WorkoutSerializer(serializers.ModelSerializer):
     exercises = WorkoutExerciseSerializer(many=True, source='workout_exercises')
+    routine = RoutineSerializer()
 
     class Meta:
         model = Workout

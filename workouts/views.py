@@ -90,7 +90,7 @@ def workouts_list_create(request):
 def workout_detail(request, workout_id):
     if request.method == 'GET':
         try:
-            workout = Workout.objects.prefetch_related('workout_exercises__exercise').get(id=workout_id)
+            workout = Workout.objects.get(id=workout_id)
             serializer = WorkoutSerializer(workout)
             return JsonResponse({'workout': serializer.data}, safe=False, status=200)
         except Workout.DoesNotExist:
