@@ -8,6 +8,7 @@ urlpatterns = [
 
     path('api/workouts/', views.workouts_list_create, name='workouts_list_create'),
     path('api/workouts/<int:workout_id>/', views.workout_detail, name='workout_detail'),
+    path('api/workouts/user/<int:user_id>/', views.workouts_list_by_user, name='workouts-list-by-user'),
 
     path('api/routines/', views.routines_list_create, name='routines_list_create'),
     path('api/routines/<int:routine_id>/', views.delete_routine, name='delete_routine'),

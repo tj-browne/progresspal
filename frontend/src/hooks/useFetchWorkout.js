@@ -22,14 +22,12 @@ const useFetchWorkout = (workoutId) => {
                     withCredentials: true,
                 });
 
-                // Adjust based on actual API response structure
                 if (response.data) {
-                    setData(response.data); // Assuming the API response is an object with workout data
+                    setData(response.data);
                 } else {
                     setError('No data found');
                 }
             } catch (error) {
-                // Enhance error handling by checking for response errors
                 if (error.response) {
                     setError(`Error ${error.response.status}: ${error.response.data.detail || 'Failed to load data'}`);
                 } else {

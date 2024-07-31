@@ -2,10 +2,13 @@ import React, {useState, useRef} from 'react';
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import ChooseRoutineModal from "../components/ChooseRoutineModal";
+import useFetchUserWorkouts from "../hooks/useFetchUserWorkouts";
 
 const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const modalButtonRef = useRef(null);
+
+    const {workouts, workoutsLoading, workoutsError} = useFetchUserWorkouts();
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -26,19 +29,42 @@ const Dashboard = () => {
                 >
                     Start Workout
                 </button>
-                <h3 className="text-left text-white underline mb-4">
-                    History
-                </h3>
-                <div className="flex flex-col border rounded w-6/12 bg-[#2C2C2C] p-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-left text-white underline">Push</h3>
-                        <h3 className="text-white">16/07/24</h3>
-                    </div>
-                    <p className="text-left text-white">
-                        ProgressPal is a user-friendly Fitness and Workout Tracker web app that helps users achieve
-                        their fitness goals through effective workout logging, progress tracking, and motivational
-                        features.
-                    </p>
+                <h3 className="text-left text-white underline mb-4">History</h3>
+                <div className="mb-32">
+                    {workoutsLoading ? (
+                        <p className="text-white">Loading workouts...</p>
+                    ) : workoutsError ? (
+                        <p className="text-red-500">Error: {workoutsError}</p>
+                    ) : workouts.length > 0 ? (
+                        workouts.map((workout) => (
+                            <div key={workout.id} className="flex flex-col border rounded mb-4 p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-left text-white font-bold">
+                                            {workout.routine?.name || 'No routine name'}
+                                        </h3>
+                                        <h3 className="text-white">
+                                            {new Date(workout.date_started).toLocaleDateString()}
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div className="mt-2 text-left">
+                                    <p className="text-white">Exercise</p>
+                                    {workout.exercises && workout.exercises.length > 0 ? (
+                                        workout.exercises.map((exerciseEntry, index) => (
+                                            <div key={exerciseEntry.exercise.id}>
+                                                <p className="text-white">- {exerciseEntry.exercise.name || 'No exercise name'}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-white">No exercises listed.</p>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-white">No workout history available.</p>
+                    )}
                 </div>
             </div>
             <Footer/>
