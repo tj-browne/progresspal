@@ -1,14 +1,16 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
+import {useNavigate} from "react-router-dom";
 
-const NewWorkoutPage = () => {
+const CreateRoutinePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
     const {userId} = useFetchCurrentUser();
+    const navigate = useNavigate();
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -32,7 +34,7 @@ const NewWorkoutPage = () => {
         const workoutData = {
             name: workoutName,
             exercises: exercises.map(exercise => exercise.name),
-            user_id: userId,
+            user: userId,
         };
 
         try {
@@ -46,6 +48,7 @@ const NewWorkoutPage = () => {
 
             if (response.ok) {
                 console.log('Workout saved successfully');
+                navigate('/dashboard');
             } else {
                 console.error('Failed to save workout');
                 const errorData = await response.json();
@@ -114,4 +117,4 @@ const NewWorkoutPage = () => {
     );
 };
 
-export default NewWorkoutPage;
+export default CreateRoutinePage;

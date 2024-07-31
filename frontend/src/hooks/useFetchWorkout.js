@@ -2,30 +2,39 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 
 const useFetchWorkout = (workoutId) => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(null); // Initialize as null for better handling of data absence
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                if (!workoutId) return;
+            if (!workoutId) {
+                setError('Workout ID is required');
+                setLoading(false);
+                return;
+            }
 
+            try {
                 const response = await axios.get(`http://localhost:8000/api/workouts/${workoutId}/`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     withCredentials: true,
                 });
-                const workouts = response.data && Array.isArray(response.data)
-                    ? response.data
-                    : response.data && Array.isArray(response.data.routines)
-                        ? response.data.routines
-                        : [];
 
-                setData(response.data.workout);
+                // Adjust based on actual API response structure
+                if (response.data) {
+                    setData(response.data); // Assuming the API response is an object with workout data
+                } else {
+                    setError('No data found');
+                }
             } catch (error) {
-                setError('Failed to load routines data.');
+                // Enhance error handling by checking for response errors
+                if (error.response) {
+                    setError(`Error ${error.response.status}: ${error.response.data.detail || 'Failed to load data'}`);
+                } else {
+                    setError('Network or server error');
+                }
             } finally {
                 setLoading(false);
             }

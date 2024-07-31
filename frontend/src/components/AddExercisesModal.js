@@ -28,7 +28,6 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
                     },
                     withCredentials: true,
                 });
-                console.log(response.data);
                 setExercisesData(response.data.exercises || response.data);
             } catch (error) {
                 setError('Failed to load exercises data.');

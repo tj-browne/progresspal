@@ -10,7 +10,7 @@ urlpatterns = [
 
     path('api/users/profile/', views.profile, name='profile'),
 
-    path('api/auth/current_user/', views.current_user, name='current_user'),
+    path('api/auth/current-user/', views.current_user, name='current_user'),
 
     path('api/users/<int:user_id>/', views.user_detail, name='user_detail'),
 

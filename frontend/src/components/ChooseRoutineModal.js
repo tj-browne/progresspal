@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Modal from 'react-modal';
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
-import { useNavigate } from 'react-router-dom';
-import useFetchCurrentUser from "../hooks/useFetchCurrentUser"; // Import the hook
+import {useNavigate} from 'react-router-dom';
+import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 Modal.setAppElement('#root');
 
-const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
+const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
     const [selectedRoutineId, setSelectedRoutineId] = useState(null);
-    const { routines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
-    const { userId } = useFetchCurrentUser(); // Use the hook to get the userId
+    const {routines, routinesLoading, routinesError, userLoading, userError} = useFetchUserRoutines();
     const closeButtonRef = useRef(null);
     const navigate = useNavigate();
 
@@ -21,8 +20,10 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
         }
     }, [isOpen]);
 
+    const userId = useFetchCurrentUser().userId; // Ensure userId is fetched properly
     const handleRoutineSelection = async (routineId) => {
         setSelectedRoutineId(routineId);
+
 
         if (!userId) {
             console.error('User ID is not available');
@@ -30,9 +31,9 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
         }
 
         const workoutData = {
-            user: userId,        // Integer user ID
-            routine: routineId,  // Integer routine ID
-            exercises: []        // Array of exercises or empty array if no exercises are provided
+            user: userId,
+            routine: routineId,
+            exercises: []
         };
 
         try {
@@ -41,13 +42,13 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(workoutData), // Correctly stringified data
+                body: JSON.stringify(workoutData),
             });
 
             if (response.ok) {
                 const data = await response.json();
                 if (data && data.id) {
-                    navigate(`/workout/${data.id}`); // Redirect to the new workout
+                    navigate(`/workout/${data.id}`);
                 } else {
                     console.error('Unexpected response format:', data);
                 }
@@ -63,8 +64,6 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
             console.error('Network or server error:', error);
         }
     };
-
-
 
     const customStyles = {
         content: {
@@ -111,7 +110,8 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
                         <div>{routinesError}</div>
                     ) : (
                         <>
-                            <li><a href="/create-routine" className="text-blue-400 hover:underline">+Create New Routine</a></li>
+                            <li><a href="/create-routine" className="text-blue-400 hover:underline">+Create New
+                                Routine</a></li>
                             {routines.length > 0 ? (
                                 routines.map((routine) => (
                                     <li key={routine.id}>
