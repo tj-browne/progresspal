@@ -9,7 +9,6 @@ const useFetchUserRoutines = () => {
     const [routinesError, setRoutinesError] = useState(null);
 
     useEffect(() => {
-        // If userId is not available yet, do not fetch routines
         if (!userId) return;
 
         const fetchUserRoutines = async () => {
@@ -29,7 +28,7 @@ const useFetchUserRoutines = () => {
         };
 
         fetchUserRoutines();
-    }, [userId]); // Depend on userId
+    }, [userId]);
 
     return {routines, setRoutines, routinesLoading, routinesError, userLoading, userError};
 };

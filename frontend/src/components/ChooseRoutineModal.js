@@ -20,7 +20,7 @@ const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
         }
     }, [isOpen]);
 
-    const userId = useFetchCurrentUser().userId; // Ensure userId is fetched properly
+    const userId = useFetchCurrentUser().userId;
     const handleRoutineSelection = async (routineId) => {
         setSelectedRoutineId(routineId);
 

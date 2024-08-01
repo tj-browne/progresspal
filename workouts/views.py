@@ -75,14 +75,27 @@ def workouts_list_create(request):
         return Response(serializer.errors, status=400)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'DELETE', 'PUT'])
 def workout_detail(request, workout_id):
     try:
         workout = Workout.objects.get(id=workout_id)
-        serializer = WorkoutSerializer(workout)
-        return Response(serializer.data)
     except Workout.DoesNotExist:
         return Response({'error': 'Workout not found'}, status=404)
+
+    if request.method == 'GET':
+        serializer = WorkoutSerializer(workout)
+        return Response(serializer.data)
+
+    if request.method == 'DELETE':
+        workout.delete()
+        return Response({'message': 'Workout deleted successfully'}, status=204)
+
+    if request.method == 'PUT':
+        serializer = WorkoutCreateSerializer(workout, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Workout updated successfully'}, status=200)
+        return Response(serializer.errors, status=400)
 
 
 @api_view(['GET'])
