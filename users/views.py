@@ -2,7 +2,6 @@ import json
 import uuid
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.sessions.models import Session
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -10,24 +9,19 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from django.contrib.auth import login as auth_login, login
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from google.auth.transport import requests
 from google.oauth2 import id_token
 
 from progresspal import settings
 from .models import CustomUser
 
-
 @csrf_protect
-def user_list_create(request):
+def users_list_create(request):
     if request.method == 'GET':
         users = CustomUser.objects.all()
         user_data = list(users.values())
         return JsonResponse({'users': user_data})
-
-    if request.method == 'DELETE':
-        pass
 
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -39,15 +33,14 @@ def user_list_create(request):
             return JsonResponse({'error': 'Invalid username.'}, status=401)
 
         if CustomUser.objects.filter(email=email).exists():
-            return JsonResponse({'error': 'Email already in use. Please use a different email address.'}, status=409)
+            return JsonResponse({'error': 'Email already in use.'}, status=409)
 
         if CustomUser.objects.filter(username=username).exists():
-            return JsonResponse({'error': 'Username already in use. Please use a different username.'}, status=409)
+            return JsonResponse({'error': 'Username already in use.'}, status=409)
 
         try:
-            CustomUser.objects.create_user(username=username, email=email, password=password)
-            auth_login(request, CustomUser.objects.get(username=username),
-                       backend='django.contrib.auth.backends.ModelBackend')
+            user = CustomUser.objects.create_user(username=username, email=email, password=password)
+            auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return JsonResponse({'message': 'User created successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
@@ -56,7 +49,7 @@ def user_list_create(request):
 
 
 @login_required
-def profile(request):
+def user_profile(request):
     user = request.user
     profile_data = {
         'id': user.id,
@@ -67,7 +60,7 @@ def profile(request):
 
 
 @csrf_protect
-def login_user(request):
+def user_login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         identifier = data.get('identifier')
@@ -75,15 +68,9 @@ def login_user(request):
         remember_me = data.get('rememberMe', False)
 
         try:
-            if '@' in identifier:
-                user = CustomUser.objects.get(email=identifier)
-            else:
-                user = CustomUser.objects.get(username=identifier)
-
+            user = CustomUser.objects.get(email=identifier) if '@' in identifier else CustomUser.objects.get(username=identifier)
             if user.check_password(password):
                 auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-                print(f"User authenticated: {request.user.username}, Authenticated: {request.user.is_authenticated}")
 
                 if remember_me:
                     request.session.set_expiry(1209600)  # 14 days
@@ -100,7 +87,7 @@ def login_user(request):
 
 
 @csrf_protect
-def logout_user(request):
+def user_logout(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
             try:
@@ -110,17 +97,12 @@ def logout_user(request):
                 return JsonResponse({'error': 'An error occurred during logout'}, status=500)
         else:
             return JsonResponse({'error': 'No user is logged in'}, status=400)
-    else:
-        return JsonResponse({'error': 'Invalid request method. Use POST.'}, status=405)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
-def check_auth(request):
+def check_authentication(request):
     user = request.user
-
-    if user.is_authenticated:
-        return JsonResponse({'authenticated': True, 'user': {'username': user.username}}, status=200)
-    else:
-        return JsonResponse({'authenticated': False}, status=200)
+    return JsonResponse({'authenticated': user.is_authenticated, 'user': {'username': user.username}})
 
 
 def get_csrf_token(request):
@@ -144,7 +126,7 @@ def password_reset_request(request):
 
         reset_link = f"http://localhost:3000/password-reset/{token}/"
         send_mail(
-            'Progress Pal - Password Reset Request',
+            'Password Reset Request',
             f'Click the link below to reset your password:\n{reset_link}',
             'from@example.com',
             [user.email],
@@ -213,23 +195,22 @@ def google_auth_callback(request):
 
 def verify_google_token(id_token_str):
     try:
-        client_id = settings.SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID  # or CLIENT_ID from your settings
+        client_id = settings.SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID
         idinfo = id_token.verify_oauth2_token(id_token_str, requests.Request(), client_id)
         return idinfo
     except ValueError as e:
-        print(f"Token verification failed: {e}")
         return None
 
 
-def user_detail(request, user_id):
+def user_retrieve_update_delete(request, user_id):
     if request.method == 'DELETE':
         try:
             user = get_object_or_404(CustomUser, id=user_id)
             user.delete()
             return JsonResponse({'message': 'User deleted successfully'}, status=204)
         except Exception as e:
-            print(e)
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
 @login_required

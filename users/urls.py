@@ -3,26 +3,22 @@ from . import views
 from .views import google_auth_callback
 
 urlpatterns = [
-    path('api/users/', views.user_list_create, name='user_list_create'),
-
-    path('api/users/login/', views.login_user, name='login_user'),
-    path('api/users/logout/', views.logout_user, name='logout_user'),
-
-    path('api/users/profile/', views.profile, name='profile'),
-
+    # User-related endpoints
+    path('api/users/', views.users_list_create, name='users_list_create'),
+    path('api/users/<int:user_id>/', views.user_retrieve_update_delete, name='user_retrieve_update_delete'),
+    path('api/users/profile/', views.user_profile, name='user_profile'),
     path('api/auth/current-user/', views.current_user, name='current_user'),
 
-    path('api/users/<int:user_id>/', views.user_detail, name='user_detail'),
+    # Authentication endpoints
+    path('api/auth/login/', views.user_login, name='user_login'),
+    path('api/auth/logout/', views.user_logout, name='user_logout'),
+    path('api/auth/check/', views.check_authentication, name='check_authentication'),
+    path('api/auth/google/', google_auth_callback, name='google_auth_callback'),
 
+    # Password reset endpoints
     path('api/users/password-reset-request/', views.password_reset_request, name='password_reset_request'),
     path('api/users/password-reset/<uuid:token>/', views.password_reset, name='password_reset'),
 
-    # OPTIONAL: Activate account (email)
-    # path('api/users/activate/<str:token>/', views.activate_account, name='activate_account'),
-    # path('api/users/resend-activation/', views.resend_activation_email, name='resend_activation_email'),
-
+    # CSRF token endpoint
     path('api/csrf-token/', views.get_csrf_token, name='get_csrf_token'),
-    path('api/auth/check/', views.check_auth, name='check_auth'),
-
-    path('api/auth/google/', google_auth_callback, name='google_auth_callback'),
 ]

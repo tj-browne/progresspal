@@ -13,7 +13,7 @@ const useFetchUserRoutines = () => {
 
         const fetchUserRoutines = async () => {
             try {
-                const routinesResponse = await axios.get(`http://localhost:8000/api/routines/user/${userId}`);
+                const routinesResponse = await axios.get(`http://localhost:8000/api/users/${userId}/routines/`);
                 setRoutines(routinesResponse.data);
             } catch (error) {
                 if (error.response?.status === 401) {

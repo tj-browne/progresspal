@@ -16,7 +16,7 @@ const UserHeader = ({ user }) => {
     const handleLogout = async () => {
         try {
             const csrfToken = await getCsrfToken();
-            await axios.post('http://localhost:8000/api/users/logout/', {}, {
+            await axios.post('http://localhost:8000/api/auth/logout/', {}, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                 },

@@ -13,7 +13,7 @@ const useFetchUserWorkouts = () => {
 
         const fetchUserWorkouts = async () => {
             try {
-                const workoutsResponse = await axios.get(`http://localhost:8000/api/workouts/user/${userId}`);
+                const workoutsResponse = await axios.get(`http://localhost:8000/api/users/${userId}/workouts/`);
                 setWorkouts(workoutsResponse.data);
             } catch (error) {
                 if (error.response?.status === 401) {

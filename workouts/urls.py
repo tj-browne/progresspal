@@ -1,17 +1,15 @@
 from django.urls import path
-
 from workouts import views
 
 urlpatterns = [
-    # TODO: Refactor paths (Restful)
-    path('api/exercises/', views.get_exercises, name='get_exercises'),
+    path('api/exercises/', views.exercises_list, name='exercises_list'),
 
     path('api/workouts/', views.workouts_list_create, name='workouts_list_create'),
-    path('api/workouts/<int:workout_id>/', views.workout_detail, name='workout_detail'),
-    path('api/workouts/user/<int:user_id>/', views.workouts_list_by_user, name='workouts-list-by-user'),
+    path('api/workouts/<int:workout_id>/', views.workout_retrieve_update_delete, name='workout_retrieve_update_delete'),
+    path('api/users/<int:user_id>/workouts/', views.user_workouts_list, name='user_workouts_list'),
 
     path('api/routines/', views.routines_list_create, name='routines_list_create'),
-    path('api/routines/<int:routine_id>/', views.delete_routine, name='delete_routine'),
-    path('api/routines/user/<int:user_id>/', views.routines_list_by_user, name='routines_list_by_user'),
-    path('api/routines/exercises/', views.get_routine_exercises, name='get_routine_exercises'),
+    path('api/routines/<int:routine_id>/', views.routine_retrieve_update_delete, name='routine_retrieve_update_delete'),
+    path('api/users/<int:user_id>/routines/', views.user_routines_list, name='user_routines_list'),
+    path('api/routines/exercises/', views.routine_exercises_list, name='routine_exercises_list'),
 ]
