@@ -58,13 +58,13 @@ class TestCustomUserModel:
 class TestSignup:
 
     def test_signup_success(self, api_client):
-        url = reverse('user_list_create')
+        url = reverse('users_list_create')
         data = {'username': 'testuser', 'email': 'test@example.com', 'password': 'password123'}
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_signup_fail(self, api_client):
-        url = reverse('user_list_create')
+        url = reverse('users_list_create')
         data = {'username': '', 'email': 'invalid', 'password': ''}
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -72,7 +72,7 @@ class TestSignup:
     def test_login_email_inuse(self, api_client):
         CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
                                        password="password123")
-        url = reverse('user_list_create')
+        url = reverse('users_list_create')
         data = {'username': 'validtestuser2', 'email': 'validtestuser@example.com', 'password': 'password123'}
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_409_CONFLICT
@@ -80,13 +80,13 @@ class TestSignup:
     def test_login_username_inuse(self, api_client):
         CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
                                        password="password123")
-        url = reverse('user_list_create')
+        url = reverse('users_list_create')
         data = {'username': 'validtestuser', 'email': 'validtestuser2@example.com', 'password': 'password123'}
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_409_CONFLICT
 
     def test_valid_username(self, api_client):
-        url = reverse('user_list_create')
+        url = reverse('users_list_create')
         data = {'username': 'test@user', 'email': 'testvalidusername@example.com', 'password': 'password123'}
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -102,25 +102,25 @@ class TestLogin:
                                                    password='testlogin123')
 
     def test_login_success_email(self):
-        url = reverse('login_user')
+        url = reverse('user_login')
         data = {'identifier': 'testloginuser@example.com', 'password': 'testlogin123'}
         response = self.client.post(url, data, format='json')
         assert response.status_code == status.HTTP_200_OK
 
     def test_login_success_username(self):
-        url = reverse('login_user')
+        url = reverse('user_login')
         data = {'identifier': 'testloginuser', 'password': 'testlogin123'}
         response = self.client.post(url, data, format='json')
         assert response.status_code == status.HTTP_200_OK
 
     def test_login_fail_email(self):
-        url = reverse('login_user')
+        url = reverse('user_login')
         data = {'identifier': 'invalid@example.com', 'password': 'wrongpassword'}
         response = self.client.post(url, data, format='json')
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_login_fail_username(self):
-        url = reverse('login_user')
+        url = reverse('user_login')
         data = {'identifier': 'invalid', 'password': 'wrongpassword'}
         response = self.client.post(url, data, format='json')
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -202,12 +202,12 @@ class TestLogout:
         self.client.login(username='testlogoutuser', password='testlogout123')
 
     def test_logout_success(self):
-        url = reverse('logout_user')
+        url = reverse('user_logout')
         response = self.client.post(url, format='json')
         assert response.status_code == status.HTTP_200_OK
 
     def test_logout_fail_not_authenticated(self):
         self.client.logout()
-        url = reverse('logout_user')
+        url = reverse('user_logout')
         response = self.client.post(url, format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST

@@ -33,7 +33,6 @@ const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
         const workoutData = {
             user: userId,
             routine: routineId,
-            exercises: []
         };
 
         try {

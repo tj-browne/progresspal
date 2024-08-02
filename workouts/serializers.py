@@ -36,7 +36,6 @@ class RoutineCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         exercises_names = validated_data.pop('exercises')
-        user = validated_data['user']
         routine = Routine.objects.create(**validated_data)
 
         for exercise_name in exercises_names:
@@ -55,12 +54,11 @@ class WorkoutExerciseSerializer(serializers.ModelSerializer):
 
 
 class WorkoutSerializer(serializers.ModelSerializer):
-    exercises = WorkoutExerciseSerializer(many=True, source='workout_exercises')
     routine = RoutineSerializer()
 
     class Meta:
         model = Workout
-        fields = ['id', 'user', 'routine', 'date_started', 'date_completed', 'exercises']
+        fields = ['id', 'user', 'routine', 'date_started', 'date_completed']
 
 
 class WorkoutCreateSerializer(serializers.ModelSerializer):

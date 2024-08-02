@@ -18,8 +18,7 @@ const Dashboard = () => {
         setIsModalOpen(false);
     };
 
-    // TODO: Add limit to list
-    const reversedWorkouts = workouts.slice().reverse();
+    const reversedWorkouts = workouts.slice().reverse().slice(0, 7);
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
@@ -53,8 +52,8 @@ const Dashboard = () => {
                                 </div>
                                 <div className="mt-2 text-left">
                                     <p className="text-white">Exercises:</p>
-                                    {workout.exercises && workout.exercises.length > 0 ? (
-                                        workout.exercises.map((exerciseEntry, index) => (
+                                    {workout.routine.exercises && workout.routine.exercises.length > 0 ? (
+                                        workout.routine.exercises.map((exerciseEntry, index) => (
                                             <div key={exerciseEntry.exercise.id}>
                                                 <p className="text-white">- {exerciseEntry.exercise.name || 'No exercise name'}</p>
                                             </div>

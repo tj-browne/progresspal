@@ -31,12 +31,12 @@ class Routine(models.Model):
 class RoutineExercise(models.Model):
     routine = models.ForeignKey(Routine, on_delete=models.CASCADE, related_name='routine_exercises')
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    default_sets = models.IntegerField(blank=True, null=True)
-    default_reps = models.IntegerField(blank=True, null=True)
-    default_weight = models.FloatField(blank=True, null=True)
-    default_distance = models.FloatField(blank=True, null=True)
+    default_sets = models.IntegerField(blank=True, null=True, default=1)
+    default_reps = models.IntegerField(blank=True, null=True, default=0)
+    default_weight = models.FloatField(blank=True, null=True, default=0.0)
+    default_distance = models.FloatField(blank=True, null=True, default=0.0)
     default_time = models.DurationField(blank=True, null=True)
-    default_calories_burned = models.IntegerField(blank=True, null=True)
+    default_calories_burned = models.IntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
         return f'{self.routine.name} - {self.exercise.name}'
