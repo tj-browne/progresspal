@@ -1,25 +1,28 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 import useFetchWorkout from "../hooks/useFetchWorkout";
 import useDeleteWorkout from "../hooks/useDeleteWorkout";
-import {useParams, useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const WorkoutPage = () => {
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
     const [isDirty, setIsDirty] = useState(false);
-    const {workoutId} = useParams();
-    const {userId, loading: userLoading, error: userError} = useFetchCurrentUser();
-    const {data, loading: workoutLoading, error: workoutError} = useFetchWorkout(workoutId);
-    const {deleteWorkout, loading: deleteLoading, error: deleteError} = useDeleteWorkout(workoutId);
+    const { workoutId } = useParams();
+    const { userId, loading: userLoading, error: userError } = useFetchCurrentUser();
+    const { data, loading: workoutLoading, error: workoutError } = useFetchWorkout(workoutId);
+    const { deleteWorkout, loading: deleteLoading, error: deleteError } = useDeleteWorkout(workoutId);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (data) {
-            setWorkoutName(data.routine.name || 'No Workout Name');
-            setExercises(data.exercises || []);
+            setWorkoutName(data.routine?.name || 'No Workout Name');
+            setExercises(data.exercises?.map(exercise => ({
+                ...exercise,
+                sets: exercise.sets || [{ reps: 1, weight: 0 }]
+            })) || []);
             setIsDirty(false);
         }
     }, [data]);
@@ -50,9 +53,10 @@ const WorkoutPage = () => {
             routine: data.routine.id,
             exercises: exercises.map(exercise => ({
                 exercise_id: exercise.exercise.id,
-                sets: exercise.sets || null,
-                reps: exercise.reps || null,
-                weight: exercise.weight || null,
+                sets: Array.isArray(exercise.sets) ? exercise.sets.map(set => ({
+                    reps: set.reps || 0,
+                    weight: set.weight || 0
+                })) : [{ reps: 0, weight: 0 }],
                 distance: exercise.distance || null,
                 time: exercise.time || null,
                 calories_burned: exercise.calories_burned || null
@@ -62,8 +66,8 @@ const WorkoutPage = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/api/workouts/', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8000/api/workouts/${workoutId}/`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -71,7 +75,7 @@ const WorkoutPage = () => {
             });
 
             if (response.ok) {
-                console.log('Workout started successfully');
+                console.log('Workout updated successfully');
                 navigate('/');
             } else {
                 console.error('Failed to save workout');
@@ -92,25 +96,6 @@ const WorkoutPage = () => {
         }
     };
 
-    useEffect(() => {
-        const handleBeforeUnload = async (event) => {
-            event.preventDefault();
-            event.returnValue = '';
-
-            try {
-                await deleteWorkout();
-            } catch (error) {
-                console.error('Failed to delete workout:', deleteError);
-            }
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, [isDirty, deleteWorkout, deleteError]);
-
     if (userLoading || workoutLoading) {
         return <div>Loading...</div>;
     }
@@ -125,63 +110,69 @@ const WorkoutPage = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader/>
+            <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <h1 className="text-3xl mb-2 w-8/12 p-2 text-center">{workoutName}</h1>
-                <div>
-                    {exercises.map((exercise, index) => (
-                        <div key={index} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C]">
-                            <h2 className="text-xl">{exercise.exercise.name}</h2>
-                            <div className="flex items-center justify-center">
-                                <div>
-                                    <p>Sets</p>
-                                    <input
-                                        className="w-2/12"
-                                        placeholder={exercise.default_sets || 0}
-                                        onChange={(e) => {
+                <div className="w-8/12">
+                    {exercises.map((exercise, exerciseIndex) => (
+                        <div key={exerciseIndex} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C] p-4 rounded-lg">
+                            <h2 className="text-xl mb-2">{exercise.exercise.name}</h2>
+                            {exercise.sets.map((set, setIndex) => (
+                                <div className="flex items-center mb-2" key={setIndex}>
+                                    <div className="flex flex-col items-center mr-4">
+                                        <label className="mb-1">Reps</label>
+                                        <input
+                                            className="w-20 p-1 text-black"
+                                            type="number"
+                                            value={set.reps || 0}
+                                            onChange={(e) => {
+                                                const updatedExercises = [...exercises];
+                                                updatedExercises[exerciseIndex].sets[setIndex].reps = Number(e.target.value);
+                                                setExercises(updatedExercises);
+                                                setIsDirty(true);
+                                            }}
+                                            placeholder="Reps"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col items-center mr-4">
+                                        <label className="mb-1">Weight (kg)</label>
+                                        <input
+                                            className="w-20 p-1 text-black"
+                                            type="number"
+                                            value={set.weight || 0}
+                                            onChange={(e) => {
+                                                const updatedExercises = [...exercises];
+                                                updatedExercises[exerciseIndex].sets[setIndex].weight = Number(e.target.value);
+                                                setExercises(updatedExercises);
+                                                setIsDirty(true);
+                                            }}
+                                            placeholder="Weight"
+                                        />
+                                    </div>
+                                    <button
+                                        className="bg-red-700 px-2 py-1 rounded"
+                                        onClick={() => {
                                             const updatedExercises = [...exercises];
-                                            updatedExercises[index] = {
-                                                ...updatedExercises[index],
-                                                default_sets: e.target.value,
-                                            };
+                                            updatedExercises[exerciseIndex].sets.splice(setIndex, 1);
                                             setExercises(updatedExercises);
                                             setIsDirty(true);
                                         }}
-                                    />
+                                    >
+                                        - Remove Set
+                                    </button>
                                 </div>
-                                <div>
-                                    <p>kg</p>
-                                    <input
-                                        className="w-2/12"
-                                        placeholder={exercise.default_weight || 0}
-                                        onChange={(e) => {
-                                            const updatedExercises = [...exercises];
-                                            updatedExercises[index] = {
-                                                ...updatedExercises[index],
-                                                default_weight: e.target.value,
-                                            };
-                                            setExercises(updatedExercises);
-                                            setIsDirty(true);
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <p>Reps</p>
-                                    <input
-                                        className="w-2/12"
-                                        placeholder={exercise.default_reps || 0}
-                                        onChange={(e) => {
-                                            const updatedExercises = [...exercises];
-                                            updatedExercises[index] = {
-                                                ...updatedExercises[index],
-                                                default_reps: e.target.value,
-                                            };
-                                            setExercises(updatedExercises);
-                                            setIsDirty(true);
-                                        }}
-                                    />
-                                </div>
-                            </div>
+                            ))}
+                            <button
+                                className="bg-green-700 px-4 py-2 rounded"
+                                onClick={() => {
+                                    const updatedExercises = [...exercises];
+                                    updatedExercises[exerciseIndex].sets.push({ reps: 1, weight: 0 });
+                                    setExercises(updatedExercises);
+                                    setIsDirty(true);
+                                }}
+                            >
+                                + Add Set
+                            </button>
                         </div>
                     ))}
                 </div>
@@ -200,7 +191,7 @@ const WorkoutPage = () => {
                     </button>
                 </div>
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 };

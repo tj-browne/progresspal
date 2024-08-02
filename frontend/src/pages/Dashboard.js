@@ -18,8 +18,7 @@ const Dashboard = () => {
         setIsModalOpen(false);
     };
 
-    // TODO: Add limit to list
-    const reversedWorkouts = workouts.slice().reverse();
+    const reversedWorkouts = workouts.slice().reverse().slice(0, 7);
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">

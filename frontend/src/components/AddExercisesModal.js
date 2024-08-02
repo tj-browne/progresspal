@@ -1,48 +1,57 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Modal from 'react-modal';
-import axios from "axios";
-import {getCsrfToken} from "../services/csrfService";
+import axios from 'axios';
 
 Modal.setAppElement('#root');
 
 const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
     const closeButtonRef = useRef(null);
+    const searchInputRef = useRef(null);
     const [exercisesData, setExercisesData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filterOption, setFilterOption] = useState('all');
 
-    useEffect(() => {
-        if (isOpen) {
-            setTimeout(() => {
-                closeButtonRef.current?.focus();
-            }, 0);
+    const fetchExercises = useCallback(async () => {
+        if (!isOpen) return; // Prevent fetching when modal is not open
+
+        setLoading(true);
+        try {
+            const response = await axios.get('http://localhost:8000/api/exercises/', {
+                params: {
+                    search: searchQuery,
+                    filter: filterOption,
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            });
+            setExercisesData(response.data.exercises || response.data);
+        } catch (error) {
+            setError('Failed to load exercises data.');
+        } finally {
+            setLoading(false);
         }
-    }, [isOpen]);
+    }, [searchQuery, filterOption, isOpen]);
 
     useEffect(() => {
-        const fetchExercises = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/api/exercises/', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    withCredentials: true,
-                });
-                setExercisesData(response.data.exercises || response.data);
-            } catch (error) {
-                setError('Failed to load exercises data.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (isOpen) {
             fetchExercises();
         }
-    }, [isOpen]);
+    }, [isOpen, fetchExercises]);
 
     const handleAddExercise = (exercise) => {
         onAddExercise(exercise);
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const handleFilterChange = (event) => {
+        setFilterOption(event.target.value);
     };
 
     const customStyles = {
@@ -57,10 +66,11 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
             borderRadius: '10px',
             padding: '20px',
             width: '80%',
-            // maxWidth: '400px',
             maxHeight: '80vh',
             overflowY: 'auto',
             color: 'white',
+            display: 'flex',
+            flexDirection: 'column',
         },
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
@@ -80,12 +90,25 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
         >
             <div>
                 <h2 id="modalTitle" className="text-xl mb-4">Add Exercise:</h2>
+                <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    placeholder="Search exercises..."
+                    className="mb-4 p-2 border rounded text-black"
+                />
+                <select value={filterOption} onChange={handleFilterChange} className="mb-4 p-2 text-black border rounded">
+                    <option value="all">All</option>
+                    <option value="strength">Strength</option>
+                    <option value="cardio">Cardio</option>
+                </select>
                 {loading ? (
                     <div>Loading...</div>
                 ) : error ? (
                     <div>{error}</div>
                 ) : (
-                    <div>
+                    <div className="overflow-y-auto" style={{ maxHeight: '60vh', minHeight: '60vh' }}>
                         {exercisesData.length > 0 ? (
                             exercisesData.map((exercise) => (
                                 <div
@@ -93,7 +116,7 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
                                     key={exercise.id}>
                                     <h2>{exercise.name}</h2>
                                     <button onClick={() => handleAddExercise(exercise)}
-                                            className="bg-green-500 hover:bg-green-600  text-center py-2 px-4 rounded-3xl text-sm w-16">
+                                            className="bg-green-500 hover:bg-green-600 text-center py-2 px-4 rounded-3xl text-sm w-16">
                                         ADD
                                     </button>
                                 </div>

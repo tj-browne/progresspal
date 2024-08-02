@@ -9,9 +9,21 @@ from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCr
 
 @api_view(['GET'])
 def exercises_list(request):
+    search_query = request.GET.get('search', '')
+    filter_option = request.GET.get('filter', 'all')
+
     exercises = Exercise.objects.all()
+
+    if search_query:
+        exercises = exercises.filter(name__icontains=search_query)
+
+    if filter_option and filter_option != 'all':
+        exercises = exercises.filter(exercise_type=filter_option)
+
     serializer = ExerciseSerializer(exercises, many=True)
-    return Response(serializer.data)
+    return Response({
+        'exercises': serializer.data
+    })
 
 
 @api_view(['GET'])
