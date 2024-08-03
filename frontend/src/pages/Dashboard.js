@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import ChooseRoutineModal from "../components/ChooseRoutineModal";
@@ -8,7 +8,7 @@ const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const modalButtonRef = useRef(null);
 
-    const {workouts, workoutsLoading, workoutsError} = useFetchUserWorkouts();
+    const { workouts, workoutsLoading, workoutsError } = useFetchUserWorkouts();
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -52,10 +52,11 @@ const Dashboard = () => {
                                 </div>
                                 <div className="mt-2 text-left">
                                     <p className="text-white">Exercises:</p>
-                                    {workout.routine.exercises && workout.routine.exercises.length > 0 ? (
-                                        workout.routine.exercises.map((exerciseEntry, index) => (
-                                            <div key={exerciseEntry.exercise.id}>
+                                    {workout.routine?.routine_exercises?.length > 0 ? (
+                                        workout.routine.routine_exercises.map((exerciseEntry, index) => (
+                                            <div key={index}>
                                                 <p className="text-white">- {exerciseEntry.exercise.name || 'No exercise name'}</p>
+                                                <p className="text-white text-sm">Sets: {exerciseEntry.default_sets || 'N/A'}</p>
                                             </div>
                                         ))
                                     ) : (

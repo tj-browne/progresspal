@@ -12,4 +12,6 @@ urlpatterns = [
     path('api/routines/<int:routine_id>/', views.routine_retrieve_update_delete, name='routine_retrieve_update_delete'),
     path('api/users/<int:user_id>/routines/', views.user_routines_list, name='user_routines_list'),
     path('api/routines/exercises/', views.routine_exercises_list, name='routine_exercises_list'),
+
+    path('api/workouts/exercises/', views.workout_exercises_list, name='workout_exercises_list'),
 ]

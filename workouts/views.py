@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from workouts.models import Routine, Exercise, RoutineExercise, Workout
+from workouts.models import Routine, Exercise, RoutineExercise, Workout, WorkoutExercise
 from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCreateSerializer, WorkoutCreateSerializer, \
-    ExerciseSerializer, RoutineExerciseSerializer
+    ExerciseSerializer, RoutineExerciseSerializer, WorkoutExerciseSerializer
 
 
 @api_view(['GET'])
@@ -42,10 +42,20 @@ def routines_list_create(request):
 
     if request.method == 'POST':
         serializer = RoutineCreateSerializer(data=request.data)
+
         if serializer.is_valid():
-            routine = serializer.save()
-            return Response(RoutineSerializer(routine).data, status=201)
-        return Response(serializer.errors, status=400)
+            try:
+                routine = serializer.save()
+                return Response({
+                    'id': routine.id,
+                    'name': routine.name,
+                    'routine_exercises': RoutineExerciseSerializer(routine.routine_exercises.all(), many=True).data
+                }, status=201)
+            except Exception as e:
+                return Response({'error': 'An error occurred while saving the routine.'},
+                                status=500)
+        else:
+            return Response(serializer.errors, status=400)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -57,7 +67,7 @@ def routine_retrieve_update_delete(request, routine_id):
         return Response(serializer.data)
 
     if request.method == 'PUT':
-        serializer = RoutineCreateSerializer(routine, data=request.data)
+        serializer = RoutineSerializer(routine, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Routine updated successfully'}, status=200)
@@ -78,15 +88,15 @@ def user_routines_list(request, user_id):
 @api_view(['GET', 'POST'])
 def workouts_list_create(request):
     if request.method == 'GET':
-        workouts = Workout.objects.prefetch_related('workout_exercises__exercise').all()
+        workouts = Workout.objects.prefetch_related('workout_exercises__exercise', 'workout_exercises__sets').all()
         serializer = WorkoutSerializer(workouts, many=True)
         return Response(serializer.data)
 
     if request.method == 'POST':
         serializer = WorkoutCreateSerializer(data=request.data)
         if serializer.is_valid():
-            workout = serializer.save()
-            return Response(WorkoutSerializer(workout).data, status=201)
+            routine = serializer.save()
+            return Response(WorkoutSerializer(routine).data, status=201)
         return Response(serializer.errors, status=400)
 
 
@@ -121,3 +131,10 @@ def user_workouts_list(request, user_id):
         return Response(serializer.data)
     else:
         return Response({'error': 'No workouts found for this user.'}, status=404)
+
+
+@api_view(['GET'])
+def workout_exercises_list(request):
+    workout_exercises = WorkoutExercise.objects.prefetch_related('sets', 'exercise').all()
+    serializer = WorkoutExerciseSerializer(workout_exercises, many=True)
+    return Response(serializer.data)

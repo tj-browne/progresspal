@@ -5,8 +5,8 @@ import useDeleteRoutine from "../hooks/useDeleteRoutine";
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
 
 const RoutinesPage = () => {
-    const {routines, setRoutines, routinesLoading, routinesError, userLoading, userError} = useFetchUserRoutines();
-    const {deleteRoutine, error: deleteError} = useDeleteRoutine();
+    const { routines, setRoutines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
+    const { deleteRoutine, error: deleteError } = useDeleteRoutine();
 
     const handleDelete = async (routineId) => {
         const success = await deleteRoutine(routineId);
@@ -41,10 +41,8 @@ const RoutinesPage = () => {
                             className="flex flex-col justify-between border rounded w-6/12 bg-[#2C2C2C] p-4"
                             key={routine.id}
                         >
-                            {/*TODO: Add clickable link to start specific workout - with modal?*/}
                             <div className="flex justify-between">
                                 <h1 className="text-2xl">{routine.name}</h1>
-                                {/*TODO: Add Hamburger Menu - Edit/Delete*/}
                                 <button
                                     className="bg-red-800 p-1 rounded"
                                     onClick={() => handleDelete(routine.id)}
@@ -55,30 +53,29 @@ const RoutinesPage = () => {
                             <hr/>
                             <p className="text-xs">{new Date(routine.date_created).toLocaleDateString()}</p>
                             <div>
-                                {routine.exercises && routine.exercises.length > 0 ? (
+                                {routine.routine_exercises && routine.routine_exercises.length > 0 ? (
                                     <ul>
-                                        {routine.exercises.map((exerciseEntry, index) => {
+                                        {routine.routine_exercises.map((exerciseEntry, index) => {
                                             const {
                                                 exercise,
                                                 default_sets,
                                                 default_reps,
                                                 default_weight,
-                                                default_distance,
-                                                default_time,
-                                                default_calories_burned
                                             } = exerciseEntry;
                                             return (
-                                                <li className="" key={index}>
-                                                    {exercise.name}
-                                                    {default_sets !== null && <span> - Sets: {default_sets}</span>}
-                                                    {default_reps !== null && <span> - Reps: {default_reps}</span>}
-                                                    {default_weight !== null &&
-                                                        <span> - Weight: {default_weight}kg</span>}
-                                                    {default_distance !== null &&
-                                                        <span> - Distance: {default_distance}km</span>}
-                                                    {default_time !== null && <span> - Time: {default_time}</span>}
-                                                    {default_calories_burned !== null &&
-                                                        <span> - Calories Burned: {default_calories_burned}</span>}
+                                                <li className="mb-2" key={index}>
+                                                    <h3 className="text-lg font-semibold mb-1">{exercise.name}</h3>
+                                                    <div>
+                                                        {default_sets !== null && (
+                                                            <p>Sets: {default_sets}</p>
+                                                        )}
+                                                        {default_reps !== null && (
+                                                            <p>Reps: {default_reps}</p>
+                                                        )}
+                                                        {default_weight !== null && (
+                                                            <p>Weight: {default_weight} kg</p>
+                                                        )}
+                                                    </div>
                                                 </li>
                                             );
                                         })}

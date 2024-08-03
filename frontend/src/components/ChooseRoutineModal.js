@@ -1,16 +1,17 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 Modal.setAppElement('#root');
 
-const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
+const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
     const [selectedRoutineId, setSelectedRoutineId] = useState(null);
-    const {routines, routinesLoading, routinesError, userLoading, userError} = useFetchUserRoutines();
+    const { routines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
     const closeButtonRef = useRef(null);
     const navigate = useNavigate();
+    const userId = useFetchCurrentUser().userId;
 
     useEffect(() => {
         if (isOpen) {
@@ -20,10 +21,8 @@ const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
         }
     }, [isOpen]);
 
-    const userId = useFetchCurrentUser().userId;
     const handleRoutineSelection = async (routineId) => {
         setSelectedRoutineId(routineId);
-
 
         if (!userId) {
             console.error('User ID is not available');
@@ -32,7 +31,7 @@ const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
 
         const workoutData = {
             user: userId,
-            routine: routineId,
+            routine: routineId
         };
 
         try {

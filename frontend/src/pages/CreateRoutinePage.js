@@ -9,51 +9,69 @@ const CreateRoutinePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
+    const [error, setError] = useState('');
     const {userId} = useFetchCurrentUser();
     const navigate = useNavigate();
 
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     const handleAddExercise = (exercise) => {
-        setExercises([...exercises, {exercise, sets: []}]);
+        const defaultSets = 3;
+        setExercises([...exercises, {exercise, defaultSets, sets: [{reps: null, weight: null}]}]);
         setIsModalOpen(false);
     };
 
     const handleAddSet = (exerciseIndex) => {
         const newExercises = [...exercises];
-        newExercises[exerciseIndex].sets.push({reps: '', weight: ''});
+        newExercises[exerciseIndex].sets.push({reps: null, weight: null});
         setExercises(newExercises);
     };
 
     const handleRemoveSet = (exerciseIndex, setIndex) => {
         const newExercises = [...exercises];
         newExercises[exerciseIndex].sets.splice(setIndex, 1);
-        setExercises(newExercises);
-    };
-
-    const handleSetChange = (exerciseIndex, setIndex, field, value) => {
-        const newExercises = [...exercises];
-        newExercises[exerciseIndex].sets[setIndex][field] = value;
+        if (newExercises[exerciseIndex].sets.length === 0) {
+            newExercises.splice(exerciseIndex, 1);
+        }
         setExercises(newExercises);
     };
 
     const handleSaveRoutine = async () => {
         if (!userId) {
-            console.error('User ID is not available');
+            setError('User ID is not available');
+            return;
+        }
+
+        if (!workoutName.trim()) {
+            setError('Workout name is required');
+            return;
+        }
+
+        const isValid = exercises.every(ex =>
+            ex.exercise.name.trim()
+        );
+
+        if (!isValid) {
+            setError('Invalid data in workout routine');
             return;
         }
 
         const workoutData = {
-            name: workoutName,
-            exercises: exercises.map(ex => ex.exercise.name), // Send only the exercise names
             user: userId,
+            name: workoutName,
+            exercises: exercises.map(ex => ({
+                exercise: {
+                    id: ex.exercise.id,
+                    name: ex.exercise.name,
+                    exercise_type: ex.exercise.exercise_type,
+                },
+                default_sets: ex.defaultSets || 3
+            })),
         };
+
+
+        console.log('Sending data:', JSON.stringify(workoutData, null, 2));
 
         try {
             const response = await fetch('http://localhost:8000/api/routines/', {
@@ -68,14 +86,15 @@ const CreateRoutinePage = () => {
                 console.log('Routine saved successfully');
                 navigate('/dashboard');
             } else {
-                console.error('Failed to save workout');
                 const errorData = await response.json();
-                console.error('Error details:', errorData);
+                console.error('Failed to save workout:', errorData);
+                setError(`Failed to save workout: ${errorData.detail || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error:', error);
+            setError(`Error: ${error.message}`);
         }
     };
+
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
             <UserHeader/>
@@ -87,31 +106,23 @@ const CreateRoutinePage = () => {
                     onChange={(e) => setWorkoutName(e.target.value)}
                     placeholder="Routine Name"
                 />
+                {error && <div className="text-red-500 mb-4">{error}</div>}
                 <div className="w-8/12">
                     {exercises.map((exercise, exerciseIndex) => (
                         <div key={exerciseIndex} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C] p-4 rounded-lg">
                             <h2 className="text-xl mb-2">{exercise.exercise.name}</h2>
                             {exercise.sets.map((set, setIndex) => (
-                                <div className="flex items-center mb-2" key={setIndex}>
-                                    <div className="flex flex-col items-center mr-4">
-                                        <label className="mb-1">Reps</label>
-                                        <input
-                                            className="w-20 p-1 text-black"
-                                            value={set.reps}
-                                            onChange={(e) => handleSetChange(exerciseIndex, setIndex, 'reps', e.target.value)}
-                                            placeholder="Reps"
-                                        />
+                                <div className="flex items-center mb-2 p-2 rounded" key={setIndex}>
+                                    <span className="text-gray-300 mr-4">Set {setIndex + 1}</span>
+                                    <div className="flex flex-col mr-4">
+                                        <label className="mb-1 text-gray-300">Reps</label>
+                                        <span className="text-gray-300">{set.reps ?? 'Default'}</span>
                                     </div>
-                                    <div className="flex flex-col items-center mr-4">
-                                        <label className="mb-1">Weight (kg)</label>
-                                        <input
-                                            className="w-20 p-1 text-black"
-                                            value={set.weight}
-                                            onChange={(e) => handleSetChange(exerciseIndex, setIndex, 'weight', e.target.value)}
-                                            placeholder="Weight"
-                                        />
+                                    <div className="flex flex-col mr-4">
+                                        <label className="mb-1 text-gray-300">Weight (kg)</label>
+                                        <span className="text-gray-300">{set.weight ?? 'Default'}</span>
                                     </div>
-                                    <button className="bg-red-700 px-2 py-1 rounded"
+                                    <button className="bg-red-700 px-3 py-1 rounded text-white"
                                             onClick={() => handleRemoveSet(exerciseIndex, setIndex)}>
                                         - Remove Set
                                     </button>

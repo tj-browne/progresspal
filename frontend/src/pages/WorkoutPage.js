@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 import useFetchWorkout from "../hooks/useFetchWorkout";
 import useDeleteWorkout from "../hooks/useDeleteWorkout";
-import {useParams, useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const WorkoutPage = () => {
     const [exercises, setExercises] = useState([]);
@@ -18,9 +18,9 @@ const WorkoutPage = () => {
     useEffect(() => {
         if (data) {
             setWorkoutName(data.routine?.name || 'No Workout Name');
-            setExercises(data.exercises?.map(exercise => ({
-                ...exercise,
-                sets: exercise.sets || [{ reps: 1, weight: 0 }]
+            setExercises(data.workout_exercises?.map(workoutExercise => ({
+                ...workoutExercise.exercise,
+                sets: workoutExercise.sets || [{ reps: 1, weight: 0 }]
             })) || []);
         }
     }, [data]);
@@ -54,7 +54,10 @@ const WorkoutPage = () => {
         const workoutData = {
             user: userId,
             routine: data.routine.id,
-            exercises,
+            workout_exercises: exercises.map(exercise => ({
+                exercise: exercise.id,
+                sets: exercise.sets
+            })),
         };
 
         try {
@@ -103,21 +106,21 @@ const WorkoutPage = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader/>
+            <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <h1 className="text-3xl mb-2 w-8/12 p-2 text-center">{workoutName}</h1>
                 <div className="w-8/12">
-                    {data.routine?.exercises?.map((exercise, exerciseIndex) => (
+                    {data.workout_exercises?.map((workoutExercise, exerciseIndex) => (
                         <div key={exerciseIndex} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C] p-4 rounded-lg">
-                            <h2 className="text-xl mb-2">{exercise.exercise.name}</h2>
-                            {exercise.default_sets && Array.from({length: exercise.default_sets}).map((_, setIndex) => (
+                            <h2 className="text-xl mb-2">{workoutExercise.exercise.name}</h2>
+                            {workoutExercise.sets?.map((set, setIndex) => (
                                 <div className="flex items-center mb-2" key={setIndex}>
                                     <div className="flex flex-col items-center mr-4">
                                         <label className="mb-1">Reps</label>
                                         <input
                                             className="w-20 p-1 text-black"
                                             type="number"
-                                            value={exercises[exerciseIndex]?.sets[setIndex]?.reps || 0}
+                                            value={set.reps || 0}
                                             onChange={(e) => {
                                                 const updatedExercises = [...exercises];
                                                 updatedExercises[exerciseIndex].sets[setIndex].reps = Number(e.target.value);
@@ -131,7 +134,7 @@ const WorkoutPage = () => {
                                         <input
                                             className="w-20 p-1 text-black"
                                             type="number"
-                                            value={exercises[exerciseIndex]?.sets[setIndex]?.weight || 0}
+                                            value={set.weight || 0}
                                             onChange={(e) => {
                                                 const updatedExercises = [...exercises];
                                                 updatedExercises[exerciseIndex].sets[setIndex].weight = Number(e.target.value);
@@ -140,28 +143,8 @@ const WorkoutPage = () => {
                                             placeholder="Weight"
                                         />
                                     </div>
-                                    <button
-                                        className="bg-red-700 px-2 py-1 rounded"
-                                        onClick={() => {
-                                            const updatedExercises = [...exercises];
-                                            updatedExercises[exerciseIndex].sets.splice(setIndex, 1);
-                                            setExercises(updatedExercises);
-                                        }}
-                                    >
-                                        - Remove Set
-                                    </button>
                                 </div>
                             ))}
-                            <button
-                                className="bg-green-700 px-4 py-2 rounded"
-                                onClick={() => {
-                                    const updatedExercises = [...exercises];
-                                    updatedExercises[exerciseIndex].sets.push({reps: 1, weight: 0});
-                                    setExercises(updatedExercises);
-                                }}
-                            >
-                                + Add Set
-                            </button>
                         </div>
                     ))}
                 </div>
@@ -180,7 +163,7 @@ const WorkoutPage = () => {
                     </button>
                 </div>
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 };

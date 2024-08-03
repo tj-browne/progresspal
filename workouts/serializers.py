@@ -1,13 +1,17 @@
 from rest_framework import serializers
-
-from users.models import CustomUser
-from .models import Exercise, Routine, RoutineExercise, Workout, WorkoutExercise
+from .models import Exercise, Routine, RoutineExercise, Workout, WorkoutExercise, Set
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exercise
-        fields = ['id', 'name', 'instructions', 'muscle_worked', 'exercise_type']
+        fields = ['id', 'name', 'muscle_worked', 'exercise_type']
+
+
+class SetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Set
+        fields = ['id', 'reps', 'weight']
 
 
 class RoutineExerciseSerializer(serializers.ModelSerializer):
@@ -15,123 +19,116 @@ class RoutineExerciseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoutineExercise
-        fields = ['exercise', 'default_sets', 'default_reps', 'default_weight', 'default_distance', 'default_time',
-                  'default_calories_burned']
+        fields = ['exercise', 'default_sets']
 
 
 class RoutineSerializer(serializers.ModelSerializer):
-    exercises = RoutineExerciseSerializer(many=True, source='routine_exercises')
+    routine_exercises = RoutineExerciseSerializer(many=True)
+
+    class Meta:
+        model = Routine
+        fields = ['id', 'name', 'routine_exercises']
+
+
+class RoutineCreateSerializer(serializers.ModelSerializer):
+    exercises = RoutineExerciseSerializer(many=True)
 
     class Meta:
         model = Routine
         fields = ['id', 'user', 'name', 'date_created', 'exercises']
 
-
-class RoutineCreateSerializer(serializers.ModelSerializer):
-    exercises = serializers.ListField(child=serializers.CharField())
-
-    class Meta:
-        model = Routine
-        fields = ['user', 'name', 'exercises']
-
     def create(self, validated_data):
-        exercises_names = validated_data.pop('exercises')
+        exercises_data = validated_data.pop('exercises')
         routine = Routine.objects.create(**validated_data)
 
-        for exercise_name in exercises_names:
-            exercise, created = Exercise.objects.get_or_create(name=exercise_name)
-            RoutineExercise.objects.create(routine=routine, exercise=exercise)
+        for exercise_data in exercises_data:
+            exercise_info = exercise_data['exercise']
+            exercise_id = exercise_info.get('id')
+
+            if exercise_id:
+                exercise = Exercise.objects.get(id=exercise_id)
+            else:
+                exercise = Exercise.objects.create(**exercise_info)
+
+            RoutineExercise.objects.create(routine=routine, exercise=exercise,
+                                           default_sets=exercise_data['default_sets'])
 
         return routine
 
 
 class WorkoutExerciseSerializer(serializers.ModelSerializer):
     exercise = ExerciseSerializer()
+    sets = SetSerializer(many=True)
+    workout = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = WorkoutExercise
-        fields = ['exercise', 'sets', 'reps', 'weight', 'distance', 'time', 'calories_burned']
+        fields = ['workout', 'exercise', 'sets']
 
 
 class WorkoutSerializer(serializers.ModelSerializer):
     routine = RoutineSerializer()
+    workout_exercises = WorkoutExerciseSerializer(many=True, required=False)
 
     class Meta:
         model = Workout
-        fields = ['id', 'user', 'routine', 'date_started', 'date_completed']
+        fields = ['id', 'user', 'routine', 'date_started', 'date_completed', 'workout_exercises']
 
 
 class WorkoutCreateSerializer(serializers.ModelSerializer):
-    exercises = serializers.ListSerializer(child=serializers.DictField(), required=False)
-    user = serializers.IntegerField()
-    routine = serializers.IntegerField()
-
     class Meta:
         model = Workout
-        fields = ['user', 'routine', 'exercises']
+        fields = ['user', 'routine']
 
     def create(self, validated_data):
-        exercises_data = validated_data.pop('exercises', [])
-        user_id = validated_data.pop('user')
-        routine_id = validated_data.pop('routine')
-
-        user = CustomUser.objects.get(id=user_id)
-        routine = Routine.objects.get(id=routine_id)
+        routine = validated_data.pop('routine')
+        user = validated_data.pop('user')
 
         workout = Workout.objects.create(user=user, routine=routine)
 
-        if not exercises_data:
-            routine_exercises = RoutineExercise.objects.filter(routine=routine)
-            for routine_exercise in routine_exercises:
-                WorkoutExercise.objects.create(
-                    workout=workout,
-                    exercise=routine_exercise.exercise,
-                    sets=routine_exercise.default_sets,
-                    reps=routine_exercise.default_reps,
-                    weight=routine_exercise.default_weight,
-                    distance=routine_exercise.default_distance,
-                    time=routine_exercise.default_time,
-                    calories_burned=routine_exercise.default_calories_burned
+        routine_exercises = RoutineExercise.objects.filter(routine=routine)
+
+        for routine_exercise in routine_exercises:
+            exercise = routine_exercise.exercise
+            workout_exercise = WorkoutExercise.objects.create(
+                workout=workout,
+                exercise=exercise
+            )
+
+            for _ in range(routine_exercise.default_sets):
+                set_obj = Set.objects.create(
+                    exercise=exercise,
+                    reps=0,
+                    weight=0,
                 )
-        else:
-            for exercise_data in exercises_data:
-                WorkoutExercise.objects.create(
-                    workout=workout,
-                    exercise_id=exercise_data.get('exercise_id'),
-                    sets=exercise_data.get('sets'),
-                    reps=exercise_data.get('reps'),
-                    weight=exercise_data.get('weight'),
-                    distance=exercise_data.get('distance'),
-                    time=exercise_data.get('time'),
-                    calories_burned=exercise_data.get('calories_burned')
-                )
+                workout_exercise.sets.add(set_obj)
 
         return workout
 
     def update(self, instance, validated_data):
-        exercises_data = validated_data.pop('exercises', [])
-        user_id = validated_data.pop('user', None)
-        routine_id = validated_data.pop('routine', None)
-
-        if user_id is not None:
-            instance.user = CustomUser.objects.get(id=user_id)
-        if routine_id is not None:
-            instance.routine = Routine.objects.get(id=routine_id)
-
+        instance.user = validated_data.get('user', instance.user)
+        instance.routine = validated_data.get('routine', instance.routine)
         instance.save()
 
-        WorkoutExercise.objects.filter(workout=instance).delete()
+        instance.workout_exercises.all().delete()
 
-        for exercise_data in exercises_data:
-            WorkoutExercise.objects.create(
+        for exercise_data in validated_data.get('exercises', []):
+            exercise = Exercise.objects.get(id=exercise_data.get('exercise_id'))
+            sets_data = exercise_data.get('sets', [])
+            workout_exercise = WorkoutExercise.objects.create(
                 workout=instance,
-                exercise_id=exercise_data.get('exercise_id'),
-                sets=exercise_data.get('sets'),
-                reps=exercise_data.get('reps'),
-                weight=exercise_data.get('weight'),
-                distance=exercise_data.get('distance'),
-                time=exercise_data.get('time'),
-                calories_burned=exercise_data.get('calories_burned')
+                exercise=exercise
             )
+
+            for set_data in sets_data:
+                set_obj = Set.objects.create(
+                    exercise=exercise,
+                    reps=set_data.get('reps'),
+                    weight=set_data.get('weight'),
+                    distance=set_data.get('distance'),
+                    time=set_data.get('time'),
+                    calories_burned=set_data.get('calories_burned'),
+                )
+                workout_exercise.sets.add(set_obj)
 
         return instance

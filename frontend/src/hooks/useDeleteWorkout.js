@@ -7,7 +7,7 @@ const useDeleteWorkout = (workoutId) => {
     const deleteWorkout = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8000/api/workouts/${workoutId}`, {
+            const response = await fetch(`http://localhost:8000/api/workouts/${workoutId}/`, {
                 method: 'DELETE',
             });
 
