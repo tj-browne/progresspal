@@ -20,20 +20,19 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f'Failed to parse JSON: {e}'))
             return
 
-        # TODO: Filter data further (category - strength/cardio only) - remove instructions for now
-        for item in data:
+        filtered_data = [item for item in data if item.get('category') in ['strength', 'cardio']]
+
+        for item in filtered_data:
             name = item.get('name')
-            instructions = " ".join(item.get('instructions', []))
             primary_muscles = item.get('primaryMuscles', [])
             secondary_muscles = item.get('secondaryMuscles', [])
-            muscles = list(set(primary_muscles + secondary_muscles))
+            muscle_worked = list(set(primary_muscles + secondary_muscles))
             exercise_type = item.get('category')
 
             exercise, created = Exercise.objects.update_or_create(
                 name=name,
                 defaults={
-                    'instructions': instructions,
-                    'muscles': muscles,
+                    'muscle_worked': muscle_worked,
                     'exercise_type': exercise_type,
                 }
             )

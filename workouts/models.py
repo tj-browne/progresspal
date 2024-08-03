@@ -6,7 +6,6 @@ from users.models import CustomUser
 
 class Exercise(models.Model):
     name = models.CharField(max_length=100)
-    instructions = models.TextField(blank=True, null=True)
     muscle_worked = models.JSONField(default=list, blank=True, null=True)
     exercise_type = models.CharField(max_length=50, choices=[('strength', 'Strength'), ('cardio', 'Cardio')])
 
@@ -24,30 +23,30 @@ class Routine(models.Model):
         return self.name
 
 
-# RoutineExercise:
-# Represents the many-to-many relationship between Routine and Exercise.
-# It captures the default sets,reps, weight, etc., for each exercise in the routine.
-# TODO: Decide how defaults will be saved/represented - saved as last/ set in routines?
 class RoutineExercise(models.Model):
     routine = models.ForeignKey(Routine, on_delete=models.CASCADE, related_name='routine_exercises')
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     default_sets = models.IntegerField(blank=True, null=True, default=1)
-    default_reps = models.IntegerField(blank=True, null=True, default=0)
-    default_weight = models.FloatField(blank=True, null=True, default=0.0)
-    default_distance = models.FloatField(blank=True, null=True, default=0.0)
-    default_time = models.DurationField(blank=True, null=True)
-    default_calories_burned = models.IntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
         return f'{self.routine.name} - {self.exercise.name}'
 
 
-# Workout:
-# Represents a specific workout session initiated by a user based on a routine.
-# It keeps track of when the workout started and completed.
+class Set(models.Model):
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    reps = models.IntegerField(blank=True, null=True)
+    weight = models.FloatField(blank=True, null=True)
+    distance = models.FloatField(blank=True, null=True)
+    time = models.DurationField(blank=True, null=True)
+    calories_burned = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Set {self.id} - Exercise: {self.exercise.name}'
+
+
 class Workout(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    routine = models.ForeignKey(Routine, on_delete=models.SET_NULL, null=True, blank=True, related_name='routines')
+    routine = models.ForeignKey(Routine, on_delete=models.SET_NULL, null=True, blank=True, related_name='workouts')
     date_started = models.DateTimeField(auto_now_add=True)
     date_completed = models.DateTimeField(blank=True, null=True)
 
@@ -55,18 +54,10 @@ class Workout(models.Model):
         return f'{self.user.username} - {self.date_started.strftime("%Y-%m-%d %H:%M:%S")}'
 
 
-# WorkoutExercise:
-# Represents the actual performance of each exercise during a specific workout session.
-# Capturing details like sets, reps, weight, etc., specific to that session.
 class WorkoutExercise(models.Model):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name='workout_exercises')
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    sets = models.IntegerField(blank=True, null=True)
-    reps = models.IntegerField(blank=True, null=True)
-    weight = models.FloatField(blank=True, null=True)
-    distance = models.FloatField(blank=True, null=True)
-    time = models.DurationField(blank=True, null=True)
-    calories_burned = models.IntegerField(blank=True, null=True)
+    sets = models.ManyToManyField(Set, related_name='workout_exercises')
 
     def __str__(self):
         return f'{self.workout.user.username} - {self.exercise.name} - {self.workout.date_started.strftime("%Y-%m-%d %H:%M:%S")}'

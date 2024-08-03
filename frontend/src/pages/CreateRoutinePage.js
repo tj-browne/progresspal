@@ -51,7 +51,7 @@ const CreateRoutinePage = () => {
 
         const workoutData = {
             name: workoutName,
-            exercises: exercises.map(ex => ex.exercise.name), // Send only the exercise names
+            exercises: exercises.map(ex => ex.exercise.name),
             user: userId,
         };
 
