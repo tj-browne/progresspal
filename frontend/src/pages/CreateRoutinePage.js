@@ -1,30 +1,30 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CreateRoutinePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
     const [error, setError] = useState('');
-    const {userId} = useFetchCurrentUser();
+    const { userId } = useFetchCurrentUser();
     const navigate = useNavigate();
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
     const handleAddExercise = (exercise) => {
-        const defaultSets = 3;
-        setExercises([...exercises, {exercise, defaultSets, sets: [{reps: null, weight: null}]}]);
+        setExercises([...exercises, { exercise, defaultSets: 1, sets: [{ reps: null, weight: null }] }]);
         setIsModalOpen(false);
     };
 
     const handleAddSet = (exerciseIndex) => {
         const newExercises = [...exercises];
-        newExercises[exerciseIndex].sets.push({reps: null, weight: null});
+        newExercises[exerciseIndex].sets.push({ reps: null, weight: null });
+        newExercises[exerciseIndex].defaultSets = newExercises[exerciseIndex].sets.length;
         setExercises(newExercises);
     };
 
@@ -33,6 +33,8 @@ const CreateRoutinePage = () => {
         newExercises[exerciseIndex].sets.splice(setIndex, 1);
         if (newExercises[exerciseIndex].sets.length === 0) {
             newExercises.splice(exerciseIndex, 1);
+        } else {
+            newExercises[exerciseIndex].defaultSets = newExercises[exerciseIndex].sets.length;
         }
         setExercises(newExercises);
     };
@@ -66,10 +68,9 @@ const CreateRoutinePage = () => {
                     name: ex.exercise.name,
                     exercise_type: ex.exercise.exercise_type,
                 },
-                default_sets: ex.defaultSets || 3
+                default_sets: ex.defaultSets
             })),
         };
-
 
         console.log('Sending data:', JSON.stringify(workoutData, null, 2));
 
@@ -97,7 +98,7 @@ const CreateRoutinePage = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader/>
+            <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <input
                     type="text"
@@ -116,11 +117,11 @@ const CreateRoutinePage = () => {
                                     <span className="text-gray-300 mr-4">Set {setIndex + 1}</span>
                                     <div className="flex flex-col mr-4">
                                         <label className="mb-1 text-gray-300">Reps</label>
-                                        <span className="text-gray-300">{set.reps ?? 'Default'}</span>
+                                        <span className="text-gray-300">{set.reps ?? 'N/A'}</span>
                                     </div>
                                     <div className="flex flex-col mr-4">
                                         <label className="mb-1 text-gray-300">Weight (kg)</label>
-                                        <span className="text-gray-300">{set.weight ?? 'Default'}</span>
+                                        <span className="text-gray-300">{set.weight ?? 'N/A'}</span>
                                     </div>
                                     <button className="bg-red-700 px-3 py-1 rounded text-white"
                                             onClick={() => handleRemoveSet(exerciseIndex, setIndex)}>
@@ -150,8 +151,8 @@ const CreateRoutinePage = () => {
                     </button>
                 </div>
             </div>
-            <Footer/>
-            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise}/>
+            <Footer />
+            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise} />
         </div>
     );
 };

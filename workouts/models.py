@@ -26,7 +26,7 @@ class Routine(models.Model):
 class RoutineExercise(models.Model):
     routine = models.ForeignKey(Routine, on_delete=models.CASCADE, related_name='routine_exercises')
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    default_sets = models.IntegerField(default=3)
+    default_sets = models.IntegerField(default=1)
 
     def __str__(self):
         return f'{self.routine.name} - {self.exercise.name}'
