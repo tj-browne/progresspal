@@ -17,11 +17,17 @@ const WorkoutPage = () => {
 
     useEffect(() => {
         if (data) {
+            const routineExercisesMap = new Map(
+                data.routine?.routine_exercises.map(re => [re.exercise.id, re.exercise]) || []
+            );
+
+            const updatedExercises = data.workout_exercises.map(we => ({
+                ...routineExercisesMap.get(we.exercise),
+                sets: we.sets || [{reps: 1, weight: 0}]
+            }));
+
             setWorkoutName(data.routine?.name || 'No Workout Name');
-            setExercises(data.workout_exercises?.map(workoutExercise => ({
-                ...workoutExercise.exercise,
-                sets: workoutExercise.sets || [{reps: 1, weight: 0}]
-            })) || []);
+            setExercises(updatedExercises);
         }
     }, [data]);
 
@@ -35,20 +41,15 @@ const WorkoutPage = () => {
             user: userId,
             routine: data.routine.id,
             workout_exercises: exercises.map(exercise => ({
-                exercise: {
-                    id: exercise.id,
-                    name: exercise.name,
-                    exercise_type: exercise.exercise_type
-                },
+                exercise: exercise.id,
                 sets: exercise.sets.map(set => ({
                     id: set.id,
                     reps: set.reps,
                     weight: set.weight
                 }))
-            })),
+            }))
         };
 
-        console.log(workoutData);
         try {
             const response = await fetch(`http://localhost:8000/api/workouts/${workoutId}/`, {
                 method: 'PUT',
@@ -62,12 +63,13 @@ const WorkoutPage = () => {
                 console.log('Workout updated successfully');
                 navigate('/');
             } else {
-                console.error('Failed to save workout');
                 const errorData = await response.json();
-                console.error('Error details:', errorData);
+                console.error('Failed to save workout:', errorData);
+                alert(`Error: ${errorData.detail || 'An unknown error occurred.'}`);
             }
         } catch (error) {
             console.error('Error:', error);
+            alert('An error occurred while saving the workout.');
         }
     };
 
@@ -99,10 +101,10 @@ const WorkoutPage = () => {
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <h1 className="text-3xl mb-2 w-8/12 p-2 text-center">{workoutName}</h1>
                 <div className="w-8/12">
-                    {data.workout_exercises?.map((workoutExercise, exerciseIndex) => (
+                    {exercises.map((exercise, exerciseIndex) => (
                         <div key={exerciseIndex} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C] p-4 rounded-lg">
-                            <h2 className="text-xl mb-2">{workoutExercise.exercise.name}</h2>
-                            {workoutExercise.sets?.map((set, setIndex) => (
+                            <h2 className="text-xl mb-2">{exercise.name}</h2>
+                            {exercise.sets?.map((set, setIndex) => (
                                 <div className="flex items-center mb-2" key={setIndex}>
                                     <div className="flex flex-col items-center mr-4">
                                         <label className="mb-1">Reps</label>

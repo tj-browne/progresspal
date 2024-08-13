@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef} from 'react';
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import ChooseRoutineModal from "../components/ChooseRoutineModal";
@@ -8,7 +8,7 @@ const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const modalButtonRef = useRef(null);
 
-    const { workouts, workoutsLoading, workoutsError } = useFetchUserWorkouts();
+    const {workouts, workoutsLoading, workoutsError} = useFetchUserWorkouts();
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -19,6 +19,17 @@ const Dashboard = () => {
     };
 
     const reversedWorkouts = workouts.slice().reverse().slice(0, 7);
+
+    const getExerciseDetails = (workout) => {
+        const routineExercisesMap = new Map(
+            workout.routine?.routine_exercises.map(re => [re.exercise.id, re.exercise]) || []
+        );
+
+        return workout.workout_exercises.map(we => ({
+            ...routineExercisesMap.get(we.exercise),
+            sets: we.sets || [{reps: 1, weight: 0}]
+        }));
+    };
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
@@ -38,43 +49,48 @@ const Dashboard = () => {
                     ) : workoutsError ? (
                         <p className="text-red-500">Error: {workoutsError}</p>
                     ) : reversedWorkouts.length > 0 ? (
-                        reversedWorkouts.map((workout) => (
-                            <div key={workout.id} className="flex flex-col border rounded mb-4 p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-left text-white text-xl font-bold">
-                                            {workout.routine?.name || 'No routine name'}
-                                        </h3>
-                                        <h3 className="text-white text-xs">
-                                            {new Date(workout.date_started).toLocaleDateString()}
-                                        </h3>
+                        reversedWorkouts.map((workout) => {
+                            const exercises = getExerciseDetails(workout);
+
+                            return (
+                                <div key={workout.id} className="flex flex-col border rounded mb-4 p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-left text-white text-xl font-bold">
+                                                {workout.routine?.name || 'No routine name'}
+                                            </h3>
+                                            <h3 className="text-white text-xs">
+                                                {new Date(workout.date_started).toLocaleDateString()}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 text-left">
+                                        <p className="text-white">Exercises:</p>
+                                        {exercises.length > 0 ? (
+                                            exercises.map((exercise, index) => (
+                                                <div key={index}>
+                                                    <p className="text-white">- {exercise.name || 'No exercise name'}</p>
+                                                    {exercise.sets.length > 0 ? (
+                                                        exercise.sets.map((set, setIndex) => (
+                                                            <div key={setIndex} className="ml-4">
+                                                                <p className="text-white text-sm">
+                                                                    Set {setIndex + 1}: Reps: {set.reps},
+                                                                    Weight: {set.weight}
+                                                                </p>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <p className="text-white text-sm">No sets available.</p>
+                                                    )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-white">No exercises listed.</p>
+                                        )}
                                     </div>
                                 </div>
-                                <div className="mt-2 text-left">
-                                    <p className="text-white">Exercises:</p>
-                                    {workout.workout_exercises?.length > 0 ? (
-                                        workout.workout_exercises.map((workoutExercise, index) => (
-                                            <div key={index}>
-                                                <p className="text-white">- {workoutExercise.exercise.name || 'No exercise name'}</p>
-                                                {workoutExercise.sets.length > 0 ? (
-                                                    workoutExercise.sets.map((set, setIndex) => (
-                                                        <div key={setIndex} className="ml-4">
-                                                            <p className="text-white text-sm">
-                                                                Set {setIndex + 1}: Reps: {set.reps}, Weight: {set.weight}
-                                                            </p>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <p className="text-white text-sm">No sets available.</p>
-                                                )}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-white">No exercises listed.</p>
-                                    )}
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
                     ) : (
                         <p className="text-white">No workout history available.</p>
                     )}

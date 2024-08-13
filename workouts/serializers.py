@@ -113,3 +113,42 @@ class WorkoutCreateSerializer(serializers.ModelSerializer):
 
         print(f'Finished creating workout with ID: {workout.id}')
         return workout
+
+
+class WorkoutUpdateSerializer(serializers.ModelSerializer):
+    workout_exercises = WorkoutExerciseSerializer(many=True)
+
+    class Meta:
+        model = Workout
+        fields = ['user', 'routine', 'workout_exercises']
+
+    def update(self, instance, validated_data):
+        instance.user = validated_data.get('user', instance.user)
+        instance.routine = validated_data.get('routine', instance.routine)
+        instance.save()
+
+        workout_exercises_data = validated_data.get('workout_exercises', [])
+        print("Workout exercises data ", workout_exercises_data)
+        for exercise_data in workout_exercises_data:
+            exercise_id = exercise_data.get('exercise')
+
+            if isinstance(exercise_id, int):
+                try:
+                    exercise = Exercise.objects.get(id=exercise_id)
+                except Exercise.DoesNotExist:
+                    continue
+
+                workout_exercise, created = WorkoutExercise.objects.update_or_create(
+                    workout=instance,
+                    exercise=exercise,
+                    defaults={'sets': exercise_data.get('sets', [])}
+                )
+
+
+                # for set_data in exercise_data.get('sets', []):
+                #     Set.objects.update_or_create(
+                #         workout_exercise=workout_exercise,
+                #         defaults=set_data
+                #     )
+
+        return instance
