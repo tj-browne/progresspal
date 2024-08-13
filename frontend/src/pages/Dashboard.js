@@ -52,11 +52,21 @@ const Dashboard = () => {
                                 </div>
                                 <div className="mt-2 text-left">
                                     <p className="text-white">Exercises:</p>
-                                    {workout.routine?.routine_exercises?.length > 0 ? (
-                                        workout.routine.routine_exercises.map((exerciseEntry, index) => (
+                                    {workout.workout_exercises?.length > 0 ? (
+                                        workout.workout_exercises.map((workoutExercise, index) => (
                                             <div key={index}>
-                                                <p className="text-white">- {exerciseEntry.exercise.name || 'No exercise name'}</p>
-                                                <p className="text-white text-sm">Sets: {exerciseEntry.default_sets || 'N/A'}</p>
+                                                <p className="text-white">- {workoutExercise.exercise.name || 'No exercise name'}</p>
+                                                {workoutExercise.sets.length > 0 ? (
+                                                    workoutExercise.sets.map((set, setIndex) => (
+                                                        <div key={setIndex} className="ml-4">
+                                                            <p className="text-white text-sm">
+                                                                Set {setIndex + 1}: Reps: {set.reps}, Weight: {set.weight}
+                                                            </p>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className="text-white text-sm">No sets available.</p>
+                                                )}
                                             </div>
                                         ))
                                     ) : (

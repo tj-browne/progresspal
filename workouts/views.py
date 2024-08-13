@@ -102,14 +102,18 @@ def workouts_list_create(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def workout_retrieve_update_delete(request, workout_id):
-    workout = get_object_or_404(Workout, id=workout_id)
+    workout = get_object_or_404(Workout.objects.prefetch_related(
+        'workout_exercises__exercise', 'workout_exercises__sets'
+    ), id=workout_id)
+
+    print(f'Incoming data: {request.data}')
 
     if request.method == 'GET':
         serializer = WorkoutSerializer(workout)
         return Response(serializer.data)
 
     if request.method == 'PUT':
-        serializer = WorkoutCreateSerializer(workout, data=request.data)
+        serializer = WorkoutUpdateSerializer(workout, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Workout updated successfully'}, status=200)

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Exercise, Routine, RoutineExercise, Workout, WorkoutExercise, Set
 
 
@@ -57,9 +58,7 @@ class RoutineCreateSerializer(serializers.ModelSerializer):
 
 
 class WorkoutExerciseSerializer(serializers.ModelSerializer):
-    exercise = ExerciseSerializer()
     sets = SetSerializer(many=True)
-    workout = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = WorkoutExercise
@@ -76,59 +75,41 @@ class WorkoutSerializer(serializers.ModelSerializer):
 
 
 class WorkoutCreateSerializer(serializers.ModelSerializer):
+    workout_exercises = WorkoutExerciseSerializer(many=True, required=False)
+
     class Meta:
         model = Workout
-        fields = ['user', 'routine']
+        fields = ['id', 'user', 'routine', 'workout_exercises']
 
     def create(self, validated_data):
         routine = validated_data.pop('routine')
         user = validated_data.pop('user')
 
+        print(f'Creating workout for user: {user.id}, using routine: {routine.id}')
+
         workout = Workout.objects.create(user=user, routine=routine)
+        print(f'Workout created with ID: {workout.id}')
 
         routine_exercises = RoutineExercise.objects.filter(routine=routine)
+        print(f'Routine exercises found: {routine_exercises.count()}')
 
         for routine_exercise in routine_exercises:
             exercise = routine_exercise.exercise
+            print(f'Adding exercise: {exercise.name} (ID: {exercise.id}) to workout')
+
             workout_exercise = WorkoutExercise.objects.create(
                 workout=workout,
                 exercise=exercise
             )
 
-            for _ in range(routine_exercise.default_sets):
+            for i in range(routine_exercise.default_sets):
                 set_obj = Set.objects.create(
                     exercise=exercise,
-                    reps=0,
-                    weight=0,
+                    reps=1,
+                    weight=1,
                 )
                 workout_exercise.sets.add(set_obj)
+                print(f'Created set {i + 1} for exercise: {exercise.name} with reps: 1 and weight: 1')
 
+        print(f'Finished creating workout with ID: {workout.id}')
         return workout
-
-    def update(self, instance, validated_data):
-        instance.user = validated_data.get('user', instance.user)
-        instance.routine = validated_data.get('routine', instance.routine)
-        instance.save()
-
-        instance.workout_exercises.all().delete()
-
-        for exercise_data in validated_data.get('exercises', []):
-            exercise = Exercise.objects.get(id=exercise_data.get('exercise_id'))
-            sets_data = exercise_data.get('sets', [])
-            workout_exercise = WorkoutExercise.objects.create(
-                workout=instance,
-                exercise=exercise
-            )
-
-            for set_data in sets_data:
-                set_obj = Set.objects.create(
-                    exercise=exercise,
-                    reps=set_data.get('reps'),
-                    weight=set_data.get('weight'),
-                    distance=set_data.get('distance'),
-                    time=set_data.get('time'),
-                    calories_burned=set_data.get('calories_burned'),
-                )
-                workout_exercise.sets.add(set_obj)
-
-        return instance
