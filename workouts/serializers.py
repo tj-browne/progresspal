@@ -14,6 +14,17 @@ class SetSerializer(serializers.ModelSerializer):
         model = Set
         fields = ['id', 'reps', 'weight']
 
+    def to_internal_value(self, data):
+        internal_data = super().to_internal_value(data)
+        if 'id' not in internal_data:
+            internal_data['id'] = None
+        return internal_data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['id'] = instance.id
+        return representation
+
 
 class RoutineExerciseSerializer(serializers.ModelSerializer):
     exercise = ExerciseSerializer()
@@ -63,6 +74,28 @@ class WorkoutExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkoutExercise
         fields = ['workout', 'exercise', 'sets']
+
+    def to_internal_value(self, data):
+        internal_data = super().to_internal_value(data)
+        exercise_data = data.get('exercise')
+
+        if isinstance(exercise_data, dict):
+            exercise_id = exercise_data.get('id')
+            if exercise_id:
+                internal_data['exercise'] = exercise_id
+            else:
+                raise serializers.ValidationError("Exercise ID is required.")
+        elif isinstance(exercise_data, int):
+            internal_data['exercise'] = exercise_data
+        else:
+            raise serializers.ValidationError("Invalid exercise data format.")
+        return internal_data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['exercise'] = instance.exercise.id
+        representation['sets'] = SetSerializer(instance.sets.all(), many=True).data
+        return representation
 
 
 class WorkoutSerializer(serializers.ModelSerializer):
@@ -116,7 +149,7 @@ class WorkoutCreateSerializer(serializers.ModelSerializer):
 
 
 class WorkoutUpdateSerializer(serializers.ModelSerializer):
-    workout_exercises = WorkoutExerciseSerializer(many=True)
+    workout_exercises = WorkoutExerciseSerializer(many=True, required=False)
 
     class Meta:
         model = Workout
@@ -128,7 +161,9 @@ class WorkoutUpdateSerializer(serializers.ModelSerializer):
         instance.save()
 
         workout_exercises_data = validated_data.get('workout_exercises', [])
-        print("Workout exercises data ", workout_exercises_data)
+
+        existing_workout_exercises = {we.exercise.id: we for we in WorkoutExercise.objects.filter(workout=instance)}
+
         for exercise_data in workout_exercises_data:
             exercise_id = exercise_data.get('exercise')
 
@@ -136,19 +171,40 @@ class WorkoutUpdateSerializer(serializers.ModelSerializer):
                 try:
                     exercise = Exercise.objects.get(id=exercise_id)
                 except Exercise.DoesNotExist:
-                    continue
+                    raise serializers.ValidationError(f"Exercise with ID {exercise_id} does not exist.")
 
                 workout_exercise, created = WorkoutExercise.objects.update_or_create(
                     workout=instance,
-                    exercise=exercise,
-                    defaults={'sets': exercise_data.get('sets', [])}
+                    exercise=exercise
                 )
 
+                sets_data = exercise_data.get('sets', [])
+                existing_sets = workout_exercise.sets.all()
+                existing_sets_dict = {s.id: s for s in existing_sets}
 
-                # for set_data in exercise_data.get('sets', []):
-                #     Set.objects.update_or_create(
-                #         workout_exercise=workout_exercise,
-                #         defaults=set_data
-                #     )
+                for set_data in sets_data:
+                    set_id = set_data.get('id')
+                    reps = set_data.get('reps')
+                    weight = set_data.get('weight')
+
+                    if set_id:
+                        if set_id in existing_sets_dict:
+                            existing_set = existing_sets_dict[set_id]
+                            existing_set.reps = reps
+                            existing_set.weight = weight
+                            existing_set.save()
+                            del existing_sets_dict[set_id]
+                        else:
+                            print(f"Set ID={set_id} not found. Skipping update.")
+                    else:
+                        new_set = Set.objects.create(
+                            exercise=exercise,
+                            reps=reps,
+                            weight=weight
+                        )
+                        workout_exercise.sets.add(new_set)
+
+                for outdated_set in existing_sets_dict.values():
+                    outdated_set.delete()
 
         return instance

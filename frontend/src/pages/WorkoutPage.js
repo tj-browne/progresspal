@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 import useFetchWorkout from "../hooks/useFetchWorkout";
 import useDeleteWorkout from "../hooks/useDeleteWorkout";
-import {useParams, useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const WorkoutPage = () => {
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
-    const {workoutId} = useParams();
-    const {userId, loading: userLoading, error: userError} = useFetchCurrentUser();
-    const {data, loading: workoutLoading, error: workoutError} = useFetchWorkout(workoutId);
-    const {deleteWorkout, loading: deleteLoading, error: deleteError} = useDeleteWorkout(workoutId);
+    const { workoutId } = useParams();
+    const { userId, loading: userLoading, error: userError } = useFetchCurrentUser();
+    const { data, loading: workoutLoading, error: workoutError } = useFetchWorkout(workoutId);
+    const { deleteWorkout, loading: deleteLoading, error: deleteError } = useDeleteWorkout(workoutId);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,13 +23,33 @@ const WorkoutPage = () => {
 
             const updatedExercises = data.workout_exercises.map(we => ({
                 ...routineExercisesMap.get(we.exercise),
-                sets: we.sets || [{reps: 1, weight: 0}]
+                sets: we.sets || [{ reps: 1, weight: 0 }]
             }));
 
             setWorkoutName(data.routine?.name || 'No Workout Name');
             setExercises(updatedExercises);
         }
     }, [data]);
+
+    // Handle page unload and navigation
+    useEffect(() => {
+        const handleBeforeUnload = async (event) => {
+            event.preventDefault();
+            event.returnValue = '';
+
+            try {
+                await deleteWorkout();
+            } catch (error) {
+                console.error('Failed to delete workout:', deleteError);
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [deleteWorkout, deleteError]);
 
     const handleSaveWorkout = async () => {
         if (!userId) {
@@ -97,7 +117,7 @@ const WorkoutPage = () => {
 
     return (
         <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader/>
+            <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <h1 className="text-3xl mb-2 w-8/12 p-2 text-center">{workoutName}</h1>
                 <div className="w-8/12">
@@ -154,7 +174,7 @@ const WorkoutPage = () => {
                     </button>
                 </div>
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 };

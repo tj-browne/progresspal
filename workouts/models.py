@@ -33,7 +33,7 @@ class RoutineExercise(models.Model):
 
 
 class Set(models.Model):
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, null=True)
     reps = models.IntegerField(blank=True, null=True, default=0)
     weight = models.FloatField(blank=True, null=True, default=0)
 
