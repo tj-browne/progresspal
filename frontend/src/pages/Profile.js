@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { getCsrfToken } from "../services/csrfService";
 import useDeleteUser from "../hooks/useDeleteUser";
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
     const [profileData, setProfileData] = useState(null);
@@ -54,7 +55,7 @@ const Profile = () => {
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
-            <UserHeader/>
+            <UserHeader />
 
             <div className="flex flex-col items-center pt-32 px-6 py-8 flex-grow">
                 <div className="w-full max-w-md p-4 rounded-lg bg-gray-800">
@@ -70,13 +71,13 @@ const Profile = () => {
                         <p className="text-white">{profileData.email}</p>
                     </div>
 
-                    <hr className="my-4 border-gray-600"/>
+                    <hr className="my-4 border-gray-600" />
 
                     <h2 className="text-3xl text-white underline mb-4">Settings</h2>
 
                     <div className="flex flex-col space-y-2 mb-6">
                         <div>
-                            <a href="/password-reset-request" className="text-white underline">Forgot Password?</a>
+                            <Link to="/password-reset-request" className="text-white underline">Forgot Password?</Link>
                         </div>
                     </div>
 
@@ -89,7 +90,7 @@ const Profile = () => {
                 </div>
             </div>
 
-            <Footer/>
+            <Footer />
         </div>
     );
 };

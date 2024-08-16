@@ -47,13 +47,13 @@ const UserHeader = ({ user }) => {
     return (
         <div className="relative">
             <div className="absolute top-6 left-6 p-2">
-                <a href='/dashboard' className="inline-block">
+                <Link to='/dashboard' className="inline-block">
                     <img
                         src={logo}
                         className="w-16 filter brightness-100 hue-rotate-180"
                         alt="ProgressPal logo"
                     />
-                </a>
+                </Link>
             </div>
             <div className="absolute top-6 right-6" ref={dropdownRef}>
                 <img

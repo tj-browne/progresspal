@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
-import {fetchCsrfToken, getCsrfToken} from "../services/csrfService";
+import { useNavigate } from "react-router-dom";
+import { getCsrfToken } from "../services/csrfService";
 import SignupForm from "../components/SignupForm";
 import Header from "../components/Header";
+import { Link } from 'react-router-dom'; // Import Link
 
 const Signup = () => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -15,7 +16,7 @@ const Signup = () => {
     });
 
     const handleChange = (e) => {
-        setFormData({...formData, [e.target.name]: e.target.value});
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
@@ -37,8 +38,8 @@ const Signup = () => {
     };
 
     return (
-        <div className="bg-zinc-900">
-            <Header/>
+        <div className="bg-gray-900">
+            <Header />
             <SignupForm
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}

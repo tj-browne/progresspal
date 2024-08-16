@@ -12,7 +12,7 @@ const WorkoutPage = () => {
     const { workoutId } = useParams();
     const { userId, loading: userLoading, error: userError } = useFetchCurrentUser();
     const { data, loading: workoutLoading, error: workoutError } = useFetchWorkout(workoutId);
-    const { deleteWorkout, loading: deleteLoading, error: deleteError } = useDeleteWorkout(workoutId);
+    const { deleteWorkout, loading: deleteLoading, error: deleteError } = useDeleteWorkout();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,7 +38,10 @@ const WorkoutPage = () => {
             event.returnValue = '';
 
             try {
-                await deleteWorkout();
+                // Ensure workoutId is available
+                if (workoutId) {
+                    await deleteWorkout(workoutId);
+                }
             } catch (error) {
                 console.error('Failed to delete workout:', deleteError);
             }
@@ -49,7 +52,7 @@ const WorkoutPage = () => {
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [deleteWorkout, deleteError]);
+    }, [deleteWorkout, deleteError, workoutId]);
 
     const handleSaveWorkout = async () => {
         if (!userId) {
@@ -95,9 +98,12 @@ const WorkoutPage = () => {
 
     const handleDiscardWorkout = async () => {
         try {
-            await deleteWorkout();
-            navigate('/');
-            console.log('Workout discarded.');
+            // Ensure workoutId is available
+            if (workoutId) {
+                await deleteWorkout(workoutId);
+                navigate('/');
+                console.log('Workout discarded.');
+            }
         } catch (error) {
             console.error('Failed to delete workout:', deleteError);
         }
@@ -116,7 +122,7 @@ const WorkoutPage = () => {
     }
 
     return (
-        <div className="bg-zinc-900 min-h-screen flex flex-col">
+        <div className="bg-gray-900 min-h-screen flex flex-col">
             <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <h1 className="text-3xl mb-2 w-8/12 p-2 text-center">{workoutName}</h1>

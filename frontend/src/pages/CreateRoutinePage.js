@@ -97,12 +97,12 @@ const CreateRoutinePage = () => {
     };
 
     return (
-        <div className="bg-zinc-900 min-h-screen flex flex-col">
+        <div className="bg-gray-900 min-h-screen flex flex-col">
             <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <input
                     type="text"
-                    className="text-3xl text-white bg-zinc-900 border-b border-b-white mb-2 w-8/12 p-2"
+                    className="text-3xl text-white bg-gray-900 border-b border-b-white mb-2 w-8/12 p-2"
                     value={workoutName}
                     onChange={(e) => setWorkoutName(e.target.value)}
                     placeholder="Routine Name"

@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import useDeleteRoutine from "../hooks/useDeleteRoutine";
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
 import HamburgerMenu from "../components/HamburgerMenu";
+import { Link } from 'react-router-dom';
 
 const RoutinesPage = () => {
     const { routines, setRoutines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
@@ -32,11 +33,12 @@ const RoutinesPage = () => {
         <div className="bg-gray-900 min-h-screen flex flex-col">
             <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
-                <a href="/create-routine"
-                   className="bg-green-500 hover:bg-green-600 py-2 px-4 text-center rounded-3xl mb-2 text-xl text-white w-52 transition duration-300 ease-in-out"
+                <Link
+                    to="/create-routine"
+                    className="bg-green-500 hover:bg-green-600 py-2 px-4 text-center rounded-3xl mb-2 text-xl text-white w-52 transition duration-300 ease-in-out"
                 >
                     Create New Routine
-                </a>
+                </Link>
                 {routines.length > 0 ? (
                     routines.map((routine) => (
                         <div

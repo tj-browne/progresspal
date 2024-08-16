@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import axios from "../services/axiosConfig";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
-import {fetchCsrfToken, getCsrfToken} from "../services/csrfService";
+import { getCsrfToken } from "../services/csrfService";
 import Header from "../components/Header";
+import { Link } from 'react-router-dom'; // Import Link
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -15,10 +16,9 @@ const Login = () => {
     });
 
     const handleChange = (e) => {
-        const {name, type, checked, value} = e.target;
-        setFormData({...formData, [name]: type === 'checkbox' ? checked : value});
+        const { name, type, checked, value } = e.target;
+        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -39,8 +39,8 @@ const Login = () => {
     };
 
     return (
-        <div className="bg-zinc-900 min-h-screen flex items-center justify-center">
-            <Header/>
+        <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+            <Header />
             <LoginForm
                 formData={formData}
                 handleChange={handleChange}
@@ -50,6 +50,5 @@ const Login = () => {
         </div>
     );
 };
-
 
 export default Login;

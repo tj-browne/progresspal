@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React, { useState, useRef } from 'react';
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
@@ -14,7 +15,6 @@ const Dashboard = () => {
     const { deleteWorkout, error: deleteError } = useDeleteWorkout();
 
     const handleDelete = async (workoutId) => {
-        console.log("Attempting to delete workout ID: ", workoutId);
         const success = await deleteWorkout(workoutId);
         if (success) {
             setWorkouts((prevWorkouts) => prevWorkouts.filter((workout) => workout.id !== workoutId));
@@ -52,23 +52,25 @@ const Dashboard = () => {
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
-            <UserHeader />
+            <UserHeader/>
             <div className="flex flex-col items-center text-center flex-grow">
                 <button
                     onClick={openModal}
                     ref={modalButtonRef}
-                    className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full mt-16 mb-4 text-2xl w-52 transition duration-300 ease-in-out"
+                    className="bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 text-white py-3 px-6 rounded-full mt-16 mb-4 text-2xl w-52 transition transform duration-300 ease-in-out"
                 >
                     Start Workout
                 </button>
                 <h3 className="text-left text-white underline mb-4 text-xl font-semibold">History</h3>
                 <div className="mb-32">
                     {reversedWorkouts.length > 0 ? (
-                        reversedWorkouts.map((workout, index) => {
-
+                        reversedWorkouts.map((workout) => {
                             return (
-                                <div key={workout.id}
-                                     className="relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300">
+                                <Link
+                                    key={workout.id}
+                                    to={`/workout/${workout.id}`}
+                                    className="relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300"
+                                >
                                     <div className="flex items-center justify-between mb-2">
                                         <h3 className="text-left text-white text-xl font-bold">
                                             {workout.routine?.name || 'No routine name'}
@@ -76,7 +78,7 @@ const Dashboard = () => {
                                         <div className="flex items-center">
                                             <HamburgerMenu onDelete={() => {
                                                 handleDelete(workout.id);
-                                            }} />
+                                            }}/>
                                         </div>
                                     </div>
                                     <h3 className="text-white text-xs">
@@ -106,7 +108,7 @@ const Dashboard = () => {
                                             <p className="text-white">No exercises listed.</p>
                                         )}
                                     </div>
-                                </div>
+                                </Link>
                             );
                         })
                     ) : (
@@ -115,8 +117,8 @@ const Dashboard = () => {
                     {deleteError && <div className="text-red-500">{deleteError}</div>}
                 </div>
             </div>
-            <Footer />
-            <ChooseRoutineModal isOpen={isModalOpen} onRequestClose={closeModal} />
+            <Footer/>
+            <ChooseRoutineModal isOpen={isModalOpen} onRequestClose={closeModal}/>
         </div>
     );
 };

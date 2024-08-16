@@ -62,7 +62,7 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
             bottom: 'auto',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
-            backgroundColor: '#2C2C2C',
+            backgroundColor: '#111827',
             borderRadius: '10px',
             padding: '20px',
             width: '80%',

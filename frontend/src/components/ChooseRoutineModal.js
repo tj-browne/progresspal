@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Modal from 'react-modal';
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 Modal.setAppElement('#root');
 
-const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
+const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
     const [selectedRoutineId, setSelectedRoutineId] = useState(null);
-    const { routines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
+    const {routines, routinesLoading, routinesError, userLoading, userError} = useFetchUserRoutines();
     const closeButtonRef = useRef(null);
     const navigate = useNavigate();
     const userId = useFetchCurrentUser().userId;
@@ -71,7 +71,7 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
             bottom: 'auto',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
-            backgroundColor: '#2C2C2C',
+            backgroundColor: '#111827',
             borderRadius: '10px',
             padding: '20px',
             width: '90%',
@@ -108,8 +108,8 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
                         <div className="text-red-500">{routinesError}</div>
                     ) : (
                         <>
-                            <li><a href="/create-routine" className="text-blue-400 hover:underline">+Create New
-                                Routine</a></li>
+                            <li><Link to="/create-routine" className="text-blue-400 hover:underline">+Create New
+                                Routine</Link></li>
                             {routines.length > 0 ? (
                                 routines.map((routine) => (
                                     <li key={routine.id}>
