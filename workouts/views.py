@@ -106,8 +106,6 @@ def workout_retrieve_update_delete(request, workout_id):
         'workout_exercises__exercise', 'workout_exercises__sets'
     ), id=workout_id)
 
-    print(f'Incoming data: {request.data}')
-
     if request.method == 'GET':
         serializer = WorkoutSerializer(workout)
         return Response(serializer.data)

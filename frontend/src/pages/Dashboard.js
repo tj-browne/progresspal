@@ -4,12 +4,22 @@ import Footer from "../components/Footer";
 import ChooseRoutineModal from "../components/ChooseRoutineModal";
 import useFetchUserWorkouts from "../hooks/useFetchUserWorkouts";
 import HamburgerMenu from "../components/HamburgerMenu";
+import useDeleteWorkout from "../hooks/useDeleteWorkout";
 
 const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const modalButtonRef = useRef(null);
 
-    const { workouts, workoutsLoading, workoutsError } = useFetchUserWorkouts();
+    const { workouts, setWorkouts, workoutsLoading, workoutsError } = useFetchUserWorkouts();
+    const { deleteWorkout, error: deleteError } = useDeleteWorkout();
+
+    const handleDelete = async (workoutId) => {
+        console.log("Attempting to delete workout ID: ", workoutId);
+        const success = await deleteWorkout(workoutId);
+        if (success) {
+            setWorkouts((prevWorkouts) => prevWorkouts.filter((workout) => workout.id !== workoutId));
+        }
+    };
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -32,6 +42,14 @@ const Dashboard = () => {
         }));
     };
 
+    if (workoutsLoading) {
+        return <div className="text-white">Loading workouts...</div>;
+    }
+
+    if (workoutsError) {
+        return <div className="text-red-500">{workoutsError}</div>;
+    }
+
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
             <UserHeader />
@@ -45,13 +63,8 @@ const Dashboard = () => {
                 </button>
                 <h3 className="text-left text-white underline mb-4 text-xl font-semibold">History</h3>
                 <div className="mb-32">
-                    {workoutsLoading ? (
-                        <p className="text-white">Loading workouts...</p>
-                    ) : workoutsError ? (
-                        <p className="text-red-500">Error: {workoutsError}</p>
-                    ) : reversedWorkouts.length > 0 ? (
-                        reversedWorkouts.map((workout) => {
-                            const exercises = getExerciseDetails(workout);
+                    {reversedWorkouts.length > 0 ? (
+                        reversedWorkouts.map((workout, index) => {
 
                             return (
                                 <div key={workout.id}
@@ -60,16 +73,20 @@ const Dashboard = () => {
                                         <h3 className="text-left text-white text-xl font-bold">
                                             {workout.routine?.name || 'No routine name'}
                                         </h3>
-                                        <HamburgerMenu />
+                                        <div className="flex items-center">
+                                            <HamburgerMenu onDelete={() => {
+                                                handleDelete(workout.id);
+                                            }} />
+                                        </div>
                                     </div>
                                     <h3 className="text-white text-xs">
                                         {new Date(workout.date_started).toLocaleDateString()}
                                     </h3>
                                     <div className="mt-2 text-left">
                                         <p className="text-white">Exercises:</p>
-                                        {exercises.length > 0 ? (
-                                            exercises.map((exercise, index) => (
-                                                <div key={index}>
+                                        {getExerciseDetails(workout).length > 0 ? (
+                                            getExerciseDetails(workout).map((exercise, exerciseIndex) => (
+                                                <div key={exerciseIndex}>
                                                     <p className="text-white">- {exercise.name || 'No exercise name'}</p>
                                                     {exercise.sets.length > 0 ? (
                                                         exercise.sets.map((set, setIndex) => (
@@ -95,6 +112,7 @@ const Dashboard = () => {
                     ) : (
                         <p className="text-white">No workout history available.</p>
                     )}
+                    {deleteError && <div className="text-red-500">{deleteError}</div>}
                 </div>
             </div>
             <Footer />

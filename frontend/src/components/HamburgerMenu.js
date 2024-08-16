@@ -18,7 +18,7 @@ const HamburgerMenu = ({ onDelete }) => {
                 <div className="absolute right-0 bg-gray-800 text-white mt-2 rounded-lg shadow-lg">
                     <button
                         onClick={onDelete}
-                        className="block px-4 py-2 hover:bg-gray-700 w-full text-left"
+                        className="block px-4 py-2 hover:bg-red-600 bg-red-500 w-full text-left"
                     >
                         Delete
                     </button>
