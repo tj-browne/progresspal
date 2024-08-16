@@ -136,7 +136,7 @@ def user_workouts_list(request, user_id):
         serializer = WorkoutSerializer(workouts, many=True)
         return Response(serializer.data)
     else:
-        return Response({'error': 'No workouts found for this user.'}, status=404)
+        return Response([], status=200)
 
 
 @api_view(['GET'])

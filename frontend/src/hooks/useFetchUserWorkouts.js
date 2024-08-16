@@ -1,9 +1,9 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import useFetchCurrentUser from "./useFetchCurrentUser";
 
 const useFetchUserWorkouts = () => {
-    const {userId, loading: userLoading, error: userError} = useFetchCurrentUser();
+    const { userId, loading: userLoading, error: userError } = useFetchCurrentUser();
     const [workouts, setWorkouts] = useState([]);
     const [workoutsLoading, setWorkoutsLoading] = useState(true);
     const [workoutsError, setWorkoutsError] = useState(null);
@@ -15,9 +15,15 @@ const useFetchUserWorkouts = () => {
             try {
                 const workoutsResponse = await axios.get(`http://localhost:8000/api/users/${userId}/workouts/`);
                 setWorkouts(workoutsResponse.data);
+                // Handle the case where the data is an empty array
+                if (Array.isArray(workoutsResponse.data) && workoutsResponse.data.length === 0) {
+                    setWorkoutsError(null); // No error, just no workouts
+                }
             } catch (error) {
                 if (error.response?.status === 401) {
                     setWorkoutsError('User not authenticated');
+                } else if (error.response?.status === 404) {
+                    setWorkoutsError('No workouts found for this user.');
                 } else {
                     setWorkoutsError('Error fetching workouts');
                 }
@@ -30,8 +36,7 @@ const useFetchUserWorkouts = () => {
         fetchUserWorkouts();
     }, [userId]);
 
-
-    return {workouts, setWorkouts, workoutsLoading, workoutsError, userLoading, userError};
+    return { workouts, setWorkouts, workoutsLoading, workoutsError, userLoading, userError };
 };
 
 export default useFetchUserWorkouts;

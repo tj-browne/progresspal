@@ -66,11 +66,12 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
             borderRadius: '10px',
             padding: '20px',
             width: '80%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            color: 'white',
+            minHeight: '80vh', // Minimum height to maintain consistency
+            maxHeight: '80vh', // Ensure the modal does not exceed viewport height
             display: 'flex',
             flexDirection: 'column',
+            color: 'white', // Text color
+            boxSizing: 'border-box', // Ensure padding is included in height calculation
         },
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
@@ -88,7 +89,7 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
             contentLabel="Add Exercises"
             style={customStyles}
         >
-            <div>
+            <div className="flex flex-col h-full">
                 <h2 id="modalTitle" className="text-xl mb-4">Add Exercise:</h2>
                 <input
                     ref={searchInputRef}
@@ -103,13 +104,13 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
                     <option value="strength">Strength</option>
                     <option value="cardio">Cardio</option>
                 </select>
-                {loading ? (
-                    <div>Loading...</div>
-                ) : error ? (
-                    <div className="text-red-500">{error}</div>
-                ) : (
-                    <div className="overflow-y-auto" style={{ maxHeight: '60vh', minHeight: '60vh' }}>
-                        {exercisesData.length > 0 ? (
+                <div className="flex-grow overflow-y-auto" style={{ maxHeight: '50vh' }}>
+                    {loading ? (
+                        <div>Loading...</div>
+                    ) : error ? (
+                        <div className="text-red-500">{error}</div>
+                    ) : (
+                        exercisesData.length > 0 ? (
                             exercisesData.map((exercise) => (
                                 <div
                                     className="flex justify-between items-center rounded-2xl w-full mb-4 p-2 bg-gray-800"
@@ -123,9 +124,9 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
                             ))
                         ) : (
                             <p>No exercises available.</p>
-                        )}
-                    </div>
-                )}
+                        )
+                    )}
+                </div>
                 <button
                     onClick={onRequestClose}
                     ref={closeButtonRef}
