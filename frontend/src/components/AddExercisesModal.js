@@ -106,7 +106,7 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
                 {loading ? (
                     <div>Loading...</div>
                 ) : error ? (
-                    <div>{error}</div>
+                    <div className="text-red-500">{error}</div>
                 ) : (
                     <div className="overflow-y-auto" style={{ maxHeight: '60vh', minHeight: '60vh' }}>
                         {exercisesData.length > 0 ? (

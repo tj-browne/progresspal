@@ -9,10 +9,10 @@ const UserHeader = ({ user }) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const location = useLocation();
+    const navigate = useNavigate();
 
     const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
 
-    const navigate = useNavigate();
     const handleLogout = async () => {
         try {
             const csrfToken = await getCsrfToken();
@@ -46,28 +46,32 @@ const UserHeader = ({ user }) => {
 
     return (
         <div className="relative">
-            <div className="absolute top-6 left-6">
+            <div className="absolute top-6 left-6 p-2">
                 <a href='/dashboard' className="inline-block">
-                    <img src={logo} className="w-16" alt="ProgressPal logo" />
+                    <img
+                        src={logo}
+                        className="w-16 filter brightness-100 hue-rotate-180"
+                        alt="ProgressPal logo"
+                    />
                 </a>
             </div>
             <div className="absolute top-6 right-6" ref={dropdownRef}>
                 <img
                     src={defaultProfilePic}
-                    className={`w-10 h-10 rounded-full cursor-pointer hover:rounded-lg transition-all duration-300 ${profileImgClass}`}
+                    className={`w-12 h-12 rounded-full cursor-pointer hover:rounded-lg transition-all duration-300 ${profileImgClass} filter brightness-100 hue-rotate-180`}
                     alt="User profile"
                     onClick={toggleDropdown}
                 />
                 {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg">
+                    <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white shadow-lg rounded-lg">
                         <Link
                             to="/profile"
-                            className="block px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-300">
+                            className="block px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-300">
                             Profile
                         </Link>
                         <button
                             onClick={handleLogout}
-                            className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-300">
+                            className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-300">
                             Logout
                         </button>
                     </div>

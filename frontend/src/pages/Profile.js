@@ -1,16 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import axios from "axios";
-import {getCsrfToken} from "../services/csrfService";
+import { getCsrfToken } from "../services/csrfService";
 import useDeleteUser from "../hooks/useDeleteUser";
 
 const Profile = () => {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const {deleteUser, error: deleteError} = useDeleteUser();
-
+    const { deleteUser, error: deleteError } = useDeleteUser();
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -46,19 +45,19 @@ const Profile = () => {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="text-white">Loading...</div>;
     }
 
     if (error) {
-        return <div>{error}</div>;
+        return <div className="text-red-500">{error}</div>;
     }
 
     return (
-        <div className="bg-zinc-900 min-h-screen flex flex-col">
+        <div className="bg-gray-900 min-h-screen flex flex-col">
             <UserHeader/>
 
             <div className="flex flex-col items-center pt-32 px-6 py-8 flex-grow">
-                <div className="w-full max-w-md p-4 rounded-lg">
+                <div className="w-full max-w-md p-4 rounded-lg bg-gray-800">
                     <h1 className="text-5xl text-white mb-2">Profile</h1>
 
                     <div className="flex items-center mb-1">
@@ -81,9 +80,9 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {/*TODO: Add delete account modal*/}
                     <button
-                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg" onClick={handleDelete}
+                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
+                        onClick={handleDelete}
                     >
                         Delete Account
                     </button>

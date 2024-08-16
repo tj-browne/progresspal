@@ -3,6 +3,7 @@ import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import useDeleteRoutine from "../hooks/useDeleteRoutine";
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
+import HamburgerMenu from "../components/HamburgerMenu";
 
 const RoutinesPage = () => {
     const { routines, setRoutines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
@@ -16,41 +17,37 @@ const RoutinesPage = () => {
     };
 
     if (userLoading || routinesLoading) {
-        return <div>Loading...</div>;
+        return <div className="text-white">Loading...</div>;
     }
 
     if (userError) {
-        return <div>{userError}</div>;
+        return <div className="text-red-500">{userError}</div>;
     }
 
     if (routinesError) {
-        return <div>{routinesError}</div>;
+        return <div className="text-red-500">{routinesError}</div>;
     }
 
     return (
-        <div className="bg-zinc-900 min-h-screen flex flex-col">
-            <UserHeader/>
+        <div className="bg-gray-900 min-h-screen flex flex-col">
+            <UserHeader />
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <a href="/create-routine"
-                   className="bg-green-500 hover:bg-green-600 py-2 px-4 text-center rounded-3xl mb-2 text-xl text-black w-52"
-                >Create New Routine
+                   className="bg-green-500 hover:bg-green-600 py-2 px-4 text-center rounded-3xl mb-2 text-xl text-white w-52 transition duration-300 ease-in-out"
+                >
+                    Create New Routine
                 </a>
                 {routines.length > 0 ? (
                     routines.map((routine) => (
                         <div
-                            className="flex flex-col justify-between border rounded w-6/12 bg-[#2C2C2C] p-4"
+                            className="relative flex flex-col justify-between border border-gray-700 rounded-lg w-6/12 bg-gray-800 p-4 transition-transform transform hover:scale-105 duration-300"
                             key={routine.id}
                         >
-                            <div className="flex justify-between">
-                                <h1 className="text-2xl">{routine.name}</h1>
-                                <button
-                                    className="bg-red-800 p-1 rounded"
-                                    onClick={() => handleDelete(routine.id)}
-                                >
-                                    Delete
-                                </button>
+                            <div className="flex items-center justify-between">
+                                <h1 className="text-2xl font-semibold">{routine.name}</h1>
+                                <HamburgerMenu onDelete={() => handleDelete(routine.id)} />
                             </div>
-                            <hr/>
+                            <hr className="my-2 border-gray-600" />
                             <p className="text-xs">{new Date(routine.date_created).toLocaleDateString()}</p>
                             <div>
                                 {routine.routine_exercises && routine.routine_exercises.length > 0 ? (
@@ -69,12 +66,6 @@ const RoutinesPage = () => {
                                                         {default_sets !== null && (
                                                             <p>Sets: {default_sets}</p>
                                                         )}
-                                                        {default_reps !== null && (
-                                                            <p>Reps: {default_reps}</p>
-                                                        )}
-                                                        {default_weight !== null && (
-                                                            <p>Weight: {default_weight} kg</p>
-                                                        )}
                                                     </div>
                                                 </li>
                                             );
@@ -89,9 +80,9 @@ const RoutinesPage = () => {
                 ) : (
                     <p>No routines available.</p>
                 )}
-                {deleteError && <div>{deleteError}</div>}
+                {deleteError && <div className="text-red-500">{deleteError}</div>}
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 };

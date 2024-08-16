@@ -103,9 +103,9 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
                     {userLoading || routinesLoading ? (
                         <div>Loading...</div>
                     ) : userError ? (
-                        <div>{userError}</div>
+                        <div className="text-red-500">{userError}</div>
                     ) : routinesError ? (
-                        <div>{routinesError}</div>
+                        <div className="text-red-500">{routinesError}</div>
                     ) : (
                         <>
                             <li><a href="/create-routine" className="text-blue-400 hover:underline">+Create New
