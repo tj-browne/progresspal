@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import defaultProfilePic from '../assets/images/default-profile-pic.svg';
-import logo from "../assets/images/logo.svg";
+import React, {useEffect, useRef, useState} from 'react';
+import {Link, useNavigate, useLocation} from 'react-router-dom';
 import axios from "axios";
-import { getCsrfToken } from "../services/csrfService";
+import {getCsrfToken} from "../services/csrfService";
+import LineChart from "../assets/images/LineChart";
+import UserCircle from "../assets/images/UserCircle";
 
-const UserHeader = ({ user }) => {
+const UserHeader = ({user}) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const location = useLocation();
@@ -42,26 +42,24 @@ const UserHeader = ({ user }) => {
     }, []);
 
     const isProfilePath = location.pathname === '/profile';
-    const profileImgClass = isDropdownOpen || isProfilePath ? 'brightness-200' : 'brightness-100';
+    const profileIconClass = isDropdownOpen || isProfilePath ? 'brightness-200' : 'brightness-100';
 
     return (
         <div className="relative">
-            <div className="absolute top-6 left-6 p-2">
+            <div className="absolute top-6 left-6 p-2 flex items-center">
                 <Link to='/dashboard' className="inline-block">
-                    <img
-                        src={logo}
-                        className="w-16 filter brightness-100 hue-rotate-180"
-                        alt="ProgressPal logo"
-                    />
+                    <div
+                        className="w-16 h-16 bg-gray-600 hover:bg-green-600 rounded-full flex items-center justify-center">
+                        <LineChart size={32} color="#ffffff"/>
+                    </div>
                 </Link>
             </div>
             <div className="absolute top-6 right-6" ref={dropdownRef}>
-                <img
-                    src={defaultProfilePic}
-                    className={`w-12 h-12 rounded-full cursor-pointer hover:rounded-lg transition-all duration-300 ${profileImgClass} filter brightness-100 hue-rotate-180`}
-                    alt="User profile"
-                    onClick={toggleDropdown}
-                />
+                <div
+                    className={`cursor-pointer hover:scale-110 transition-all duration-300 ${profileIconClass}`}
+                    onClick={toggleDropdown}>
+                    <UserCircle size={48} color="#ffffff"/> {/* Adjust size and color as needed */}
+                </div>
                 {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white shadow-lg rounded-lg">
                         <Link

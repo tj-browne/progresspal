@@ -141,6 +141,20 @@ const WorkoutPage = () => {
                                     {exercise.exercise_type === 'strength' ? (
                                         <>
                                             <div className="flex flex-col items-center mr-4">
+                                                <label className="mb-1">kg</label>
+                                                <input
+                                                    className="w-20 p-1 text-black"
+                                                    type="number"
+                                                    value={set.weight || 0}
+                                                    onChange={(e) => {
+                                                        const updatedExercises = [...exercises];
+                                                        updatedExercises[exerciseIndex].sets[setIndex].weight = Number(e.target.value);
+                                                        setExercises(updatedExercises);
+                                                    }}
+                                                    placeholder="Weight"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col items-center mr-4">
                                                 <label className="mb-1">Reps</label>
                                                 <input
                                                     className="w-20 p-1 text-black"
@@ -152,20 +166,6 @@ const WorkoutPage = () => {
                                                         setExercises(updatedExercises);
                                                     }}
                                                     placeholder="Reps"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col items-center mr-4">
-                                                <label className="mb-1">Weight (kg)</label>
-                                                <input
-                                                    className="w-20 p-1 text-black"
-                                                    type="number"
-                                                    value={set.weight || 0}
-                                                    onChange={(e) => {
-                                                        const updatedExercises = [...exercises];
-                                                        updatedExercises[exerciseIndex].sets[setIndex].weight = Number(e.target.value);
-                                                        setExercises(updatedExercises);
-                                                    }}
-                                                    placeholder="Weight"
                                                 />
                                             </div>
                                         </>

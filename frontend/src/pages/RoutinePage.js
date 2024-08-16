@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React, {useState, useEffect} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
-import { useNavigate } from "react-router-dom";
+import useFetchRoutine from "../hooks/useFetchRoutine"; // Custom hook to fetch routine
+import {useParams, useNavigate} from "react-router-dom";
 
-const CreateRoutinePage = () => {
+const RoutinePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
-    const [workoutName, setWorkoutName] = useState('');
+    const [routineName, setRoutineName] = useState('');
     const [error, setError] = useState('');
-    const { userId } = useFetchCurrentUser();
+    const {routineId} = useParams();
+    const {userId} = useFetchCurrentUser();
+    const {data, loading: routineLoading, error: routineError} = useFetchRoutine(routineId);
     const navigate = useNavigate();
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
+
+    useEffect(() => {
+        if (data) {
+            setRoutineName(data.name || '');
+            setExercises(data.routine_exercises.map(re => ({
+                exercise: re.exercise,
+                defaultSets: re.default_sets,
+                sets: Array.from({length: re.default_sets}, () =>
+                    re.exercise.exercise_type === 'strength'
+                        ? {reps: null, weight: null}
+                        : {distance: null, time: null}
+                )
+            })));
+        }
+    }, [data]);
 
     const handleAddExercise = (exercise) => {
         const newExercise = {
             exercise,
             defaultSets: 1,
             sets: exercise.exercise_type === 'strength'
-                ? [{ reps: null, weight: null }]
-                : [{ distance: null, time: null }]
+                ? [{reps: null, weight: null}]
+                : [{distance: null, time: null}]
         };
         setExercises([...exercises, newExercise]);
         setIsModalOpen(false);
@@ -32,9 +50,9 @@ const CreateRoutinePage = () => {
         const newExercises = [...exercises];
         const exercise = newExercises[exerciseIndex];
         if (exercise.exercise.exercise_type === 'strength') {
-            newExercises[exerciseIndex].sets.push({ reps: null, weight: null });
+            newExercises[exerciseIndex].sets.push({reps: null, weight: null});
         } else {
-            newExercises[exerciseIndex].sets.push({ distance: null, time: null });
+            newExercises[exerciseIndex].sets.push({distance: null, time: null});
         }
         newExercises[exerciseIndex].defaultSets = newExercises[exerciseIndex].sets.length;
         setExercises(newExercises);
@@ -57,8 +75,8 @@ const CreateRoutinePage = () => {
             return;
         }
 
-        if (!workoutName.trim()) {
-            setError('Workout name is required');
+        if (!routineName.trim()) {
+            setError('Routine name is required');
             return;
         }
 
@@ -72,23 +90,16 @@ const CreateRoutinePage = () => {
         }
 
         const workoutData = {
-            user: userId,
-            name: workoutName,
-            exercises: exercises.map(ex => ({
-                exercise: {
-                    id: ex.exercise.id,
-                    name: ex.exercise.name,
-                    exercise_type: ex.exercise.exercise_type,
-                },
+            name: routineName,
+            routine_exercises: exercises.map(ex => ({
+                exercise: ex.exercise.id,
                 default_sets: ex.defaultSets
             })),
         };
 
-        console.log('Sending data:', JSON.stringify(workoutData, null, 2));
-
         try {
-            const response = await fetch('http://localhost:8000/api/routines/', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8000/api/routines/${routineId}/`, { // Correct URL with routineId
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -96,11 +107,9 @@ const CreateRoutinePage = () => {
             });
 
             if (response.ok) {
-                console.log('Routine saved successfully');
                 navigate('/routines');
             } else {
                 const errorData = await response.json();
-                console.error('Failed to save workout:', errorData);
                 setError(`Failed to save workout: ${errorData.detail || 'Unknown error'}`);
             }
         } catch (error) {
@@ -108,15 +117,24 @@ const CreateRoutinePage = () => {
         }
     };
 
+
+    if (routineLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (routineError) {
+        return <div>{routineError}</div>;
+    }
+
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
-            <UserHeader />
+            <UserHeader/>
             <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
                 <input
                     type="text"
                     className="text-3xl text-white bg-gray-900 border-b border-b-white mb-2 w-8/12 p-2"
-                    value={workoutName}
-                    onChange={(e) => setWorkoutName(e.target.value)}
+                    value={routineName}
+                    onChange={(e) => setRoutineName(e.target.value)}
                     placeholder="Routine Name"
                 />
                 {error && <div className="text-red-500 mb-4">{error}</div>}
@@ -178,10 +196,10 @@ const CreateRoutinePage = () => {
                     </button>
                 </div>
             </div>
-            <Footer />
-            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise} />
+            <Footer/>
+            <AddExercisesModal isOpen={isModalOpen} onRequestClose={closeModal} onAddExercise={handleAddExercise}/>
         </div>
     );
 };
 
-export default CreateRoutinePage;
+export default RoutinePage;

@@ -4,7 +4,8 @@ from rest_framework.response import Response
 
 from workouts.models import Routine, Exercise, RoutineExercise, Workout, WorkoutExercise
 from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCreateSerializer, WorkoutCreateSerializer, \
-    ExerciseSerializer, RoutineExerciseSerializer, WorkoutExerciseSerializer, WorkoutUpdateSerializer
+    ExerciseSerializer, RoutineExerciseSerializer, WorkoutExerciseSerializer, WorkoutUpdateSerializer, \
+    RoutineUpdateSerializer
 
 
 @api_view(['GET'])
@@ -67,7 +68,7 @@ def routine_retrieve_update_delete(request, routine_id):
         return Response(serializer.data)
 
     if request.method == 'PUT':
-        serializer = RoutineSerializer(routine, data=request.data)
+        serializer = RoutineUpdateSerializer(routine, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Routine updated successfully'}, status=200)

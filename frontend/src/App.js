@@ -14,6 +14,7 @@ import PasswordResetPage from "./pages/PasswordResetPage";
 import RoutinesPage from "./pages/RoutinesPage";
 import WorkoutPage from "./pages/WorkoutPage";
 import CreateRoutinePage from "./pages/CreateRoutinePage";
+import RoutinePage from "./pages/RoutinePage";
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
 
                     <Route path="/create-routine" element={<AuthenticatedRoute><CreateRoutinePage/></AuthenticatedRoute>}/>
                     <Route path="/routines" element={<AuthenticatedRoute><RoutinesPage/></AuthenticatedRoute>}/>
+                    <Route path="/routine/:routineId" element={<AuthenticatedRoute><RoutinePage/></AuthenticatedRoute>}/>
 
                     <Route path="/workout/:workoutId" element={<AuthenticatedRoute><WorkoutPage/></AuthenticatedRoute>}/>
                 </Routes>
