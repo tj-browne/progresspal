@@ -37,9 +37,9 @@ class Set(models.Model):
     reps = models.IntegerField(blank=True, null=True, default=0)
     weight = models.FloatField(blank=True, null=True, default=0)
 
-    # distance = models.FloatField(blank=True, null=True)
-    # time = models.DurationField(blank=True, null=True)
-    # calories_burned = models.IntegerField(blank=True, null=True)
+    distance = models.FloatField(blank=True, null=True)
+    time = models.DurationField(blank=True, null=True)
+    calories_burned = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'Set {self.id} - Exercise: {self.exercise.name}'

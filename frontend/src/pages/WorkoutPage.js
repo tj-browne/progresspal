@@ -23,7 +23,11 @@ const WorkoutPage = () => {
 
             const updatedExercises = data.workout_exercises.map(we => ({
                 ...routineExercisesMap.get(we.exercise),
-                sets: we.sets || [{ reps: 1, weight: 0 }]
+                sets: we.sets || (
+                    we.exercise.exercise_type === 'strength'
+                        ? [{ reps: 1, weight: 0 }]
+                        : [{ distance: 0, time: 0 }]
+                )
             }));
 
             setWorkoutName(data.routine?.name || 'No Workout Name');
@@ -31,14 +35,12 @@ const WorkoutPage = () => {
         }
     }, [data]);
 
-    // Handle page unload and navigation
     useEffect(() => {
         const handleBeforeUnload = async (event) => {
             event.preventDefault();
             event.returnValue = '';
 
             try {
-                // Ensure workoutId is available
                 if (workoutId) {
                     await deleteWorkout(workoutId);
                 }
@@ -67,8 +69,13 @@ const WorkoutPage = () => {
                 exercise: exercise.id,
                 sets: exercise.sets.map(set => ({
                     id: set.id,
-                    reps: set.reps,
-                    weight: set.weight
+                    ...(exercise.exercise_type === 'strength' ? {
+                        reps: set.reps,
+                        weight: set.weight
+                    } : {
+                        distance: set.distance,
+                        time: set.time
+                    })
                 }))
             }))
         };
@@ -98,7 +105,6 @@ const WorkoutPage = () => {
 
     const handleDiscardWorkout = async () => {
         try {
-            // Ensure workoutId is available
             if (workoutId) {
                 await deleteWorkout(workoutId);
                 navigate('/');
@@ -132,34 +138,69 @@ const WorkoutPage = () => {
                             <h2 className="text-xl mb-2">{exercise.name}</h2>
                             {exercise.sets?.map((set, setIndex) => (
                                 <div className="flex items-center mb-2" key={setIndex}>
-                                    <div className="flex flex-col items-center mr-4">
-                                        <label className="mb-1">Reps</label>
-                                        <input
-                                            className="w-20 p-1 text-black"
-                                            type="number"
-                                            value={set.reps || 0}
-                                            onChange={(e) => {
-                                                const updatedExercises = [...exercises];
-                                                updatedExercises[exerciseIndex].sets[setIndex].reps = Number(e.target.value);
-                                                setExercises(updatedExercises);
-                                            }}
-                                            placeholder="Reps"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col items-center mr-4">
-                                        <label className="mb-1">Weight (kg)</label>
-                                        <input
-                                            className="w-20 p-1 text-black"
-                                            type="number"
-                                            value={set.weight || 0}
-                                            onChange={(e) => {
-                                                const updatedExercises = [...exercises];
-                                                updatedExercises[exerciseIndex].sets[setIndex].weight = Number(e.target.value);
-                                                setExercises(updatedExercises);
-                                            }}
-                                            placeholder="Weight"
-                                        />
-                                    </div>
+                                    {exercise.exercise_type === 'strength' ? (
+                                        <>
+                                            <div className="flex flex-col items-center mr-4">
+                                                <label className="mb-1">Reps</label>
+                                                <input
+                                                    className="w-20 p-1 text-black"
+                                                    type="number"
+                                                    value={set.reps || 0}
+                                                    onChange={(e) => {
+                                                        const updatedExercises = [...exercises];
+                                                        updatedExercises[exerciseIndex].sets[setIndex].reps = Number(e.target.value);
+                                                        setExercises(updatedExercises);
+                                                    }}
+                                                    placeholder="Reps"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col items-center mr-4">
+                                                <label className="mb-1">Weight (kg)</label>
+                                                <input
+                                                    className="w-20 p-1 text-black"
+                                                    type="number"
+                                                    value={set.weight || 0}
+                                                    onChange={(e) => {
+                                                        const updatedExercises = [...exercises];
+                                                        updatedExercises[exerciseIndex].sets[setIndex].weight = Number(e.target.value);
+                                                        setExercises(updatedExercises);
+                                                    }}
+                                                    placeholder="Weight"
+                                                />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex flex-col items-center mr-4">
+                                                <label className="mb-1">Distance (km)</label>
+                                                <input
+                                                    className="w-20 p-1 text-black"
+                                                    type="number"
+                                                    value={set.distance || 0}
+                                                    onChange={(e) => {
+                                                        const updatedExercises = [...exercises];
+                                                        updatedExercises[exerciseIndex].sets[setIndex].distance = Number(e.target.value);
+                                                        setExercises(updatedExercises);
+                                                    }}
+                                                    placeholder="Distance"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col items-center mr-4">
+                                                <label className="mb-1">Time (min)</label>
+                                                <input
+                                                    className="w-20 p-1 text-black"
+                                                    type="number"
+                                                    value={set.time || 0}
+                                                    onChange={(e) => {
+                                                        const updatedExercises = [...exercises];
+                                                        updatedExercises[exerciseIndex].sets[setIndex].time = Number(e.target.value);
+                                                        setExercises(updatedExercises);
+                                                    }}
+                                                    placeholder="Time"
+                                                />
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             ))}
                         </div>

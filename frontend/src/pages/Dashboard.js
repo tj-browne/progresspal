@@ -38,7 +38,7 @@ const Dashboard = () => {
 
         return workout.workout_exercises.map(we => ({
             ...routineExercisesMap.get(we.exercise),
-            sets: we.sets || [{ reps: 1, weight: 0 }]
+            sets: we.sets || (we.exercise.exercise_type === 'strength' ? [{ reps: 1, weight: 0 }] : [{ distance: 0, time: 0 }])
         }));
     };
 
@@ -90,10 +90,15 @@ const Dashboard = () => {
                                                 {exercise.sets.length > 0 ? (
                                                     exercise.sets.map((set, setIndex) => (
                                                         <div key={setIndex} className="ml-4">
-                                                            <p className="text-white text-sm">
-                                                                Set {setIndex + 1}: Reps: {set.reps},
-                                                                Weight: {set.weight}
-                                                            </p>
+                                                            {exercise.exercise_type === 'strength' ? (
+                                                                <p className="text-white text-sm">
+                                                                    Set {setIndex + 1}: Reps: {set.reps}, Weight: {set.weight}
+                                                                </p>
+                                                            ) : (
+                                                                <p className="text-white text-sm">
+                                                                    Set {setIndex + 1}: Distance: {set.distance} km, Time: {set.time} min
+                                                                </p>
+                                                            )}
                                                         </div>
                                                     ))
                                                 ) : (

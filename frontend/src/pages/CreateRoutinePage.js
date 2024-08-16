@@ -17,13 +17,25 @@ const CreateRoutinePage = () => {
     const closeModal = () => setIsModalOpen(false);
 
     const handleAddExercise = (exercise) => {
-        setExercises([...exercises, { exercise, defaultSets: 1, sets: [{ reps: null, weight: null }] }]);
+        const newExercise = {
+            exercise,
+            defaultSets: 1,
+            sets: exercise.exercise_type === 'strength'
+                ? [{ reps: null, weight: null }]
+                : [{ distance: null, time: null }]
+        };
+        setExercises([...exercises, newExercise]);
         setIsModalOpen(false);
     };
 
     const handleAddSet = (exerciseIndex) => {
         const newExercises = [...exercises];
-        newExercises[exerciseIndex].sets.push({ reps: null, weight: null });
+        const exercise = newExercises[exerciseIndex];
+        if (exercise.exercise.exercise_type === 'strength') {
+            newExercises[exerciseIndex].sets.push({ reps: null, weight: null });
+        } else {
+            newExercises[exerciseIndex].sets.push({ distance: null, time: null });
+        }
         newExercises[exerciseIndex].defaultSets = newExercises[exerciseIndex].sets.length;
         setExercises(newExercises);
     };
@@ -115,14 +127,29 @@ const CreateRoutinePage = () => {
                             {exercise.sets.map((set, setIndex) => (
                                 <div className="flex items-center mb-2 p-2 rounded" key={setIndex}>
                                     <span className="text-gray-300 mr-4">Set {setIndex + 1}</span>
-                                    <div className="flex flex-col mr-4">
-                                        <label className="mb-1 text-gray-300">Reps</label>
-                                        <span className="text-gray-300">{set.reps ?? 'N/A'}</span>
-                                    </div>
-                                    <div className="flex flex-col mr-4">
-                                        <label className="mb-1 text-gray-300">Weight (kg)</label>
-                                        <span className="text-gray-300">{set.weight ?? 'N/A'}</span>
-                                    </div>
+                                    {exercise.exercise.exercise_type === 'strength' ? (
+                                        <>
+                                            <div className="flex flex-col mr-4">
+                                                <label className="mb-1 text-gray-300">Reps</label>
+                                                <span className="text-gray-300">{set.reps ?? 'N/A'}</span>
+                                            </div>
+                                            <div className="flex flex-col mr-4">
+                                                <label className="mb-1 text-gray-300">Weight (kg)</label>
+                                                <span className="text-gray-300">{set.weight ?? 'N/A'}</span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex flex-col mr-4">
+                                                <label className="mb-1 text-gray-300">Distance (km)</label>
+                                                <span className="text-gray-300">{set.distance ?? 'N/A'}</span>
+                                            </div>
+                                            <div className="flex flex-col mr-4">
+                                                <label className="mb-1 text-gray-300">Time (min)</label>
+                                                <span className="text-gray-300">{set.time ?? 'N/A'}</span>
+                                            </div>
+                                        </>
+                                    )}
                                     <button className="bg-red-700 px-3 py-1 rounded text-white"
                                             onClick={() => handleRemoveSet(exerciseIndex, setIndex)}>
                                         - Remove Set
