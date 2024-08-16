@@ -1,15 +1,16 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import ChooseRoutineModal from "../components/ChooseRoutineModal";
 import useFetchUserWorkouts from "../hooks/useFetchUserWorkouts";
 import HamburgerMenu from "../components/HamburgerMenu";
 import useDeleteWorkout from "../hooks/useDeleteWorkout";
-import { Link } from "react-router-dom";
 
 const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const modalButtonRef = useRef(null);
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const { workouts, setWorkouts, workoutsLoading, workoutsError } = useFetchUserWorkouts();
     const { deleteWorkout, error: deleteError } = useDeleteWorkout();
@@ -57,7 +58,7 @@ const Dashboard = () => {
                 <button
                     onClick={openModal}
                     ref={modalButtonRef}
-                    className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full mt-16 mb-4 text-2xl w-52 transition duration-300 ease-in-out"
+                    className="bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl mt-32 mb-4 text-2xl w-64 transition duration-300 ease-in-out"
                 >
                     Start Workout
                 </button>
@@ -65,20 +66,20 @@ const Dashboard = () => {
                 <div className="mb-32">
                     {reversedWorkouts.length > 0 ? (
                         reversedWorkouts.map((workout) => (
-                            <Link
-                                key={workout.id}
-                                to={`/workout/${workout.id}`}
-                                className="relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300"
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-left text-white text-xl font-bold">
+                            <div key={workout.id} className="relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300">
+                                <div className="flex items-center justify-between relative z-10">
+                                    <h3 className="text-left text-white text-xl font-bold mr-6">
                                         {workout.routine?.name || 'No routine name'}
                                     </h3>
-                                    <div className="flex items-center">
-                                        <HamburgerMenu onDelete={() => handleDelete(workout.id)} />
+                                    <div className="flex items-center z-30">
+                                        <HamburgerMenu
+                                            workoutId={workout.id}
+                                            onEdit={() => navigate(`/workout/${workout.id}`)} // Use navigate to go to workout page
+                                            onDelete={() => handleDelete(workout.id)}
+                                        />
                                     </div>
                                 </div>
-                                <h3 className="text-white text-xs">
+                                <h3 className="text-white text-xs text-left">
                                     {new Date(workout.date_started).toLocaleDateString()}
                                 </h3>
                                 <div className="mt-2 text-left">
@@ -110,7 +111,7 @@ const Dashboard = () => {
                                         <p className="text-white">No exercises listed.</p>
                                     )}
                                 </div>
-                            </Link>
+                            </div>
                         ))
                     ) : (
                         <p className="text-white">No workout history available.</p>
