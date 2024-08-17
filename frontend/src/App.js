@@ -15,6 +15,7 @@ import RoutinesPage from "./pages/RoutinesPage";
 import WorkoutPage from "./pages/WorkoutPage";
 import CreateRoutinePage from "./pages/CreateRoutinePage";
 import RoutinePage from "./pages/RoutinePage";
+import GoalsPage from "./pages/GoalsPage";
 
 
 function App() {
@@ -34,11 +35,16 @@ function App() {
                     <Route path="/password-reset-request" element={<PasswordResetRequestPage/>}/>
                     <Route path="/password-reset/:token" element={<PasswordResetPage/>}/>
 
-                    <Route path="/create-routine" element={<AuthenticatedRoute><CreateRoutinePage/></AuthenticatedRoute>}/>
+                    <Route path="/create-routine"
+                           element={<AuthenticatedRoute><CreateRoutinePage/></AuthenticatedRoute>}/>
                     <Route path="/routines" element={<AuthenticatedRoute><RoutinesPage/></AuthenticatedRoute>}/>
-                    <Route path="/routine/:routineId" element={<AuthenticatedRoute><RoutinePage/></AuthenticatedRoute>}/>
+                    <Route path="/routine/:routineId"
+                           element={<AuthenticatedRoute><RoutinePage/></AuthenticatedRoute>}/>
 
-                    <Route path="/workout/:workoutId" element={<AuthenticatedRoute><WorkoutPage/></AuthenticatedRoute>}/>
+                    <Route path="/workout/:workoutId"
+                           element={<AuthenticatedRoute><WorkoutPage/></AuthenticatedRoute>}/>
+
+                    <Route path="/goals" element={<AuthenticatedRoute><GoalsPage/></AuthenticatedRoute>}/>
                 </Routes>
             </Router>
         </div>

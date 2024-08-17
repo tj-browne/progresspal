@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import ChooseRoutineModal from "../components/ChooseRoutineModal";
@@ -10,7 +10,7 @@ import useDeleteWorkout from "../hooks/useDeleteWorkout";
 const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const modalButtonRef = useRef(null);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
 
     const { workouts, setWorkouts, workoutsLoading, workoutsError } = useFetchUserWorkouts();
     const { deleteWorkout, error: deleteError } = useDeleteWorkout();
@@ -62,6 +62,11 @@ const Dashboard = () => {
                 >
                     Start Workout
                 </button>
+
+                <div className="text-white text-lg mb-6">
+                    <p>Total Workouts: {workouts.length}</p>
+                </div>
+
                 <h3 className="text-left text-white underline mb-4 text-xl font-semibold">Recent Workouts:</h3>
                 <div className="mb-32 w-8/12">
                     {reversedWorkouts.length > 0 ? (
@@ -74,7 +79,7 @@ const Dashboard = () => {
                                     <div className="flex items-center z-30">
                                         <HamburgerMenu
                                             workoutId={workout.id}
-                                            onEdit={() => navigate(`/workout/${workout.id}`)} // Use navigate to go to workout page
+                                            onEdit={() => navigate(`/workout/${workout.id}`)}
                                             onDelete={() => handleDelete(workout.id)}
                                         />
                                     </div>
