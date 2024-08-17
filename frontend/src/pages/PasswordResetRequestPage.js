@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getCsrfToken } from "../services/csrfService";
+import Header from "../components/Header";
 
 const PasswordResetRequestPage = () => {
     const [email, setEmail] = useState('');
@@ -46,7 +47,8 @@ const PasswordResetRequestPage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
+            <Header />
             <h2 className="text-5xl font-bold mb-4 text-gray-50 text-center">Reset Your Password</h2>
             <form className="flex flex-col items-center" onSubmit={handleSubmit}>
                 <input

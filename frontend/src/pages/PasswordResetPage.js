@@ -47,7 +47,7 @@ const PasswordResetPage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
             <h1 className="text-5xl font-bold mb-4 text-gray-50 text-center">Reset Your Password</h1>
             <form className="flex flex-col items-center" onSubmit={handleSubmit}>
                 <input

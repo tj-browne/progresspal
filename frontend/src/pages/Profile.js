@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import axios from "axios";
-import { getCsrfToken } from "../services/csrfService";
 import useDeleteUser from "../hooks/useDeleteUser";
 import { Link } from 'react-router-dom';
 
@@ -11,6 +10,7 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { deleteUser, error: deleteError } = useDeleteUser();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -37,12 +37,21 @@ const Profile = () => {
             const success = await deleteUser(profileData.id);
             if (success) {
                 console.log("User deleted successfully");
+                setIsModalOpen(false); // Close the modal
             } else {
                 setError('Failed to delete account.');
             }
         } else {
             setError('User ID is missing.');
         }
+    };
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
     };
 
     if (loading) {
@@ -77,18 +86,40 @@ const Profile = () => {
 
                     <div className="flex flex-col space-y-2 mb-6">
                         <div>
-                            <Link to="/password-reset-request" className="text-white underline">Forgot Password?</Link>
+                            <Link to="/password-reset-request" className="text-white underline">Reset Password?</Link>
                         </div>
                     </div>
 
                     <button
                         className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
-                        onClick={handleDelete}
+                        onClick={handleOpenModal}
                     >
                         Delete Account
                     </button>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-gray-800 p-6 rounded-lg">
+                        <h3 className="text-white text-lg mb-4">Are you sure you want to delete your account?</h3>
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg"
+                                onClick={handleCloseModal}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
+                                onClick={handleDelete}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Footer />
         </div>
