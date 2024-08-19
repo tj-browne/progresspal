@@ -18,7 +18,6 @@ class SetSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         internal_data = super().to_internal_value(data)
-        # Set default values based on exercise type if not provided
         exercise_id = data.get('exercise')
         if exercise_id:
             try:
@@ -101,7 +100,6 @@ class RoutineExerciseUpdateSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         internal_data = super().to_internal_value(data)
-        # Ensure 'exercise' is treated as an ID
         exercise_id = data.get('exercise')
         if isinstance(exercise_id, dict):
             exercise_id = exercise_id.get('id')
@@ -121,7 +119,6 @@ class RoutineUpdateSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.save()
 
-        # Map of existing RoutineExercise objects by exercise ID
         existing_routine_exercises = {re.exercise.id: re for re in instance.routine_exercises.all()}
 
         for exercise_data in routine_exercises_data:
@@ -129,19 +126,16 @@ class RoutineUpdateSerializer(serializers.ModelSerializer):
             default_sets = exercise_data.get('default_sets')
 
             if exercise_id in existing_routine_exercises:
-                # Update the existing routine exercise
                 routine_exercise = existing_routine_exercises.pop(exercise_id)
                 routine_exercise.default_sets = default_sets
                 routine_exercise.save()
             else:
-                # Create a new routine exercise
                 RoutineExercise.objects.create(
                     routine=instance,
                     exercise_id=exercise_id,
                     default_sets=default_sets
                 )
 
-        # Delete any routine exercises that were not included in the update
         for outdated_routine_exercise in existing_routine_exercises.values():
             outdated_routine_exercise.delete()
 
@@ -199,10 +193,8 @@ class WorkoutCreateSerializer(serializers.ModelSerializer):
         routine = validated_data.pop('routine')
         user = validated_data.pop('user')
 
-        # Create the workout instance
         workout = Workout.objects.create(user=user, routine=routine)
 
-        # Get the exercises for the routine
         routine_exercises = RoutineExercise.objects.filter(routine=routine)
 
         for routine_exercise in routine_exercises:
@@ -213,7 +205,6 @@ class WorkoutCreateSerializer(serializers.ModelSerializer):
             )
 
             for i in range(routine_exercise.default_sets):
-                # Create new Set object
                 set_obj = Set.objects.create(
                     exercise=exercise,
                     reps=1 if exercise.exercise_type == 'strength' else 0,
@@ -264,9 +255,8 @@ class WorkoutUpdateSerializer(serializers.ModelSerializer):
                     reps = set_data.get('reps', 0)
                     weight = set_data.get('weight', 0)
                     distance = set_data.get('distance', 0)
-                    time = set_data.get('time', 0)  # Time in minutes or timedelta
+                    time = set_data.get('time', 0)
 
-                    # Ensure time is in minutes if it's a timedelta object
                     if isinstance(time, timedelta):
                         time_minutes = time.total_seconds() / 60.0
                     else:

@@ -84,9 +84,17 @@ const Dashboard = () => {
                                         />
                                     </div>
                                 </div>
-                                <h3 className="text-gray-400 text-xs text-left">
-                                    {new Date(workout.date_started).toLocaleDateString()}
-                                </h3>
+                                <div className="flex justify-between text-gray-400 text-xs">
+                                    <span>
+                                        {new Date(workout.date_started).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                                                    <span>
+                                        {new Date(workout.date_started).toLocaleDateString()}
+                                    </span>
+                                </div>
                                 <div className="mt-2 text-left">
                                     <p className="text-white">Exercises:</p>
                                     {getExerciseDetails(workout).length > 0 ? (

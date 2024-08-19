@@ -23,5 +23,10 @@ def calculate_current_metrics_for_user(user):
                 total_distance=Sum('workout_exercises__sets__distance')
             )['total_distance'] or 0
             goal.current_value = total_distance
+        elif goal.goal_type == 'total_weight_lifted_in_week':
+            total_weight = workouts_last_week.aggregate(
+                total_weight=Sum('workout_exercises__sets__weight')
+            )['total_weight'] or 0
+            goal.current_value = total_weight
 
         goal.save(update_fields=['current_value'])
