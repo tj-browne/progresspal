@@ -11,6 +11,7 @@ class GoalSerializer(serializers.ModelSerializer):
             'goal_type',
             'workouts_per_week',
             'cardio_distance_in_week',
+            'total_weight_lifted_in_week',
             'current_value',
             'created_at'
         ]

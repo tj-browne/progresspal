@@ -71,7 +71,8 @@ const Dashboard = () => {
                 <div className="mb-32 w-8/12">
                     {reversedWorkouts.length > 0 ? (
                         reversedWorkouts.map((workout) => (
-                            <div key={workout.id} className="relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300">
+                            <div key={workout.id}
+                                 className="relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300">
                                 <div className="flex items-center justify-between relative z-10">
                                     <h3 className="text-left text-white text-2xl font-bold mr-6">
                                         {workout.routine?.name || 'No routine name'}
@@ -84,9 +85,17 @@ const Dashboard = () => {
                                         />
                                     </div>
                                 </div>
-                                <h3 className="text-gray-400 text-xs text-left">
-                                    {new Date(workout.date_started).toLocaleDateString()}
-                                </h3>
+                                <div className="text-gray-400 text-xs text-left">
+                                    <div>
+                                        {new Date(workout.date_started).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </div>
+                                    <div>
+                                        {new Date(workout.date_started).toLocaleDateString()}
+                                    </div>
+                                </div>
                                 <div className="mt-2 text-left">
                                     <p className="text-white">Exercises:</p>
                                     {getExerciseDetails(workout).length > 0 ? (
@@ -98,11 +107,13 @@ const Dashboard = () => {
                                                         <div key={setIndex} className="ml-4">
                                                             {exercise.exercise_type === 'strength' ? (
                                                                 <p className="text-gray-400 text-sm">
-                                                                    Set {setIndex + 1}: Reps: {set.reps}, Weight: {set.weight}
+                                                                    Set {setIndex + 1}: Reps: {set.reps},
+                                                                    Weight: {set.weight}
                                                                 </p>
                                                             ) : (
                                                                 <p className="text-gray-400 text-sm">
-                                                                    Set {setIndex + 1}: Distance: {set.distance} km, Time: {set.time} min
+                                                                    Set {setIndex + 1}: Distance: {set.distance} km,
+                                                                    Time: {set.time} min
                                                                 </p>
                                                             )}
                                                         </div>
@@ -124,8 +135,8 @@ const Dashboard = () => {
                     {deleteError && <div className="text-red-500">{deleteError}</div>}
                 </div>
             </div>
-            <Footer />
-            <ChooseRoutineModal isOpen={isModalOpen} onRequestClose={closeModal} />
+            <Footer/>
+            <ChooseRoutineModal isOpen={isModalOpen} onRequestClose={closeModal}/>
         </div>
     );
 };

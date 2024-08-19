@@ -8,6 +8,7 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
     const [goalType, setGoalType] = useState('workouts_per_week');
     const [workoutsPerWeek, setWorkoutsPerWeek] = useState('');
     const [cardioDistanceInWeek, setCardioDistanceInWeek] = useState('');
+    const [totalWeightLiftedInWeek, setTotalWeightLiftedInWeek] = useState('');
     const [error, setError] = useState('');
 
     const { userId, loading, error: userError } = useFetchCurrentUser();
@@ -17,6 +18,7 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
             setGoalType(goal.goal_type);
             setWorkoutsPerWeek(goal.workouts_per_week || '');
             setCardioDistanceInWeek(goal.cardio_distance_in_week || '');
+            setTotalWeightLiftedInWeek(goal.total_weight_lifted_in_week || '');
         }
     }, [goal]);
 
@@ -43,6 +45,13 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
                     return;
                 }
                 goalData = { ...goalData, cardio_distance_in_week: Number(cardioDistanceInWeek) };
+                break;
+            case 'total_weight_lifted_in_week':
+                if (!totalWeightLiftedInWeek) {
+                    setError('Please fill out all required fields.');
+                    return;
+                }
+                goalData = { ...goalData, total_weight_lifted_in_week: Number(totalWeightLiftedInWeek) };
                 break;
             default:
                 setError('Unknown goal type.');
@@ -126,6 +135,7 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
                         <option value="">Pick a goal type:</option>
                         <option value="workouts_per_week">Workouts Per Week</option>
                         <option value="cardio_distance_in_week">Cardio Distance in a Week</option>
+                        <option value="total_weight_lifted_in_week">Total Weight Lifted in a Week</option>
                     </select>
                 </label>
                 {goalType === 'workouts_per_week' && (
@@ -147,6 +157,18 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
                             type="number"
                             value={cardioDistanceInWeek}
                             onChange={(e) => setCardioDistanceInWeek(e.target.value)}
+                            className="w-full p-2 mt-1 bg-white text-black"
+                            required
+                        />
+                    </label>
+                )}
+                {goalType === 'total_weight_lifted_in_week' && (
+                    <label className="block mb-2 text-white">
+                        Total Weight Lifted in a Week (kg):
+                        <input
+                            type="number"
+                            value={totalWeightLiftedInWeek}
+                            onChange={(e) => setTotalWeightLiftedInWeek(e.target.value)}
                             className="w-full p-2 mt-1 bg-white text-black"
                             required
                         />
