@@ -1,7 +1,10 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from datetime import timedelta
+from django.utils import timezone
 
+from goals.models import Goal
 from workouts.models import Routine, Exercise, RoutineExercise, Workout, WorkoutExercise
 from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCreateSerializer, WorkoutCreateSerializer, \
     ExerciseSerializer, RoutineExerciseSerializer, WorkoutExerciseSerializer, WorkoutUpdateSerializer, \
@@ -86,6 +89,19 @@ def user_routines_list(request, user_id):
     return Response(serializer.data)
 
 
+def calculate_current_workouts_for_user(user):
+    now = timezone.now()
+    one_week_ago = now - timedelta(days=7)
+
+    workouts_last_week = Workout.objects.filter(
+        user=user,
+        date_started__gte=one_week_ago,
+        date_started__lte=now
+    )
+
+    return workouts_last_week.count()
+
+
 @api_view(['GET', 'POST'])
 def workouts_list_create(request):
     if request.method == 'GET':
@@ -96,8 +112,21 @@ def workouts_list_create(request):
     if request.method == 'POST':
         serializer = WorkoutCreateSerializer(data=request.data)
         if serializer.is_valid():
-            routine = serializer.save()
-            return Response(WorkoutSerializer(routine).data, status=201)
+            workout = serializer.save()
+
+            goals = Goal.objects.filter(user=workout.user)
+            for goal in goals:
+                old_value = goal.current_value
+                new_value = calculate_current_workouts_for_user(workout.user)
+
+                goal.current_value = new_value
+                goal.save(update_fields=['current_value'])
+
+                updated_goal = Goal.objects.get(id=goal.id)
+
+            return Response(WorkoutSerializer(workout).data, status=201)
+
+        print(f"[DEBUG] Workout creation failed: {serializer.errors}")
         return Response(serializer.errors, status=400)
 
 
@@ -112,18 +141,28 @@ def workout_retrieve_update_delete(request, workout_id):
         return Response(serializer.data)
 
     if request.method == 'PUT':
-        print(f"Request data: {request.data}")
         serializer = WorkoutUpdateSerializer(workout, data=request.data, partial=True)
 
         if serializer.is_valid():
-            print(f"Validated data: {serializer.validated_data}")
             serializer.save()
             return Response({'message': 'Workout updated successfully'}, status=200)
         print(f"Errors: {serializer.errors}")
         return Response(serializer.errors, status=400)
 
     if request.method == 'DELETE':
+        user = workout.user
+
         workout.delete()
+
+        goals = Goal.objects.filter(user=user)
+        for goal in goals:
+            new_value = calculate_current_workouts_for_user(user)
+
+            goal.current_value = new_value
+            goal.save(update_fields=['current_value'])
+
+            updated_goal = Goal.objects.get(id=goal.id)
+
         return Response({'message': 'Workout deleted successfully'}, status=204)
 
 
