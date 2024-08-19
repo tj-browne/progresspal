@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-const HamburgerMenu = ({ goalId, onEdit, onDelete }) => {
+const HamburgerMenu = ({ goal, onEdit, onDelete }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
@@ -13,13 +13,13 @@ const HamburgerMenu = ({ goalId, onEdit, onDelete }) => {
     const handleEditClick = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        onEdit();
+        onEdit(goal);
     };
 
     const handleDeleteClick = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        onDelete(goalId);
+        onDelete(goal.id);
     };
 
     const handleClickOutside = (event) => {

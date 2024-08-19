@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 Modal.setAppElement('#root');
 
-const AddGoalModal = ({ isOpen, onRequestClose, onGoalCreated }) => {
+const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) => {
     const [goalType, setGoalType] = useState('workouts_per_week');
     const [workoutsPerWeek, setWorkoutsPerWeek] = useState('');
     const [cardioDistanceInWeek, setCardioDistanceInWeek] = useState('');
     const [error, setError] = useState('');
 
     const { userId, loading, error: userError } = useFetchCurrentUser();
+
+    useEffect(() => {
+        if (goal) {
+            setGoalType(goal.goal_type);
+            setWorkoutsPerWeek(goal.workouts_per_week || '');
+            setCardioDistanceInWeek(goal.cardio_distance_in_week || '');
+        }
+    }, [goal]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -52,8 +60,10 @@ const AddGoalModal = ({ isOpen, onRequestClose, onGoalCreated }) => {
         }
 
         try {
-            const response = await fetch('http://localhost:8000/api/goals/', {
-                method: 'POST',
+            const method = isEditing ? 'PUT' : 'POST';
+            const url = isEditing ? `http://localhost:8000/api/goals/${goal.id}/` : 'http://localhost:8000/api/goals/';
+            const response = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -65,7 +75,7 @@ const AddGoalModal = ({ isOpen, onRequestClose, onGoalCreated }) => {
                 onGoalCreated();
             } else {
                 const errorData = await response.json();
-                setError(errorData.detail || 'Failed to create goal.');
+                setError(errorData.detail || 'Failed to save goal.');
             }
         } catch (error) {
             setError('Network or server error.');
@@ -99,10 +109,10 @@ const AddGoalModal = ({ isOpen, onRequestClose, onGoalCreated }) => {
         <Modal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Add Goal"
+            contentLabel={isEditing ? "Edit Goal" : "Add New Goal"}
             style={customStyles}
         >
-            <h2 className="text-xl mb-4">Add New Goal</h2>
+            <h2 className="text-xl mb-4">{isEditing ? 'Edit Goal' : 'Add New Goal'}</h2>
             {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <label className="block mb-2 text-white">
@@ -146,7 +156,7 @@ const AddGoalModal = ({ isOpen, onRequestClose, onGoalCreated }) => {
                     type="submit"
                     className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded mt-4"
                 >
-                    Add Goal
+                    {isEditing ? 'Save Changes' : 'Add Goal'}
                 </button>
                 <button
                     onClick={onRequestClose}
@@ -159,4 +169,4 @@ const AddGoalModal = ({ isOpen, onRequestClose, onGoalCreated }) => {
     );
 };
 
-export default AddGoalModal;
+export default GoalModal;

@@ -1,8 +1,7 @@
 from django.urls import path
-from . import views
-
+from .views import fitness_goals_list_create
 
 urlpatterns = [
-    path('api/goals/', views.fitness_goals_list_create, name='fitness-goal-list-create'),
-    path('api/goals/<int:id>/', views.delete_goal, name='delete_goal'),
+    path('api/goals/', fitness_goals_list_create, name='goal-list-create'),
+    path('api/goals/<int:id>/', fitness_goals_list_create, name='goal-detail'),
 ]

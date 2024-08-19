@@ -15,6 +15,8 @@ const GoalsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentGoal, setCurrentGoal] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
 
     const fetchGoals = async () => {
         try {
@@ -31,8 +33,16 @@ const GoalsPage = () => {
         fetchGoals();
     }, []);
 
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+    const openModal = (goal = null) => {
+        setCurrentGoal(goal);
+        setIsEditing(!!goal);
+        setIsModalOpen(true);
+    };
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setCurrentGoal(null);
+        setIsEditing(false);
+    };
 
     const handleDelete = async (goalId) => {
         try {
@@ -51,7 +61,7 @@ const GoalsPage = () => {
             <UserHeader />
             <div className="flex flex-col items-center text-center flex-grow">
                 <button
-                    onClick={openModal}
+                    onClick={() => openModal()}
                     className="bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl mt-32 mb-4 text-2xl w-64 transition duration-300 ease-in-out"
                 >
                     Set New Goal
@@ -66,8 +76,8 @@ const GoalsPage = () => {
                             >
                                 <div className="absolute top-2 right-2">
                                     <HamburgerMenu
-                                        goalId={goal.id}
-                                        onEdit={() => console.log('Edit goal', goal.id)}
+                                        goal={goal}
+                                        onEdit={() => openModal(goal)}
                                         onDelete={handleDelete}
                                     />
                                 </div>
@@ -78,7 +88,7 @@ const GoalsPage = () => {
                                     <p className="text-white">
                                         Goal:
                                         {goal.goal_type === 'workouts_per_week' ? ` ${goal.workouts_per_week} workouts per week` :
-                                            goal.goal_type === 'cardio_distance_in_week' ? ` ${goal.cardio_distance_in_week} km in a week` :
+                                            goal.goal_type === 'cardio_distance_in_week' ? ` ${goal.cardio_distance_in_week} km travelled in a week` :
                                                 'Unknown Goal'}
                                     </p>
                                     <p className="text-white">Current Value: {goal.current_value}</p>
@@ -94,7 +104,13 @@ const GoalsPage = () => {
                 </div>
             </div>
             <Footer />
-            <AddGoalModal isOpen={isModalOpen} onRequestClose={closeModal} onGoalCreated={fetchGoals} />
+            <AddGoalModal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                onGoalCreated={fetchGoals}
+                goal={currentGoal}
+                isEditing={isEditing}
+            />
         </div>
     );
 };
