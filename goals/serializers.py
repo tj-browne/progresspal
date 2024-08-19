@@ -5,4 +5,12 @@ from .models import Goal
 class GoalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Goal
-        fields = ['id', 'user', 'goal_type', 'workouts_per_week', 'current_value', 'created_at']
+        fields = [
+            'id',
+            'user',
+            'goal_type',
+            'workouts_per_week',
+            'cardio_distance_in_week',
+            'current_value',
+            'created_at'
+        ]

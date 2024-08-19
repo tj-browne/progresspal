@@ -19,7 +19,7 @@ const HamburgerMenu = ({ goalId, onEdit, onDelete }) => {
     const handleDeleteClick = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        onDelete(goalId); // Ensure goalId is passed to the delete function
+        onDelete(goalId);
     };
 
     const handleClickOutside = (event) => {
@@ -39,7 +39,7 @@ const HamburgerMenu = ({ goalId, onEdit, onDelete }) => {
         <div className="relative z-30">
             <button
                 onClick={handleClick}
-                ref={buttonRef} // Set ref to button
+                ref={buttonRef}
                 className="p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-full focus:outline-none transition-transform transform duration-300 ease-in-out"
                 aria-label="Toggle menu"
                 aria-expanded={isOpen}
@@ -50,7 +50,7 @@ const HamburgerMenu = ({ goalId, onEdit, onDelete }) => {
             </button>
             {isOpen && (
                 <div
-                    ref={menuRef} // Set ref to menu
+                    ref={menuRef}
                     className="absolute right-0 bg-gray-900 text-white rounded-lg shadow-lg transition-transform transform duration-300 ease-in-out"
                     role="menu"
                     aria-orientation="vertical"

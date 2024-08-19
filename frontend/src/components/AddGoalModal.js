@@ -1,22 +1,44 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 Modal.setAppElement('#root');
 
-const AddGoalModal = ({isOpen, onRequestClose, onGoalCreated}) => {
+const AddGoalModal = ({ isOpen, onRequestClose, onGoalCreated }) => {
     const [goalType, setGoalType] = useState('workouts_per_week');
     const [workoutsPerWeek, setWorkoutsPerWeek] = useState('');
+    const [cardioDistanceInWeek, setCardioDistanceInWeek] = useState('');
     const [error, setError] = useState('');
 
-    const {userId, loading, error: userError} = useFetchCurrentUser();
+    const { userId, loading, error: userError } = useFetchCurrentUser();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!workoutsPerWeek) {
-            setError('Please fill out all required fields.');
-            return;
+        let goalData = {
+            goal_type: goalType,
+            current_value: 0,
+            user: userId,
+        };
+
+        switch (goalType) {
+            case 'workouts_per_week':
+                if (!workoutsPerWeek) {
+                    setError('Please fill out all required fields.');
+                    return;
+                }
+                goalData = { ...goalData, workouts_per_week: Number(workoutsPerWeek) };
+                break;
+            case 'cardio_distance_in_week':
+                if (!cardioDistanceInWeek) {
+                    setError('Please fill out all required fields.');
+                    return;
+                }
+                goalData = { ...goalData, cardio_distance_in_week: Number(cardioDistanceInWeek) };
+                break;
+            default:
+                setError('Unknown goal type.');
+                return;
         }
 
         if (loading) {
@@ -28,13 +50,6 @@ const AddGoalModal = ({isOpen, onRequestClose, onGoalCreated}) => {
             setError('Failed to load user data. Please try again.');
             return;
         }
-
-        const goalData = {
-            goal_type: goalType,
-            workouts_per_week: Number(workoutsPerWeek),
-            current_value: 0,
-            user: userId,
-        };
 
         try {
             const response = await fetch('http://localhost:8000/api/goals/', {
@@ -100,18 +115,33 @@ const AddGoalModal = ({isOpen, onRequestClose, onGoalCreated}) => {
                     >
                         <option value="">Pick a goal type:</option>
                         <option value="workouts_per_week">Workouts Per Week</option>
+                        <option value="cardio_distance_in_week">Cardio Distance in a Week</option>
                     </select>
                 </label>
-                <label className="block mb-2 text-white">
-                    Goal:
-                    <input
-                        type="number"
-                        value={workoutsPerWeek}
-                        onChange={(e) => setWorkoutsPerWeek(e.target.value)}
-                        className="w-full p-2 mt-1 bg-white text-black"
-                        required
-                    />
-                </label>
+                {goalType === 'workouts_per_week' && (
+                    <label className="block mb-2 text-white">
+                        Workouts Per Week:
+                        <input
+                            type="number"
+                            value={workoutsPerWeek}
+                            onChange={(e) => setWorkoutsPerWeek(e.target.value)}
+                            className="w-full p-2 mt-1 bg-white text-black"
+                            required
+                        />
+                    </label>
+                )}
+                {goalType === 'cardio_distance_in_week' && (
+                    <label className="block mb-2 text-white">
+                        Cardio Distance in a Week (km):
+                        <input
+                            type="number"
+                            value={cardioDistanceInWeek}
+                            onChange={(e) => setCardioDistanceInWeek(e.target.value)}
+                            className="w-full p-2 mt-1 bg-white text-black"
+                            required
+                        />
+                    </label>
+                )}
                 <button
                     type="submit"
                     className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded mt-4"

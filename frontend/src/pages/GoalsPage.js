@@ -7,6 +7,7 @@ import HamburgerMenu from '../components/HamburgerMenu';
 
 const goalTypeMapping = {
     'workouts_per_week': 'Workouts Per Week',
+    'cardio_distance_in_week': 'Cardio Distance in a Week',
 };
 
 const GoalsPage = () => {
@@ -61,7 +62,7 @@ const GoalsPage = () => {
                         goals.map(goal => (
                             <div
                                 key={goal.id}
-                                className={`relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300 ${goal.current_value >= goal.workouts_per_week ? 'bg-green-600' : 'bg-gray-800'}`}
+                                className={`relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300 ${goal.current_value >= (goal.workouts_per_week || goal.cardio_distance_in_week) ? 'bg-green-600' : 'bg-gray-800'}`}
                             >
                                 <div className="absolute top-2 right-2">
                                     <HamburgerMenu
@@ -74,9 +75,14 @@ const GoalsPage = () => {
                                     <p className="text-white font-semibold">
                                         {goalTypeMapping[goal.goal_type] || 'Unknown Goal Type'}
                                     </p>
-                                    <p className="text-white">Goal: {goal.workouts_per_week} workouts per week</p>
+                                    <p className="text-white">
+                                        Goal:
+                                        {goal.goal_type === 'workouts_per_week' ? ` ${goal.workouts_per_week} workouts per week` :
+                                            goal.goal_type === 'cardio_distance_in_week' ? ` ${goal.cardio_distance_in_week} km in a week` :
+                                                'Unknown Goal'}
+                                    </p>
                                     <p className="text-white">Current Value: {goal.current_value}</p>
-                                    {goal.current_value >= goal.workouts_per_week && (
+                                    {goal.current_value >= (goal.workouts_per_week || goal.cardio_distance_in_week) && (
                                         <p className="text-green-300 font-semibold mt-2">Goal Achieved!</p>
                                     )}
                                 </div>
