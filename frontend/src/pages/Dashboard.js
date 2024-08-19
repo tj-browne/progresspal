@@ -22,13 +22,8 @@ const Dashboard = () => {
         }
     };
 
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     const reversedWorkouts = workouts.slice().reverse().slice(0, 7);
 
@@ -79,9 +74,10 @@ const Dashboard = () => {
                                     </h3>
                                     <div className="flex items-center z-30">
                                         <HamburgerMenu
-                                            workoutId={workout.id}
+                                            item={workout}
                                             onEdit={() => navigate(`/workout/${workout.id}`)}
-                                            onDelete={() => handleDelete(workout.id)}
+                                            onDelete={handleDelete}
+                                            type="workout"
                                         />
                                     </div>
                                 </div>

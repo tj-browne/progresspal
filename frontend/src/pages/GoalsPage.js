@@ -4,6 +4,7 @@ import AddGoalModal from '../components/AddGoalModal';
 import Footer from "../components/Footer";
 import UserHeader from "../components/UserHeader";
 import HamburgerMenu from '../components/HamburgerMenu';
+import {useNavigate} from "react-router-dom";
 
 const goalTypeMapping = {
     'workouts_per_week': 'Workouts Per Week',
@@ -18,6 +19,7 @@ const GoalsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentGoal, setCurrentGoal] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const navigate = useNavigate();
 
     const fetchGoals = async () => {
         try {
@@ -46,7 +48,7 @@ const GoalsPage = () => {
         setIsEditing(false);
     };
 
-    const handleDelete = async (goalId) => {
+    const handleDeleteGoal = async (goalId) => {
         try {
             await axios.delete(`http://localhost:8000/api/goals/${goalId}/`);
             fetchGoals();
@@ -78,9 +80,10 @@ const GoalsPage = () => {
                             >
                                 <div className="absolute top-2 right-2">
                                     <HamburgerMenu
-                                        goal={goal}
-                                        onEdit={() => openModal(goal)}
-                                        onDelete={handleDelete}
+                                        item={goal}
+                                        onEdit={() => navigate(`/goal/${goal.id}`)}
+                                        onDelete={handleDeleteGoal}
+                                        type="goal"
                                     />
                                 </div>
                                 <div className="mt-2 text-left">

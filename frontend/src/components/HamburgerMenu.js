@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-const HamburgerMenu = ({ goal, onEdit, onDelete }) => {
+const HamburgerMenu = ({ item, onEdit, onDelete, type }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
@@ -13,13 +14,13 @@ const HamburgerMenu = ({ goal, onEdit, onDelete }) => {
     const handleEditClick = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        onEdit(goal);
+        onEdit(item);
     };
 
     const handleDeleteClick = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        onDelete(goal.id);
+        onDelete(item.id);
     };
 
     const handleClickOutside = (event) => {
@@ -41,7 +42,7 @@ const HamburgerMenu = ({ goal, onEdit, onDelete }) => {
                 onClick={handleClick}
                 ref={buttonRef}
                 className="p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-full focus:outline-none transition-transform transform duration-300 ease-in-out"
-                aria-label="Toggle menu"
+                aria-label={`Toggle ${type} menu`}
                 aria-expanded={isOpen}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,7 +60,7 @@ const HamburgerMenu = ({ goal, onEdit, onDelete }) => {
                         onClick={handleEditClick}
                         className="block px-4 py-2 rounded-t-lg hover:bg-blue-600 bg-blue-500 w-full text-left transition-colors duration-300"
                         role="menuitem"
-                        aria-label="Edit goal"
+                        aria-label={`Edit ${type}`}
                     >
                         Edit
                     </button>
@@ -67,7 +68,7 @@ const HamburgerMenu = ({ goal, onEdit, onDelete }) => {
                         onClick={handleDeleteClick}
                         className="block px-4 py-2 rounded-b-lg hover:bg-red-600 bg-red-500 w-full text-left transition-colors duration-300"
                         role="menuitem"
-                        aria-label="Delete goal"
+                        aria-label={`Delete ${type}`}
                     >
                         Delete
                     </button>
@@ -75,6 +76,13 @@ const HamburgerMenu = ({ goal, onEdit, onDelete }) => {
             )}
         </div>
     );
+};
+
+HamburgerMenu.propTypes = {
+    item: PropTypes.object.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    type: PropTypes.string.isRequired, // 'goal', 'workout', or 'routine'
 };
 
 export default HamburgerMenu;

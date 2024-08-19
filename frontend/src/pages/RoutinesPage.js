@@ -56,9 +56,10 @@ const RoutinesPage = () => {
                             <div className="flex items-center justify-between relative z-10">
                                 <h1 className="text-xl font-bold text-white">{routine.name}</h1>
                                 <HamburgerMenu
-                                    routineId={routine.id}
+                                    item={routine}
                                     onEdit={() => handleEdit(routine.id)}
                                     onDelete={() => handleDelete(routine.id)}
+                                    type="routine"
                                 />
                             </div>
                             <h3 className="text-gray-400 text-xs mt-1">
