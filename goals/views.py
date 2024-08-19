@@ -1,12 +1,9 @@
-from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
-from workouts.models import Workout
-from workouts.views import calculate_current_workouts_for_user
-from .models import Goal
-from .serializers import GoalSerializer
+from goals.models import Goal
+from goals.serializers import GoalSerializer
+from workouts.views import calculate_current_metrics_for_user
 
 
 @api_view(['GET', 'POST'])
@@ -20,10 +17,7 @@ def fitness_goals_list_create(request):
         serializer = GoalSerializer(data=request.data)
         if serializer.is_valid():
             goal = serializer.save()
-
-            goal.current_value = calculate_current_workouts_for_user(goal.user)
-            goal.save(update_fields=['current_value'])
-
+            calculate_current_metrics_for_user(goal.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
