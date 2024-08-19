@@ -1,8 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddGoalModal from '../components/AddGoalModal';
 import Footer from "../components/Footer";
-import UserHeader from "../components/UserHeader"; // Import the AddGoalModal component
+import UserHeader from "../components/UserHeader";
+import HamburgerMenu from '../components/HamburgerMenu';
+
+const goalTypeMapping = {
+    'workouts_per_week': 'Workouts Per Week',
+};
 
 const GoalsPage = () => {
     const [goals, setGoals] = useState([]);
@@ -10,30 +15,41 @@ const GoalsPage = () => {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchGoals = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/api/goals/');
-                setGoals(response.data);
-                setLoading(false);
-            } catch (err) {
-                setError(err);
-                setLoading(false);
-            }
-        };
+    const fetchGoals = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/goals/');
+            console.log('Fetched goals:', response.data);
+            setGoals(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching goals:', err);
+            setError(err);
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchGoals();
     }, []);
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
+    const handleDelete = async (goalId) => {
+        try {
+            await axios.delete(`http://localhost:8000/api/goals/${goalId}/`);
+            fetchGoals();
+        } catch (err) {
+            console.error('Failed to delete goal:', err);
+        }
+    };
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error loading goals: {error.message}</p>;
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
-            <UserHeader/>
+            <UserHeader />
             <div className="flex flex-col items-center text-center flex-grow">
                 <button
                     onClick={openModal}
@@ -47,11 +63,24 @@ const GoalsPage = () => {
                         goals.map(goal => (
                             <div
                                 key={goal.id}
-                                className="relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300"
+                                className={`relative flex flex-col border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 transition-transform transform hover:scale-105 duration-300 ${goal.current_value >= goal.workouts_per_week ? 'bg-green-600' : 'bg-gray-800'}`}
                             >
+                                <div className="absolute top-2 right-2">
+                                    <HamburgerMenu
+                                        goalId={goal.id}
+                                        onEdit={() => console.log('Edit goal', goal.id)}
+                                        onDelete={handleDelete}
+                                    />
+                                </div>
                                 <div className="mt-2 text-left">
-                                    <p className="text-white">Target: {goal.target_value}</p>
-                                    <p className="text-white">Progress: {goal.current_value}</p>
+                                    <p className="text-white font-semibold">
+                                        {goalTypeMapping[goal.goal_type] || 'Unknown Goal Type'}
+                                    </p>
+                                    <p className="text-white">Goal: {goal.workouts_per_week} workouts per week</p>
+                                    <p className="text-white">Current Value: {goal.current_value}</p>
+                                    {goal.current_value >= goal.workouts_per_week && (
+                                        <p className="text-green-300 font-semibold mt-2">Goal Achieved!</p>
+                                    )}
                                 </div>
                             </div>
                         ))
@@ -60,8 +89,8 @@ const GoalsPage = () => {
                     )}
                 </div>
             </div>
-            < Footer/>
-            <AddGoalModal isOpen={isModalOpen} onRequestClose={closeModal}/>
+            <Footer />
+            <AddGoalModal isOpen={isModalOpen} onRequestClose={closeModal} onGoalCreated={fetchGoals} />
         </div>
     );
 };

@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Modal from 'react-modal';
+import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 Modal.setAppElement('#root');
 
-const AddGoalModal = ({ isOpen, onRequestClose }) => {
-    const [goalType, setGoalType] = useState('');
-    const [targetValue, setTargetValue] = useState('');
-    const [currentValue, setCurrentValue] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+const AddGoalModal = ({isOpen, onRequestClose, onGoalCreated}) => {
+    const [goalType, setGoalType] = useState('workouts_per_week');
+    const [workoutsPerWeek, setWorkoutsPerWeek] = useState('');
     const [error, setError] = useState('');
+
+    const {userId, loading, error: userError} = useFetchCurrentUser();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        if (!workoutsPerWeek) {
+            setError('Please fill out all required fields.');
+            return;
+        }
+
+        if (loading) {
+            setError('Loading user data, please wait.');
+            return;
+        }
+
+        if (userError || !userId) {
+            setError('Failed to load user data. Please try again.');
+            return;
+        }
+
         const goalData = {
             goal_type: goalType,
-            target_value: parseFloat(targetValue),
-            current_value: parseFloat(currentValue),
-            start_date: startDate,
-            end_date: endDate
+            workouts_per_week: Number(workoutsPerWeek),
+            current_value: 0,
+            user: userId,
         };
 
         try {
@@ -32,7 +46,8 @@ const AddGoalModal = ({ isOpen, onRequestClose }) => {
             });
 
             if (response.ok) {
-                onRequestClose(); // Close the modal on successful submission
+                onRequestClose();
+                onGoalCreated();
             } else {
                 const errorData = await response.json();
                 setError(errorData.detail || 'Failed to create goal.');
@@ -81,50 +96,18 @@ const AddGoalModal = ({ isOpen, onRequestClose }) => {
                         value={goalType}
                         onChange={(e) => setGoalType(e.target.value)}
                         className="w-full p-2 mt-1 bg-white text-black"
+                        required
                     >
-                        <option value="">Select a goal type</option>
-                        <option value="weight_loss">Weight Loss</option>
-                        <option value="muscle_gain">Muscle Gain</option>
-                        <option value="endurance">Endurance</option>
-                        <option value="strength">Strength</option>
-                        <option value="flexibility">Flexibility</option>
+                        <option value="">Pick a goal type:</option>
+                        <option value="workouts_per_week">Workouts Per Week</option>
                     </select>
                 </label>
                 <label className="block mb-2 text-white">
-                    Target Value:
+                    Goal:
                     <input
                         type="number"
-                        value={targetValue}
-                        onChange={(e) => setTargetValue(e.target.value)}
-                        className="w-full p-2 mt-1 bg-white text-black"
-                        required
-                    />
-                </label>
-                <label className="block mb-2 text-white">
-                    Current Value:
-                    <input
-                        type="number"
-                        value={currentValue}
-                        onChange={(e) => setCurrentValue(e.target.value)}
-                        className="w-full p-2 mt-1 bg-white text-black"
-                    />
-                </label>
-                <label className="block mb-2 text-white">
-                    Start Date:
-                    <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full p-2 mt-1 bg-white text-black"
-                        required
-                    />
-                </label>
-                <label className="block mb-2 text-white">
-                    End Date:
-                    <input
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        value={workoutsPerWeek}
+                        onChange={(e) => setWorkoutsPerWeek(e.target.value)}
                         className="w-full p-2 mt-1 bg-white text-black"
                         required
                     />

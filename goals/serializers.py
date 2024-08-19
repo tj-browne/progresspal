@@ -1,14 +1,8 @@
 from rest_framework import serializers
-from .models import FitnessGoal, WeightLog
+from .models import Goal
 
 
-class FitnessGoalSerializer(serializers.ModelSerializer):
+class GoalSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FitnessGoal
-        fields = '__all__'
-
-
-class WeightLogSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WeightLog
-        fields = '__all__'
+        model = Goal
+        fields = ['id', 'user', 'goal_type', 'workouts_per_week', 'current_value', 'created_at']
