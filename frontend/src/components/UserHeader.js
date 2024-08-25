@@ -58,7 +58,7 @@ const UserHeader = ({user}) => {
                 <div
                     className={`cursor-pointer hover:scale-110 transition-all duration-300 ${profileIconClass}`}
                     onClick={toggleDropdown}>
-                    <UserCircle size={48} color="#ffffff"/> {/* Adjust size and color as needed */}
+                    <UserCircle size={48} color="#ffffff"/> {}
                 </div>
                 {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white shadow-lg rounded-lg">

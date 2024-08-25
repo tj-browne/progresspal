@@ -1,4 +1,6 @@
 import json
+import random
+import string
 import uuid
 
 from django.contrib.auth.decorators import login_required
@@ -15,6 +17,7 @@ from google.oauth2 import id_token
 
 from progresspal import settings
 from .models import CustomUser
+
 
 @csrf_protect
 def users_list_create(request):
@@ -68,7 +71,8 @@ def user_login(request):
         remember_me = data.get('rememberMe', False)
 
         try:
-            user = CustomUser.objects.get(email=identifier) if '@' in identifier else CustomUser.objects.get(username=identifier)
+            user = CustomUser.objects.get(email=identifier) if '@' in identifier else CustomUser.objects.get(
+                username=identifier)
             if user.check_password(password):
                 auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
@@ -171,12 +175,19 @@ def google_auth_callback(request):
 
         if idinfo:
             email = idinfo.get('email')
-            name = idinfo.get('name')
+            email_prefix = email.split('@')[0]
             user_id = idinfo.get('sub')
 
             user, created = CustomUser.objects.get_or_create(email=email)
             if created:
-                user.username = name
+                username = email_prefix
+                counter = 1
+
+                while CustomUser.objects.filter(username=username).exists():
+                    username = f"{email_prefix}{counter}"
+                    counter += 1
+
+                user.username = username
                 user.save()
 
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
