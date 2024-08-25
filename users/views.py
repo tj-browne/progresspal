@@ -1,6 +1,5 @@
 import json
-import random
-import string
+
 import uuid
 
 from django.contrib.auth.decorators import login_required
@@ -14,41 +13,44 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from google.auth.transport import requests
 from google.oauth2 import id_token
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from progresspal import settings
 from .models import CustomUser
+from .serializers import CustomUserSerializer
 
 
-@csrf_protect
+@api_view(['GET', 'POST'])
 def users_list_create(request):
     if request.method == 'GET':
         users = CustomUser.objects.all()
-        user_data = list(users.values())
-        return JsonResponse({'users': user_data})
+        serializer = CustomUserSerializer(users, many=True)
+        return Response({'users': serializer.data})
 
     if request.method == 'POST':
-        data = json.loads(request.body)
-        email = data.get('email')
-        username = data.get('username')
-        password = data.get('password')
+        serializer = CustomUserSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            email = data.get('email')
+            username = data.get('username')
+            password = data.get('password')
 
-        if '@' in username:
-            return JsonResponse({'error': 'Invalid username.'}, status=401)
+            if '@' in username:
+                return Response({'error': 'Invalid username.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if CustomUser.objects.filter(email=email).exists():
-            return JsonResponse({'error': 'Email already in use.'}, status=409)
+            if CustomUser.objects.filter(email=email).exists():
+                return Response({'error': 'Email already in use.'}, status=status.HTTP_409_CONFLICT)
 
-        if CustomUser.objects.filter(username=username).exists():
-            return JsonResponse({'error': 'Username already in use.'}, status=409)
+            if CustomUser.objects.filter(username=username).exists():
+                return Response({'error': 'Username already in use.'}, status=status.HTTP_409_CONFLICT)
 
-        try:
             user = CustomUser.objects.create_user(username=username, email=email, password=password)
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            return JsonResponse({'message': 'User created successfully'}, status=201)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
-    return JsonResponse({'error': 'Method not allowed.'}, status=405)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @login_required
