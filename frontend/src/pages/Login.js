@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import { getCsrfToken } from "../services/csrfService";
 import Header from "../components/Header";
-import { Link } from 'react-router-dom'; // Import Link
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -34,19 +33,21 @@ const Login = () => {
             navigate('/dashboard');
         } catch (error) {
             console.error('Error submitting form:', error);
-            setErrorMessage(error.response.data.error);
+            setErrorMessage(error.response?.data?.error || 'An unexpected error occurred.');
         }
     };
 
     return (
-        <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
             <Header />
-            <LoginForm
-                formData={formData}
-                handleChange={handleChange}
-                handleSubmit={handleSubmit}
-                errorMessage={errorMessage}
-            />
+            <div className="flex justify-center items-center w-full max-w-6xl mt-20">
+                <LoginForm
+                    formData={formData}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                    errorMessage={errorMessage}
+                />
+            </div>
         </div>
     );
 };

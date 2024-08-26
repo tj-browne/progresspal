@@ -84,8 +84,6 @@ const CreateRoutinePage = () => {
             })),
         };
 
-        console.log('Sending data:', JSON.stringify(workoutData, null, 2));
-
         try {
             const response = await fetch('http://localhost:8000/api/routines/', {
                 method: 'POST',

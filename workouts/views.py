@@ -1,12 +1,7 @@
-from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from datetime import timedelta
-from django.utils import timezone
-
 from goals.goal_utils import calculate_current_metrics_for_user
-from goals.models import Goal
 from workouts.models import Routine, Exercise, RoutineExercise, Workout, WorkoutExercise
 from workouts.serializers import WorkoutSerializer, RoutineSerializer, RoutineCreateSerializer, WorkoutCreateSerializer, \
     ExerciseSerializer, RoutineExerciseSerializer, WorkoutExerciseSerializer, WorkoutUpdateSerializer, \

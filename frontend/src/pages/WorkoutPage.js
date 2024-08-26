@@ -56,9 +56,24 @@ const WorkoutPage = () => {
         };
     }, [deleteWorkout, deleteError, workoutId]);
 
+    const validateExercise = (exercise) => {
+        return exercise.sets.every(set => {
+            if (exercise.exercise_type === 'strength') {
+                return set.reps >= 1 && set.weight >= 0;
+            } else {
+                return set.distance >= 0 && set.time > 0;
+            }
+        });
+    };
+
     const handleSaveWorkout = async () => {
         if (!userId) {
             console.error('User ID is not available');
+            return;
+        }
+
+        if (!exercises.every(validateExercise)) {
+            alert('Please correct the input values.');
             return;
         }
 
@@ -146,10 +161,14 @@ const WorkoutPage = () => {
                                                     className="w-20 p-1 text-black"
                                                     type="number"
                                                     value={set.weight || 0}
+                                                    min="0"
                                                     onChange={(e) => {
-                                                        const updatedExercises = [...exercises];
-                                                        updatedExercises[exerciseIndex].sets[setIndex].weight = Number(e.target.value);
-                                                        setExercises(updatedExercises);
+                                                        const value = Number(e.target.value);
+                                                        if (value >= 0) {
+                                                            const updatedExercises = [...exercises];
+                                                            updatedExercises[exerciseIndex].sets[setIndex].weight = value;
+                                                            setExercises(updatedExercises);
+                                                        }
                                                     }}
                                                     placeholder="Weight"
                                                 />
@@ -159,11 +178,15 @@ const WorkoutPage = () => {
                                                 <input
                                                     className="w-20 p-1 text-black"
                                                     type="number"
-                                                    value={set.reps || 0}
+                                                    value={set.reps || 1}
+                                                    min="1"
                                                     onChange={(e) => {
-                                                        const updatedExercises = [...exercises];
-                                                        updatedExercises[exerciseIndex].sets[setIndex].reps = Number(e.target.value);
-                                                        setExercises(updatedExercises);
+                                                        const value = Number(e.target.value);
+                                                        if (value >= 1) {
+                                                            const updatedExercises = [...exercises];
+                                                            updatedExercises[exerciseIndex].sets[setIndex].reps = value;
+                                                            setExercises(updatedExercises);
+                                                        }
                                                     }}
                                                     placeholder="Reps"
                                                 />
@@ -177,10 +200,14 @@ const WorkoutPage = () => {
                                                     className="w-20 p-1 text-black"
                                                     type="number"
                                                     value={set.distance || 0}
+                                                    min="0"
                                                     onChange={(e) => {
-                                                        const updatedExercises = [...exercises];
-                                                        updatedExercises[exerciseIndex].sets[setIndex].distance = Number(e.target.value);
-                                                        setExercises(updatedExercises);
+                                                        const value = Number(e.target.value);
+                                                        if (value >= 0) {
+                                                            const updatedExercises = [...exercises];
+                                                            updatedExercises[exerciseIndex].sets[setIndex].distance = value;
+                                                            setExercises(updatedExercises);
+                                                        }
                                                     }}
                                                     placeholder="Distance"
                                                 />
@@ -190,11 +217,15 @@ const WorkoutPage = () => {
                                                 <input
                                                     className="w-20 p-1 text-black"
                                                     type="number"
-                                                    value={set.time || 0}
+                                                    value={set.time || 1}
+                                                    min="1"
                                                     onChange={(e) => {
-                                                        const updatedExercises = [...exercises];
-                                                        updatedExercises[exerciseIndex].sets[setIndex].time = Number(e.target.value);
-                                                        setExercises(updatedExercises);
+                                                        const value = Number(e.target.value);
+                                                        if (value > 0) {
+                                                            const updatedExercises = [...exercises];
+                                                            updatedExercises[exerciseIndex].sets[setIndex].time = value;
+                                                            setExercises(updatedExercises);
+                                                        }
                                                     }}
                                                     placeholder="Time"
                                                 />
