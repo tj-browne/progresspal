@@ -13,8 +13,9 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from google.auth.transport import requests
 from google.oauth2 import id_token
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
 from progresspal import settings
@@ -22,15 +23,17 @@ from .models import CustomUser
 from .serializers import CustomUserSerializer
 
 
-@api_view(['GET', 'POST'])
-def users_list_create(request):
-    if request.method == 'GET':
-        users = CustomUser.objects.all()
-        serializer = CustomUserSerializer(users, many=True)
-        return Response({'users': serializer.data})
+class UserListCreateView(generics.ListCreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
 
-    if request.method == 'POST':
-        serializer = CustomUserSerializer(data=request.data)
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [IsAdminUser()]
+        return []
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             email = data.get('email')
@@ -48,6 +51,7 @@ def users_list_create(request):
 
             user = CustomUser.objects.create_user(username=username, email=email, password=password)
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -168,42 +172,39 @@ def password_reset(request, token):
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
+@api_view(['POST'])
 @csrf_exempt
 def google_auth_callback(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        id_token_str = data.get('idToken')
-        idinfo = verify_google_token(id_token_str)
+    data = request.data
+    id_token_str = data.get('idToken')
+    idinfo = verify_google_token(id_token_str)
 
-        if idinfo:
-            email = idinfo.get('email')
-            email_prefix = email.split('@')[0]
-            user_id = idinfo.get('sub')
+    if idinfo:
+        email = idinfo.get('email')
+        email_prefix = email.split('@')[0]
 
-            user, created = CustomUser.objects.get_or_create(email=email)
-            if created:
-                username = email_prefix
-                counter = 1
+        user, created = CustomUser.objects.get_or_create(email=email)
+        if created:
+            username = email_prefix
+            counter = 1
 
-                while CustomUser.objects.filter(username=username).exists():
-                    username = f"{email_prefix}{counter}"
-                    counter += 1
+            while CustomUser.objects.filter(username=username).exists():
+                username = f"{email_prefix}{counter}"
+                counter += 1
 
-                user.username = username
-                user.save()
+            user.username = username
+            user.save()
 
-            auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
-            return JsonResponse({
-                'message': 'Authentication successful',
-                'user_id': user.id,
-                'username': user.username,
-                'email': user.email
-            })
-        else:
-            return JsonResponse({'error': 'Invalid token'}, status=400)
-
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+        return Response({
+            'message': 'Authentication successful',
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email
+        })
+    else:
+        return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def verify_google_token(id_token_str):
