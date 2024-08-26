@@ -2,22 +2,14 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # User-related endpoints
     path('api/users/', views.UserListCreateView.as_view(), name='users_list_create'),
-    path('api/users/<int:user_id>/', views.user_retrieve_update_delete, name='user_retrieve_update_delete'),
-    path('api/users/profile/', views.user_profile, name='user_profile'),
-    path('api/auth/current-user/', views.current_user, name='current_user'),
-
-    # Authentication endpoints
-    path('api/auth/login/', views.user_login, name='user_login'),
-    path('api/auth/logout/', views.user_logout, name='user_logout'),
-    path('api/auth/check/', views.check_authentication, name='check_authentication'),
-    path('api/auth/google/', views.google_auth_callback, name='google_auth_callback'),
-
-    # Password reset endpoints
-    path('api/users/password-reset-request/', views.password_reset_request, name='password_reset_request'),
-    path('api/users/password-reset/<uuid:token>/', views.password_reset, name='password_reset'),
-
-    # CSRF token endpoint
-    path('api/csrf-token/', views.get_csrf_token, name='get_csrf_token'),
+    path('api/users/<int:pk>/', views.UserRetrieveUpdateDeleteView.as_view(), name='user_retrieve_update_delete'),
+    path('api/auth/current-user/', views.CurrentUserView.as_view(), name='current_user'),
+    path('api/auth/login/', views.UserLoginView.as_view(), name='user_login'),
+    path('api/auth/logout/', views.UserLogoutView.as_view(), name='user_logout'),
+    path('api/auth/check/', views.CheckAuthenticationView.as_view(), name='check_authentication'),
+    path('api/auth/google/', views.GoogleAuthCallbackView.as_view(), name='google_auth_callback'),
+    path('api/users/password-reset-request/', views.PasswordResetRequestView.as_view(), name='password_reset_request'),
+    path('api/users/password-reset/<uuid:token>/', views.PasswordResetView.as_view(), name='password_reset'),
+    path('api/csrf-token/', views.CsrfTokenView.as_view(), name='get_csrf_token'),
 ]

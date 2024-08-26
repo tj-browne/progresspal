@@ -11,13 +11,14 @@ const useFetchUserWorkouts = () => {
     useEffect(() => {
         if (!userId) return;
 
+        console.log("Fetching user workouts for user ID:", userId);
+
         const fetchUserWorkouts = async () => {
             try {
                 const workoutsResponse = await axios.get(`http://localhost:8000/api/users/${userId}/workouts/`);
                 setWorkouts(workoutsResponse.data);
-                // Handle the case where the data is an empty array
                 if (Array.isArray(workoutsResponse.data) && workoutsResponse.data.length === 0) {
-                    setWorkoutsError(null); // No error, just no workouts
+                    setWorkoutsError(null);
                 }
             } catch (error) {
                 if (error.response?.status === 401) {

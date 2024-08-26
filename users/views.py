@@ -1,22 +1,16 @@
-import json
-
 import uuid
 
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.http import JsonResponse
 from django.middleware.csrf import get_token
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status, generics
-from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from progresspal import settings
 from .models import CustomUser
@@ -57,21 +51,9 @@ class UserListCreateView(generics.ListCreateAPIView):
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@login_required
-def user_profile(request):
-    user = request.user
-    profile_data = {
-        'id': user.id,
-        'username': user.username,
-        'email': user.email,
-    }
-    return JsonResponse(profile_data)
-
-
-@csrf_protect
-def user_login(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
+class UserLoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
         identifier = data.get('identifier')
         password = data.get('password')
         remember_me = data.get('rememberMe', False)
@@ -87,47 +69,47 @@ def user_login(request):
                 else:
                     request.session.set_expiry(3600)  # Session expires when the user closes the browser
 
-                return JsonResponse({'message': 'Login successful'}, status=200)
+                return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
             else:
-                return JsonResponse({'error': 'Invalid credentials.'}, status=401)
+                return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
         except CustomUser.DoesNotExist:
-            return JsonResponse({'error': 'Invalid credentials.'}, status=401)
-
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+            return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-@csrf_protect
-def user_logout(request):
-    if request.method == 'POST':
+class UserLogoutView(APIView):
+    def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             try:
                 auth_logout(request)
-                return JsonResponse({'message': 'Logged out successfully'}, status=200)
+                return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
             except Exception as e:
-                return JsonResponse({'error': 'An error occurred during logout'}, status=500)
+                return Response({'error': 'An error occurred during logout'},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            return JsonResponse({'error': 'No user is logged in'}, status=400)
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+            return Response({'error': 'No user is logged in'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def check_authentication(request):
-    user = request.user
-    return JsonResponse({'authenticated': user.is_authenticated, 'user': {'username': user.username}})
+class CheckAuthenticationView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return Response({'authenticated': user.is_authenticated, 'user': {'username': user.username}})
 
 
-def get_csrf_token(request):
-    token = get_token(request)
-    return JsonResponse({'csrfToken': token})
+class CsrfTokenView(APIView):
+    def get(self, request, *args, **kwargs):
+        token = get_token(request)
+        return Response({'csrfToken': token})
 
 
-def password_reset_request(request):
-    if request.method == 'POST':
+class PasswordResetRequestView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        email = data.get('email')
+
         try:
-            data = json.loads(request.body)
-            email = data.get('email')
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
-            return JsonResponse({'error': 'Email address not found.'}, status=401)
+            return Response({'error': 'Email address not found.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         token = uuid.uuid4()
         user.reset_password_token = token
@@ -143,68 +125,63 @@ def password_reset_request(request):
             fail_silently=False,
         )
 
-        return JsonResponse({'message': 'A password reset link has been sent to your email.'})
-
-    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+        return Response({'message': 'A password reset link has been sent to your email.'})
 
 
-@csrf_exempt
-def password_reset(request, token):
-    if request.method == 'POST':
+class PasswordResetView(APIView):
+    def post(self, request, token, *args, **kwargs):
+        data = request.data
+        new_password = data.get('new_password')
+
         try:
-            data = json.loads(request.body)
-            new_password = data.get('new_password')
-
-            user = get_object_or_404(CustomUser, reset_password_token=token)
-
+            user = CustomUser.objects.get(reset_password_token=token)
             if user.reset_password_token_expiry < timezone.now():
-                return JsonResponse({'error': 'Token has expired.'}, status=400)
+                return Response({'error': 'Token has expired.'}, status=status.HTTP_400_BAD_REQUEST)
 
             user.set_password(new_password)
             user.reset_password_token = None
             user.reset_password_token_expiry = None
             user.save()
 
-            return JsonResponse({'message': 'Password has been reset successfully.'})
+            return Response({'message': 'Password has been reset successfully.'})
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(['POST'])
-@csrf_exempt
-def google_auth_callback(request):
-    data = request.data
-    id_token_str = data.get('idToken')
-    idinfo = verify_google_token(id_token_str)
+class GoogleAuthCallbackView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        id_token_str = data.get('idToken')
+        idinfo = verify_google_token(id_token_str)
 
-    if idinfo:
-        email = idinfo.get('email')
-        email_prefix = email.split('@')[0]
+        if idinfo:
+            email = idinfo.get('email')
+            email_prefix = email.split('@')[0]
 
-        user, created = CustomUser.objects.get_or_create(email=email)
-        if created:
-            username = email_prefix
-            counter = 1
+            user, created = CustomUser.objects.get_or_create(email=email)
+            if created:
+                username = email_prefix
+                counter = 1
 
-            while CustomUser.objects.filter(username=username).exists():
-                username = f"{email_prefix}{counter}"
-                counter += 1
+                while CustomUser.objects.filter(username=username).exists():
+                    username = f"{email_prefix}{counter}"
+                    counter += 1
 
-            user.username = username
-            user.save()
+                user.username = username
+                user.save()
 
-        auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
-        return Response({
-            'message': 'Authentication successful',
-            'user_id': user.id,
-            'username': user.username,
-            'email': user.email
-        })
-    else:
-        return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'message': 'Authentication successful',
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email
+            })
+        else:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def verify_google_token(id_token_str):
@@ -216,18 +193,27 @@ def verify_google_token(id_token_str):
         return None
 
 
-def user_retrieve_update_delete(request, user_id):
-    if request.method == 'DELETE':
+class UserRetrieveUpdateDeleteView(generics.RetrieveDestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, *args, **kwargs):
         try:
-            user = get_object_or_404(CustomUser, id=user_id)
-            user.delete()
-            return JsonResponse({'message': 'User deleted successfully'}, status=204)
+            response = super().delete(request, *args, **kwargs)
+            return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@login_required
-def current_user(request):
-    user = request.user
-    return JsonResponse({'id': user.id, 'username': user.username})
+class CurrentUserView(generics.RetrieveAPIView):
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
