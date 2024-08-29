@@ -62,6 +62,11 @@ const CreateRoutinePage = () => {
             return;
         }
 
+        if (workoutName.length > 30) {
+            setError('Workout name must be 30 characters or less');
+            return;
+        }
+
         const isValid = exercises.every(ex =>
             ex.exercise.name.trim()
         );
@@ -114,7 +119,15 @@ const CreateRoutinePage = () => {
                     type="text"
                     className="text-3xl text-white bg-gray-900 border-b border-b-white mb-2 w-8/12 p-2"
                     value={workoutName}
-                    onChange={(e) => setWorkoutName(e.target.value)}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (value.length <= 30) {
+                            setWorkoutName(value);
+                            setError(''); // Clear error if input is valid
+                        } else {
+                            setError('Workout name must be 30 characters or less');
+                        }
+                    }}
                     placeholder="Routine Name"
                 />
                 {error && <div className="text-red-500 mb-4">{error}</div>}

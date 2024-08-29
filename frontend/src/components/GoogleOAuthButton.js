@@ -25,7 +25,6 @@ const GoogleOAuthButton = () => {
                 }
             );
 
-            console.log('Server Response:', serverResponse.data);
             navigate('/dashboard');
         } catch (error) {
             console.error('Error during Google OAuth login:', error);

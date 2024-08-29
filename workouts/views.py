@@ -98,12 +98,10 @@ def workouts_list_create(request):
         if serializer.is_valid():
             workout = serializer.save()
 
-            # Update goals
             calculate_current_metrics_for_user(workout.user)
 
             return Response(WorkoutSerializer(workout).data, status=201)
 
-        print(f"[DEBUG] Workout creation failed: {serializer.errors}")
         return Response(serializer.errors, status=400)
 
 
@@ -127,7 +125,6 @@ def workout_retrieve_update_delete(request, workout_id):
             calculate_current_metrics_for_user(user)
 
             return Response({'message': 'Workout updated successfully'}, status=200)
-        print(f"Errors: {serializer.errors}")
         return Response(serializer.errors, status=400)
 
     if request.method == 'DELETE':

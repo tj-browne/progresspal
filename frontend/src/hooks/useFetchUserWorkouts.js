@@ -11,8 +11,6 @@ const useFetchUserWorkouts = () => {
     useEffect(() => {
         if (!userId) return;
 
-        console.log("Fetching user workouts for user ID:", userId);
-
         const fetchUserWorkouts = async () => {
             try {
                 const workoutsResponse = await axios.get(`http://localhost:8000/api/users/${userId}/workouts/`);

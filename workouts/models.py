@@ -15,7 +15,7 @@ class Exercise(models.Model):
 
 class Routine(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=30)
     date_created = models.DateTimeField(auto_now_add=True)
     exercises = models.ManyToManyField(Exercise, through='RoutineExercise')
 

@@ -73,9 +73,7 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
             const url = isEditing ? `http://localhost:8000/api/goals/${goal.id}/` : 'http://localhost:8000/api/goals/';
             const response = await fetch(url, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(goalData),
             });
 
@@ -93,24 +91,27 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
 
     const customStyles = {
         content: {
-            top: '50%',
+            top: '30%',
             left: '50%',
             right: 'auto',
             bottom: 'auto',
             marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translate(-50%, 0)',
             backgroundColor: '#111827',
             borderRadius: '10px',
             padding: '20px',
             width: '90%',
-            maxWidth: '500px',
+            maxWidth: '600px',
             color: 'white',
+            maxHeight: '80vh',
+            overflowY: 'auto',
         },
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            zIndex: 999,
         },
     };
 

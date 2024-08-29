@@ -6,7 +6,7 @@ const Footer = () => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <footer className="bg-gray-800 py-4 fixed bottom-0 inset-x-0 shadow-lg">
+        <footer className="bg-gray-800 py-4 fixed bottom-0 inset-x-0 shadow-lg z-10">
             <div className="flex justify-around md:justify-center items-center space-x-6 md:space-x-16">
                 <Link to="/goals" className="flex flex-col items-center">
                     <button

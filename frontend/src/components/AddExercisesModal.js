@@ -1,20 +1,18 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
 
 Modal.setAppElement('#root');
 
 const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
-    const closeButtonRef = useRef(null);
-    const searchInputRef = useRef(null);
     const [exercisesData, setExercisesData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterOption, setFilterOption] = useState('all');
 
     const fetchExercises = useCallback(async () => {
-        if (!isOpen) return; // Prevent fetching when modal is not open
+        if (!isOpen) return;
 
         setLoading(true);
         try {
@@ -38,6 +36,7 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
 
     useEffect(() => {
         if (isOpen) {
+            setExercisesData([]);
             fetchExercises();
         }
     }, [isOpen, fetchExercises]);
@@ -65,19 +64,20 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
             backgroundColor: '#111827',
             borderRadius: '10px',
             padding: '20px',
-            width: '80%',
-            minHeight: '80vh', // Minimum height to maintain consistency
-            maxHeight: '80vh', // Ensure the modal does not exceed viewport height
+            width: '90%',
+            maxWidth: '500px',
+            height: '600px',
             display: 'flex',
             flexDirection: 'column',
-            color: 'white', // Text color
-            boxSizing: 'border-box', // Ensure padding is included in height calculation
+            color: 'white',
+            boxSizing: 'border-box',
         },
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            zIndex: 999,
         },
     };
 
@@ -92,19 +92,22 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
             <div className="flex flex-col h-full">
                 <h2 id="modalTitle" className="text-xl mb-4">Add Exercise:</h2>
                 <input
-                    ref={searchInputRef}
                     type="text"
                     value={searchQuery}
                     onChange={handleSearchChange}
                     placeholder="Search exercises..."
                     className="mb-4 p-2 border rounded text-black"
                 />
-                <select value={filterOption} onChange={handleFilterChange} className="mb-4 p-2 text-black border rounded">
+                <select
+                    value={filterOption}
+                    onChange={handleFilterChange}
+                    className="mb-4 p-2 text-black border rounded"
+                >
                     <option value="all">All</option>
                     <option value="strength">Strength</option>
                     <option value="cardio">Cardio</option>
                 </select>
-                <div className="flex-grow overflow-y-auto" style={{ maxHeight: '50vh' }}>
+                <div className="flex-grow overflow-y-auto" style={{ marginBottom: '20px' }}>
                     {loading ? (
                         <div>Loading...</div>
                     ) : error ? (
@@ -114,10 +117,13 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
                             exercisesData.map((exercise) => (
                                 <div
                                     className="flex justify-between items-center rounded-2xl w-full mb-4 p-2 bg-gray-800"
-                                    key={exercise.id}>
+                                    key={exercise.id}
+                                >
                                     <h2>{exercise.name}</h2>
-                                    <button onClick={() => handleAddExercise(exercise)}
-                                            className="bg-green-500 hover:bg-green-600 text-center py-2 px-4 rounded-3xl text-sm w-16">
+                                    <button
+                                        onClick={() => handleAddExercise(exercise)}
+                                        className="bg-green-500 hover:bg-green-600 text-center py-2 px-4 rounded-3xl text-sm"
+                                    >
                                         ADD
                                     </button>
                                 </div>
@@ -129,8 +135,7 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
                 </div>
                 <button
                     onClick={onRequestClose}
-                    ref={closeButtonRef}
-                    className="mt-6 bg-red-500 text-white py-2 px-4 rounded"
+                    className="mt-4 bg-red-500 text-white py-2 px-4 rounded self-center w-[90%]"
                 >
                     Close
                 </button>

@@ -26,8 +26,8 @@ class SetSerializer(serializers.ModelSerializer):
                     internal_data.setdefault('reps', 1)
                     internal_data.setdefault('weight', 1)
                 elif exercise.exercise_type == 'cardio':
-                    internal_data.setdefault('distance', 0)
-                    internal_data.setdefault('time', 0)
+                    internal_data.setdefault('distance', 0.1)
+                    internal_data.setdefault('time', timedelta(minutes=1))
             except Exercise.DoesNotExist:
                 pass
         return internal_data
