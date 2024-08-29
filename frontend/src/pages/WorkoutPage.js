@@ -131,127 +131,132 @@ const WorkoutPage = () => {
     };
 
     if (userLoading || workoutLoading) {
-        return <div>Loading...</div>;
+        return <div className="text-white">Loading...</div>;
     }
 
     if (userError) {
-        return <div>{userError}</div>;
+        return <div className="text-white">{userError}</div>;
     }
 
     if (workoutError) {
-        return <div>{workoutError}</div>;
+        return <div className="text-white">{workoutError}</div>;
     }
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
             <UserHeader />
-            <div className="flex flex-col items-center pt-32 flex-grow gap-7 text-white mb-32">
-                <h1 className="text-3xl mb-2 w-8/12 p-2 text-center">{workoutName}</h1>
-                <div className="w-8/12">
-                    {exercises.map((exercise, exerciseIndex) => (
-                        <div key={exerciseIndex} className="flex flex-col mt-2 mb-6 bg-[#2C2C2C] p-4 rounded-lg">
-                            <h2 className="text-xl mb-2">{exercise.name}</h2>
-                            {exercise.sets?.map((set, setIndex) => (
-                                <div className="flex items-center mb-2" key={setIndex}>
-                                    {exercise.exercise_type === 'strength' ? (
-                                        <>
-                                            <div className="flex flex-col items-center mr-4">
-                                                <label className="mb-1">kg</label>
-                                                <input
-                                                    className="w-20 p-1 text-black"
-                                                    type="number"
-                                                    value={set.weight || 0}
-                                                    min="0"
-                                                    onChange={(e) => {
-                                                        const value = Number(e.target.value);
-                                                        if (value >= 0) {
-                                                            const updatedExercises = [...exercises];
-                                                            updatedExercises[exerciseIndex].sets[setIndex].weight = value;
-                                                            setExercises(updatedExercises);
-                                                        }
-                                                    }}
-                                                    placeholder="Weight"
-                                                />
+            <main className="flex flex-col items-center flex-grow pt-24 pb-32"> {/* Increased padding-bottom */}
+                <div className="w-full max-w-2xl px-6">
+                    <h1 className="text-4xl text-center mb-10 text-white font-bold">{workoutName}</h1>
+                    <div className="space-y-8">
+                        {exercises.map((exercise, exerciseIndex) => (
+                            <div key={exerciseIndex} className="bg-gray-700 p-6 rounded-lg shadow-lg">
+                                <h2 className="text-2xl mb-6 text-white font-semibold">{exercise.name}</h2>
+                                <div className="space-y-4">
+                                    {exercise.sets?.map((set, setIndex) => (
+                                        <div className="bg-gray-600 p-4 rounded-lg flex items-center" key={setIndex}>
+                                            <div className="bg-gray-500 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                                                {setIndex + 1}
                                             </div>
-                                            <div className="flex flex-col items-center mr-4">
-                                                <label className="mb-1">Reps</label>
-                                                <input
-                                                    className="w-20 p-1 text-black"
-                                                    type="number"
-                                                    value={set.reps || 1}
-                                                    min="1"
-                                                    onChange={(e) => {
-                                                        const value = Number(e.target.value);
-                                                        if (value >= 1) {
-                                                            const updatedExercises = [...exercises];
-                                                            updatedExercises[exerciseIndex].sets[setIndex].reps = value;
-                                                            setExercises(updatedExercises);
-                                                        }
-                                                    }}
-                                                    placeholder="Reps"
-                                                />
+                                            <div className="flex flex-col flex-grow space-y-3">
+                                                {exercise.exercise_type === 'strength' ? (
+                                                    <div className="flex space-x-4">
+                                                        <div className="flex-1">
+                                                            <label className="block text-sm text-gray-300 mb-1">Weight (kg)</label>
+                                                            <input
+                                                                className="w-full p-2 bg-gray-800 text-white rounded"
+                                                                type="number"
+                                                                value={set.weight || 0}
+                                                                min="0"
+                                                                onChange={(e) => {
+                                                                    const value = Number(e.target.value);
+                                                                    if (value >= 0) {
+                                                                        const updatedExercises = [...exercises];
+                                                                        updatedExercises[exerciseIndex].sets[setIndex].weight = value;
+                                                                        setExercises(updatedExercises);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <label className="block text-sm text-gray-300 mb-1">Reps</label>
+                                                            <input
+                                                                className="w-full p-2 bg-gray-800 text-white rounded"
+                                                                type="number"
+                                                                value={set.reps || 1}
+                                                                min="1"
+                                                                onChange={(e) => {
+                                                                    const value = Number(e.target.value);
+                                                                    if (value >= 1) {
+                                                                        const updatedExercises = [...exercises];
+                                                                        updatedExercises[exerciseIndex].sets[setIndex].reps = value;
+                                                                        setExercises(updatedExercises);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex space-x-4">
+                                                        <div className="flex-1">
+                                                            <label className="block text-sm text-gray-300 mb-1">Distance (km)</label>
+                                                            <input
+                                                                className="w-full p-2 bg-gray-800 text-white rounded"
+                                                                type="number"
+                                                                value={set.distance || 0}
+                                                                min="0"
+                                                                onChange={(e) => {
+                                                                    const value = Number(e.target.value);
+                                                                    if (value >= 0) {
+                                                                        const updatedExercises = [...exercises];
+                                                                        updatedExercises[exerciseIndex].sets[setIndex].distance = value;
+                                                                        setExercises(updatedExercises);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <label className="block text-sm text-gray-300 mb-1">Time (min)</label>
+                                                            <input
+                                                                className="w-full p-2 bg-gray-800 text-white rounded"
+                                                                type="number"
+                                                                value={set.time || 1}
+                                                                min="1"
+                                                                onChange={(e) => {
+                                                                    const value = Number(e.target.value);
+                                                                    if (value > 0) {
+                                                                        const updatedExercises = [...exercises];
+                                                                        updatedExercises[exerciseIndex].sets[setIndex].time = value;
+                                                                        setExercises(updatedExercises);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="flex flex-col items-center mr-4">
-                                                <label className="mb-1">Distance (km)</label>
-                                                <input
-                                                    className="w-20 p-1 text-black"
-                                                    type="number"
-                                                    value={set.distance || 0}
-                                                    min="0"
-                                                    onChange={(e) => {
-                                                        const value = Number(e.target.value);
-                                                        if (value >= 0) {
-                                                            const updatedExercises = [...exercises];
-                                                            updatedExercises[exerciseIndex].sets[setIndex].distance = value;
-                                                            setExercises(updatedExercises);
-                                                        }
-                                                    }}
-                                                    placeholder="Distance"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col items-center mr-4">
-                                                <label className="mb-1">Time (min)</label>
-                                                <input
-                                                    className="w-20 p-1 text-black"
-                                                    type="number"
-                                                    value={set.time || 1}
-                                                    min="1"
-                                                    onChange={(e) => {
-                                                        const value = Number(e.target.value);
-                                                        if (value > 0) {
-                                                            const updatedExercises = [...exercises];
-                                                            updatedExercises[exerciseIndex].sets[setIndex].time = value;
-                                                            setExercises(updatedExercises);
-                                                        }
-                                                    }}
-                                                    placeholder="Time"
-                                                />
-                                            </div>
-                                        </>
-                                    )}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    ))}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-center gap-8 mt-10">
+                        <button
+                            onClick={handleSaveWorkout}
+                            className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg text-xl shadow-md"
+                        >
+                            Save
+                        </button>
+                        <button
+                            onClick={handleDiscardWorkout}
+                            className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg text-xl shadow-md"
+                        >
+                            Discard
+                        </button>
+                    </div>
                 </div>
-                <div className="flex justify-center pt-7">
-                    <button
-                        onClick={handleSaveWorkout}
-                        className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52"
-                    >
-                        Save
-                    </button>
-                    <button
-                        onClick={handleDiscardWorkout}
-                        className="bg-red-500 hover:bg-red-600 py-2 px-4 rounded-3xl mt-2 mb-2 text-2xl w-52 ml-4"
-                    >
-                        Discard
-                    </button>
-                </div>
-            </div>
+            </main>
             <Footer />
         </div>
     );

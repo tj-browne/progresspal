@@ -1,14 +1,14 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 
 Modal.setAppElement('#root');
 
-const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
+const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
     const [selectedRoutineId, setSelectedRoutineId] = useState(null);
-    const {routines, routinesLoading, routinesError, userLoading, userError} = useFetchUserRoutines();
+    const { routines, routinesLoading, routinesError, userLoading, userError } = useFetchUserRoutines();
     const closeButtonRef = useRef(null);
     const navigate = useNavigate();
     const userId = useFetchCurrentUser().userId;
@@ -37,9 +37,7 @@ const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
         try {
             const response = await fetch('http://localhost:8000/api/workouts/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(workoutData),
             });
 
@@ -65,24 +63,27 @@ const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
 
     const customStyles = {
         content: {
-            top: '50%',
+            top: '30%',
             left: '50%',
             right: 'auto',
             bottom: 'auto',
             marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translate(-50%, 0)',
             backgroundColor: '#111827',
             borderRadius: '10px',
             padding: '20px',
             width: '90%',
-            maxWidth: '400px',
+            maxWidth: '600px',
             color: 'white',
+            maxHeight: '80vh',
+            overflowY: 'auto',
         },
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            zIndex: 999,
         },
     };
 
@@ -108,8 +109,9 @@ const ChooseRoutineModal = ({isOpen, onRequestClose}) => {
                         <div className="text-red-500">{routinesError}</div>
                     ) : (
                         <>
-                            <li><Link to="/create-routine" className="text-blue-400 hover:underline">+Create New
-                                Routine</Link></li>
+                            <li>
+                                <Link to="/create-routine" className="text-blue-400 hover:underline">+ Create New Routine</Link>
+                            </li>
                             {routines.length > 0 ? (
                                 routines.map((routine) => (
                                     <li key={routine.id}>

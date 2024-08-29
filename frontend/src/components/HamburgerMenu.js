@@ -14,13 +14,17 @@ const HamburgerMenu = ({ item, onEdit, onDelete, type }) => {
     const handleEditClick = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        onEdit(item);
+        if (onEdit) {
+            onEdit(item);
+        }
     };
 
     const handleDeleteClick = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        onDelete(item.id);
+        if (onDelete) {
+            onDelete(item.id);
+        }
     };
 
     const handleClickOutside = (event) => {
@@ -56,17 +60,19 @@ const HamburgerMenu = ({ item, onEdit, onDelete, type }) => {
                     role="menu"
                     aria-orientation="vertical"
                 >
-                    <button
-                        onClick={handleEditClick}
-                        className="block px-4 py-2 rounded-t-lg hover:bg-blue-600 bg-blue-500 w-full text-left transition-colors duration-300"
-                        role="menuitem"
-                        aria-label={`Edit ${type}`}
-                    >
-                        Edit
-                    </button>
+                    {type !== 'goal' && onEdit && (
+                        <button
+                            onClick={handleEditClick}
+                            className="block px-4 py-2 rounded-t-lg hover:bg-blue-600 bg-blue-500 w-full text-left transition-colors duration-300"
+                            role="menuitem"
+                            aria-label={`Edit ${type}`}
+                        >
+                            Edit
+                        </button>
+                    )}
                     <button
                         onClick={handleDeleteClick}
-                        className="block px-4 py-2 rounded-b-lg hover:bg-red-600 bg-red-500 w-full text-left transition-colors duration-300"
+                        className={`block px-4 py-2 ${type !== 'goal' ? 'rounded-b-lg' : 'rounded-lg'} hover:bg-red-600 bg-red-500 w-full text-left transition-colors duration-300`}
                         role="menuitem"
                         aria-label={`Delete ${type}`}
                     >
@@ -80,7 +86,7 @@ const HamburgerMenu = ({ item, onEdit, onDelete, type }) => {
 
 HamburgerMenu.propTypes = {
     item: PropTypes.object.isRequired,
-    onEdit: PropTypes.func.isRequired,
+    onEdit: PropTypes.func,  // Make onEdit optional
     onDelete: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired, // 'goal', 'workout', or 'routine'
 };
