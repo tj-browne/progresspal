@@ -24,6 +24,6 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('workouts.urls')),
     path('', include('goals.urls')),
-    path('accounts/', include('allauth.urls')),
     re_path(r'^.*$', FrontendAppView.as_view(), name='index'),
+    path('accounts/', include('allauth.urls')),
 ]
