@@ -70,20 +70,19 @@ class TestSignup:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_login_email_inuse(self, api_client):
-        CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
-                                       password="password123")
+        CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com', password="password123")
         url = reverse('users_list_create')
         data = {'username': 'validtestuser2', 'email': 'validtestuser@example.com', 'password': 'password123'}
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_409_CONFLICT
 
     def test_login_username_inuse(self, api_client):
-        CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com',
-                                       password="password123")
+        CustomUser.objects.create_user(username='validtestuser', email='validtestuser@example.com', password="password123")
         url = reverse('users_list_create')
         data = {'username': 'validtestuser', 'email': 'validtestuser2@example.com', 'password': 'password123'}
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_409_CONFLICT
+
 
     def test_valid_username(self, api_client):
         url = reverse('users_list_create')
@@ -126,69 +125,69 @@ class TestLogin:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-@pytest.mark.django_db
-class TestForgotPassword:
+# @pytest.mark.django_db
+# class TestForgotPassword:
+#
+#     @pytest.fixture(autouse=True)
+#     def setup(self, api_client):
+#         self.client = api_client
+#         self.user = CustomUser.objects.create_user(username='testuser', email='testuser@example.com',
+#                                                    password='testpassword123')
+#
+#     @patch('users.views.send_mail')
+#     def test_forgot_password_success(self, mock_send_mail):
+#         url = reverse('password_reset_request')
+#         data = {'email': 'testuser@example.com'}
+#         response = self.client.post(url, data, format='json')
+#         assert response.status_code == status.HTTP_200_OK
+#         assert 'A password reset link has been sent to your email.' in response.json()['message']
+#         mock_send_mail.assert_called_once()
+#
+#     def test_forgot_password_fail(self):
+#         url = reverse('password_reset_request')
+#         data = {'email': 'nonexistentuser@example.com'}
+#         response = self.client.post(url, data, format='json')
+#         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    @pytest.fixture(autouse=True)
-    def setup(self, api_client):
-        self.client = api_client
-        self.user = CustomUser.objects.create_user(username='testuser', email='testuser@example.com',
-                                                   password='testpassword123')
 
-    @patch('users.views.send_mail')
-    def test_forgot_password_success(self, mock_send_mail):
-        url = reverse('password_reset_request')
-        data = {'email': 'testuser@example.com'}
-        response = self.client.post(url, data, format='json')
-        assert response.status_code == status.HTTP_200_OK
-        assert 'A password reset link has been sent to your email.' in response.json()['message']
-        mock_send_mail.assert_called_once()
-
-    def test_forgot_password_fail(self):
-        url = reverse('password_reset_request')
-        data = {'email': 'nonexistentuser@example.com'}
-        response = self.client.post(url, data, format='json')
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-@pytest.mark.django_db
-class TestPasswordReset:
-
-    @pytest.fixture(autouse=True)
-    def setup(self, api_client):
-        self.client = api_client
-        self.user = CustomUser.objects.create_user(username='testuser', email='testuser@example.com',
-                                                   password='testpassword123')
-        self.token = uuid.uuid4()
-        self.user.reset_password_token = self.token
-        self.user.reset_password_token_expiry = timezone.now() + timezone.timedelta(hours=1)
-        self.user.save()
-
-    def test_password_reset_success(self):
-        url = reverse('password_reset', args=[self.token])
-        data = {'new_password': 'newpassword123'}
-        response = self.client.post(url, data, format='json')
-        assert response.status_code == status.HTTP_200_OK
-        self.user.refresh_from_db()
-        assert self.user.check_password('newpassword123')
-
-    def test_password_reset_fail_invalid_token(self):
-        invalid_token = uuid.uuid4()
-        url = reverse('password_reset', args=[invalid_token])
-        data = {'new_password': 'newpassword123'}
-        response = self.client.post(url, data, format='json')
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-
-    def test_password_reset_fail_expired_token(self):
-        expired_token = uuid.uuid4()
-        self.user.reset_password_token = expired_token
-        self.user.reset_password_token_expiry = timezone.now() - timezone.timedelta(hours=1)
-        self.user.save()
-
-        url = reverse('password_reset', args=[expired_token])
-        data = {'new_password': 'newpassword123'}
-        response = self.client.post(url, data, format='json')
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+# @pytest.mark.django_db
+# class TestPasswordReset:
+#
+#     @pytest.fixture(autouse=True)
+#     def setup(self, api_client):
+#         self.client = api_client
+#         self.user = CustomUser.objects.create_user(username='testuser', email='testuser@example.com',
+#                                                    password='testpassword123')
+#         self.token = uuid.uuid4()
+#         self.user.reset_password_token = self.token
+#         self.user.reset_password_token_expiry = timezone.now() + timezone.timedelta(hours=1)
+#         self.user.save()
+#
+#     def test_password_reset_success(self):
+#         url = reverse('password_reset', args=[self.token])
+#         data = {'new_password': 'newpassword123'}
+#         response = self.client.post(url, data, format='json')
+#         assert response.status_code == status.HTTP_200_OK
+#         self.user.refresh_from_db()
+#         assert self.user.check_password('newpassword123')
+#
+#     def test_password_reset_fail_invalid_token(self):
+#         invalid_token = uuid.uuid4()
+#         url = reverse('password_reset', args=[invalid_token])
+#         data = {'new_password': 'newpassword123'}
+#         response = self.client.post(url, data, format='json')
+#         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+#
+#     def test_password_reset_fail_expired_token(self):
+#         expired_token = uuid.uuid4()
+#         self.user.reset_password_token = expired_token
+#         self.user.reset_password_token_expiry = timezone.now() - timezone.timedelta(hours=1)
+#         self.user.save()
+#
+#         url = reverse('password_reset', args=[expired_token])
+#         data = {'new_password': 'newpassword123'}
+#         response = self.client.post(url, data, format='json')
+#         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.django_db

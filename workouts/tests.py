@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -50,8 +49,11 @@ class WorkoutsAPITestCase(APITestCase):
 
     def test_routines_list_create_post(self):
         url = reverse('routines_list_create')
-        data = {'name': 'Evening Routine', 'user': self.user.id,
-                'exercises': [self.exercise1.name, self.exercise2.name]}
+        data = {
+            'name': 'Testing Routine',
+            'user': self.user.id,
+            'exercises': [{'exercise': self.exercise1.id, 'default_sets': 3}]
+        }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Routine.objects.count(), 2)
@@ -65,7 +67,6 @@ class WorkoutsAPITestCase(APITestCase):
 
     def test_routine_retrieve_update_delete_put(self):
         url = reverse('routine_retrieve_update_delete', args=[self.routine.id])
-
         exercise_id = self.exercise1.id
         data = {
             'name': 'Updated Routine',
@@ -103,9 +104,9 @@ class WorkoutsAPITestCase(APITestCase):
         url = reverse('workouts_list_create')
         data = {
             'routine': self.routine.id,
-            'exercises': [
-                {'exercise_id': self.exercise1.id, 'sets': 3, 'reps': 10},
-                {'exercise_id': self.exercise2.id, 'sets': 2, 'reps': 20}
+            'workout_exercises': [
+                {'exercise': self.exercise1.id, 'sets': [{'reps': 5, 'weight': 20}]},
+                {'exercise': self.exercise2.id, 'sets': [{'distance': 2.5, 'time': '00:30:00'}]}
             ],
             'user': self.user.id
         }
@@ -132,7 +133,8 @@ class WorkoutsAPITestCase(APITestCase):
         response = self.client.put(url, data, format='json')
         self.workout.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(list(self.workout.workout_exercises.all().values_list('sets', flat=True)), [5])
+        self.workout_exercise1.refresh_from_db()
+        self.assertEqual(self.workout_exercise1.sets, 5)
 
     def test_workout_retrieve_update_delete_delete(self):
         url = reverse('workout_retrieve_update_delete', args=[self.workout.id])

@@ -91,11 +91,11 @@ const Profile = () => {
 
                     <h2 className="text-3xl text-white font-semibold mb-4">Settings</h2>
 
-                    <div className="flex flex-col space-y-2 mb-6">
-                        <div>
-                            <Link to="/password-reset-request" className="text-white underline">Reset Password?</Link>
-                        </div>
-                    </div>
+                    {/*<div className="flex flex-col space-y-2 mb-6">*/}
+                    {/*    <div>*/}
+                    {/*        <Link to="/password-reset-request" className="text-white underline">Reset Password?</Link>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
 
                     <button
                         className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
