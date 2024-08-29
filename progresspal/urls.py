@@ -21,9 +21,9 @@ from progresspal.views import FrontendAppView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
     path('', include('users.urls')),
     path('', include('workouts.urls')),
     path('', include('goals.urls')),
-    re_path(r'^.*$', FrontendAppView.as_view(), name='index'),
-    path('accounts/', include('allauth.urls')),
+    re_path(r'^.*$', FrontendAppView.as_view(), name='home'),
 ]
