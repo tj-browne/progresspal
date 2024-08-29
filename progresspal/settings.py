@@ -14,7 +14,11 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'progresspal-80ee75f05e5c.herokuapp.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -77,11 +81,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ALLOWED_ORIGINS = [
+    "https://progresspal-80ee75f05e5c.herokuapp.com",
     "http://localhost:3000",
     "http://localhost:8000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://progresspal-80ee75f05e5c.herokuapp.com",
     'http://localhost:3000',
     "http://localhost:8000",
 ]
@@ -169,11 +175,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend' / 'build' / 'static',
-]
+    ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
