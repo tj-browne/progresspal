@@ -15,9 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.messages import api
-from django.urls import include, path
-from debug_toolbar.toolbar import debug_toolbar_urls
+from django.urls import include, path, re_path
+
+from progresspal.views import FrontendAppView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('', include('workouts.urls')),
     path('', include('goals.urls')),
     path('accounts/', include('allauth.urls')),
-]  + debug_toolbar_urls()
+    re_path(r'^.*$', FrontendAppView.as_view(), name='index'),
+]
