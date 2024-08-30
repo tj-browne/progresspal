@@ -16,4 +16,4 @@ COPY --from=frontend-build /app/frontend/build /app/frontend/build
 
 # Final Stage
 EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:${PORT}", "progresspal.wsgi:application"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} progresspal.wsgi:application"]

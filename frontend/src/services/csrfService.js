@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const fetchCsrfToken = async () => {
     try {
-        const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com//api/csrf-token/', { withCredentials: true });
+        const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/csrf-token/', { withCredentials: true });
         const token = response.data.csrfToken;
         return token;
     } catch (error) {
