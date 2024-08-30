@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import axios from '../services/axiosConfig'; // Import the configured axios instance
 import { useNavigate } from 'react-router-dom';
 
 const MemoizedChildren = React.memo(({ children }) => children);
@@ -11,7 +11,7 @@ const AuthCheck = ({ children, redirectTo }) => {
 
     const checkAuth = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/auth/check/', { withCredentials: true });
+            const response = await axios.get('/api/auth/check/'); // Use relative path
 
             if (response.status === 200 && response.data.authenticated) {
                 setIsAuthenticated(true);

@@ -23,7 +23,7 @@ const Login = () => {
         e.preventDefault();
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.post('http://localhost:8000/api/auth/login/', formData, {
+            const response = await axios.post('/api/auth/login/', formData, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                 },
