@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import AddGoalModal from '../components/AddGoalModal';
 import Footer from "../components/Footer";
 import UserHeader from "../components/UserHeader";
