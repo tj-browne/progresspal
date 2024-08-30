@@ -22,7 +22,7 @@ const Signup = () => {
         e.preventDefault();
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.post('http://localhost:8000/api/users/', formData, {
+            const response = await axios.post('https://progresspal-80ee75f05e5c.herokuapp.com/api/users/', formData, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                 },

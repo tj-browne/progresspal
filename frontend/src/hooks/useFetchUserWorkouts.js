@@ -13,7 +13,7 @@ const useFetchUserWorkouts = () => {
 
         const fetchUserWorkouts = async () => {
             try {
-                const workoutsResponse = await axios.get(`http://localhost:8000/api/users/${userId}/workouts/`);
+                const workoutsResponse = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/users/${userId}/workouts/`);
                 setWorkouts(workoutsResponse.data);
                 if (Array.isArray(workoutsResponse.data) && workoutsResponse.data.length === 0) {
                     setWorkoutsError(null);

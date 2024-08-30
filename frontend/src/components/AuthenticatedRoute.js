@@ -11,7 +11,7 @@ const AuthenticatedRoute = ({ children }) => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/auth/check/', { withCredentials: true });
+                const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/check/', { withCredentials: true });
                 if (response.status === 200 && response.data.authenticated) {
                     setIsAuthenticated(true);
                     setUser(response.data.user);

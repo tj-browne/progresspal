@@ -14,7 +14,7 @@ const GoogleOAuthButton = () => {
 
         try {
             const csrfToken = await getCsrfToken();
-            const serverResponse = await axios.post('http://localhost:8000/api/auth/google/',
+            const serverResponse = await axios.post('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/google/',
                 { idToken },
                 {
                     headers: {

@@ -35,7 +35,7 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/api/workouts/', {
+            const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(workoutData),
