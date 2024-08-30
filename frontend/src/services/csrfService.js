@@ -1,8 +1,8 @@
-import axios from './axiosConfig'; // Import the configured axios instance
+import axios from 'axios';
 
 export const fetchCsrfToken = async () => {
     try {
-        const response = await axios.get('/api/csrf-token/'); // Use relative path
+        const response = await axios.get('http://localhost:8000/api/csrf-token/', { withCredentials: true });
         const token = response.data.csrfToken;
         return token;
     } catch (error) {

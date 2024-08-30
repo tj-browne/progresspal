@@ -25,5 +25,5 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('workouts.urls')),
     path('', include('goals.urls')),
-    re_path(r'^.*$', FrontendAppView.as_view(), name='home'),
+    path('', FrontendAppView.as_view(), name='home'),
 ]
