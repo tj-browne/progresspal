@@ -13,8 +13,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 COPY --from=frontend-build /app/frontend/build /app/frontend/build
-RUN python manage.py collectstatic --noinput
 
 # Final Stage
 EXPOSE 8000
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} progresspal.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT}", "progresspal.wsgi:application"]
