@@ -8,7 +8,7 @@ const useDeleteRoutine = () => {
     const deleteRoutine = async (routineId) => {
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.delete(`http://localhost:8000/api/routines/${routineId}/`, {
+            const response = await axios.delete(`https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/${routineId}/`, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json',

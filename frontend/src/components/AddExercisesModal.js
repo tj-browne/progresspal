@@ -16,7 +16,7 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
 
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/api/exercises/', {
+            const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/exercises/', {
                 params: {
                     search: searchQuery,
                     filter: filterOption,

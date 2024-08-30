@@ -98,7 +98,7 @@ const RoutinePage = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:8000/api/routines/${routineId}/`, { // Correct URL with routineId
+            const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/${routineId}/`, { // Correct URL with routineId
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

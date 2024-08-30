@@ -11,7 +11,7 @@ from workouts.views import calculate_current_metrics_for_user
 @permission_classes([IsAuthenticated])
 def fitness_goals_list_create(request, id=None):
     if request.method == 'GET':
-        goals = Goal.objects.all()
+        goals = Goal.objects.filter(user=request.user)
         serializer = GoalSerializer(goals, many=True)
         return Response(serializer.data)
 

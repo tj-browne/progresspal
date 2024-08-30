@@ -15,7 +15,7 @@ const useFetchWorkout = (workoutId) => {
             }
 
             try {
-                const response = await axios.get(`http://localhost:8000/api/workouts/${workoutId}/`, {
+                const response = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/${workoutId}/`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

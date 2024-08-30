@@ -15,7 +15,7 @@ const PasswordResetRequestPage = () => {
 
         try {
             const csrfToken = await getCsrfToken();
-            const response = await fetch('http://localhost:8000/api/users/password-reset-request/', {
+            const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/users/password-reset-request/', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrfToken,

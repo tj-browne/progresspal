@@ -70,7 +70,7 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
 
         try {
             const method = isEditing ? 'PUT' : 'POST';
-            const url = isEditing ? `http://localhost:8000/api/goals/${goal.id}/` : 'http://localhost:8000/api/goals/';
+            const url = isEditing ? `https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/${goal.id}/` : 'https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/';
             const response = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },

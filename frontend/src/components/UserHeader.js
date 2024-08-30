@@ -16,7 +16,7 @@ const UserHeader = ({ user }) => {
     const handleLogout = async () => {
         try {
             const csrfToken = await getCsrfToken();
-            await axios.post('http://localhost:8000/api/auth/logout/', {}, {
+            await axios.post('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/logout/', {}, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                 },

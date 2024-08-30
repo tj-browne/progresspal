@@ -9,7 +9,7 @@ const useFetchCurrentUser = () => {
     useEffect(() => {
         const fetchCurrentUser = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/auth/current-user/', {
+                const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/current-user/', {
                     withCredentials: true,
                 });
                 setUserId(response.data.id);

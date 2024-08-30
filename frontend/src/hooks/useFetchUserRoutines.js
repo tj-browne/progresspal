@@ -13,7 +13,7 @@ const useFetchUserRoutines = () => {
 
         const fetchUserRoutines = async () => {
             try {
-                const routinesResponse = await axios.get(`http://localhost:8000/api/users/${userId}/routines/`);
+                const routinesResponse = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/users/${userId}/routines/`);
                 setRoutines(routinesResponse.data);
             } catch (error) {
                 if (error.response?.status === 401) {

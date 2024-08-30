@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import AddGoalModal from '../components/AddGoalModal';
 import Footer from "../components/Footer";
@@ -6,6 +6,7 @@ import UserHeader from "../components/UserHeader";
 import HamburgerMenu from '../components/HamburgerMenu';
 import { useNavigate } from "react-router-dom";
 import useDeleteGoal from "../hooks/useDeleteGoal";
+import useFetchUserGoals from '../hooks/useFetchUserGoals';
 
 const goalTypeMapping = {
     'workouts_per_week': 'Workouts Per Week',
@@ -14,29 +15,12 @@ const goalTypeMapping = {
 };
 
 const GoalsPage = () => {
-    const [goals, setGoals] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { goals, setGoals, goalsLoading: loading, goalsError: error } = useFetchUserGoals();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentGoal, setCurrentGoal] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const navigate = useNavigate();
     const { deleteGoal } = useDeleteGoal();
-
-    const fetchGoals = async () => {
-        try {
-            const response = await axios.get('http://localhost:8000/api/goals/');
-            setGoals(response.data);
-        } catch (err) {
-            setError(err.message || 'Error fetching goals');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchGoals();
-    }, []);
 
     const openModal = (goal = null) => {
         setCurrentGoal(goal);
@@ -53,7 +37,7 @@ const GoalsPage = () => {
     const handleDeleteGoal = async (goalId) => {
         const success = await deleteGoal(goalId);
         if (success) {
-            fetchGoals();
+            setGoals(goals.filter(goal => goal.id !== goalId));
         }
     };
 
@@ -133,7 +117,7 @@ const GoalsPage = () => {
             <AddGoalModal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
-                onGoalCreated={fetchGoals}
+                onGoalCreated={() => setGoals([...goals])}  // Refresh goals list when a new goal is created
                 goal={currentGoal}
                 isEditing={isEditing}
             />

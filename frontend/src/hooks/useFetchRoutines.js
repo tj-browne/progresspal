@@ -9,7 +9,7 @@ const useFetchRoutines = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/routines/', {
+                const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/', {
                     headers: {
                         'Content-Type': 'application/json',
                     },

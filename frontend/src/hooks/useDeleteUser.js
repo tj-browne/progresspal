@@ -8,7 +8,7 @@ const useDeleteUser = () => {
     const deleteUser = async (userId) => {
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.delete(`http://localhost:8000/api/users/${userId}/`, {
+            const response = await axios.delete(`https://progresspal-80ee75f05e5c.herokuapp.com/api/users/${userId}/`, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json',

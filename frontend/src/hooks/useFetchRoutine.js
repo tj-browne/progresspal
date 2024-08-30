@@ -8,7 +8,7 @@ const useFetchRoutine = (routineId) => {
     useEffect(() => {
         const fetchRoutine = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/api/routines/${routineId}/`);
+                const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/${routineId}/`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch routine');
                 }
