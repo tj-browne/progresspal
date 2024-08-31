@@ -15,6 +15,10 @@ const useFetchUserGoals = () => {
             try {
                 const goalsResponse = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/`);
                 setGoals(goalsResponse.data);
+
+                if (Array.isArray(goalsResponse.data) && goalsResponse.data.length === 0) {
+                    setGoalsError(null);
+                }
             } catch (error) {
                 if (error.response?.status === 401) {
                     setGoalsError('User not authenticated');

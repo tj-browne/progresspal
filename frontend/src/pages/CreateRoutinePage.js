@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 import { useNavigate } from "react-router-dom";
+import {getCsrfToken} from "../services/csrfService";
 
 const CreateRoutinePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,11 +91,16 @@ const CreateRoutinePage = () => {
         };
 
         try {
+            const csrfToken = await getCsrfToken();
+            console.log('CSRF Token before request:', csrfToken);
+
             const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
                 },
+                credentials: 'include',
                 body: JSON.stringify(workoutData),
             });
 
@@ -110,6 +116,7 @@ const CreateRoutinePage = () => {
             setError(`Error: ${error.message}`);
         }
     };
+
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
