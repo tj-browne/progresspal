@@ -20,10 +20,10 @@ const SignupForm = ({ handleChange, handleSubmit, errorMessage }) => {
                     Sign up
                 </button>
             </div>
-            <div className="flex flex-col items-center gap-4 sm:gap-6 mt-4 sm:mt-6">
-                <p className="text-gray-300 text-base sm:text-lg">or</p>
-                <GoogleOAuthButton />
-            </div>
+            {/*<div className="flex flex-col items-center gap-4 sm:gap-6 mt-4 sm:mt-6">*/}
+            {/*    <p className="text-gray-300 text-base sm:text-lg">or</p>*/}
+            {/*    <GoogleOAuthButton />*/}
+            {/*</div>*/}
         </form>
     );
 }
