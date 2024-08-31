@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import {getCsrfToken} from "../services/csrfService";
 
 const useDeleteWorkout = () => {
     const [loading, setLoading] = useState(false);
@@ -7,8 +8,14 @@ const useDeleteWorkout = () => {
     const deleteWorkout = async (workoutId) => {
         setLoading(true);
         try {
+            const csrfToken = await getCsrfToken();
             const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/${workoutId}/`, {
                 method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
             });
 
             if (!response.ok) {

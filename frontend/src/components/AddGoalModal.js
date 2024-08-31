@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
+import {getCsrfToken} from "../services/csrfService";
 
 Modal.setAppElement('#root');
 
@@ -69,11 +70,16 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
         }
 
         try {
+            const csrfToken = await getCsrfToken();
             const method = isEditing ? 'PUT' : 'POST';
             const url = isEditing ? `https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/${goal.id}/` : 'https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/';
             const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                credentials: 'include',
                 body: JSON.stringify(goalData),
             });
 

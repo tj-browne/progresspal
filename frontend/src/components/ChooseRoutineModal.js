@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import useFetchUserRoutines from "../hooks/useFetchUserRoutines";
 import { Link, useNavigate } from 'react-router-dom';
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
+import {getCsrfToken} from "../services/csrfService";
 
 Modal.setAppElement('#root');
 
@@ -35,9 +36,15 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
         };
 
         try {
+            const csrfToken = await getCsrfToken();
+
             const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                credentials: 'include',
                 body: JSON.stringify(workoutData),
             });
 

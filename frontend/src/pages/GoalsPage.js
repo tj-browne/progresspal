@@ -36,7 +36,24 @@ const GoalsPage = () => {
     const handleDeleteGoal = async (goalId) => {
         const success = await deleteGoal(goalId);
         if (success) {
-            setGoals(goals.filter(goal => goal.id !== goalId));
+
+            setGoals(prevGoals => prevGoals.filter(goal => goal.id !== goalId));
+        }
+    };
+
+    const handleGoalCreated = async () => {
+        const updatedGoals = await fetchGoals();
+        setGoals(updatedGoals);
+    };
+
+    const fetchGoals = async () => {
+        try {
+            const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/');
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching goals:', error);
+            return [];
         }
     };
 
@@ -116,7 +133,7 @@ const GoalsPage = () => {
             <AddGoalModal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
-                onGoalCreated={() => setGoals([...goals])}  // Refresh goals list when a new goal is created
+                onGoalCreated={handleGoalCreated}
                 goal={currentGoal}
                 isEditing={isEditing}
             />

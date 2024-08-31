@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
 import useFetchWorkout from "../hooks/useFetchWorkout";
 import useDeleteWorkout from "../hooks/useDeleteWorkout";
-import { useParams, useNavigate } from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
+import {getCsrfToken} from "../services/csrfService";
 
 const WorkoutPage = () => {
     const [exercises, setExercises] = useState([]);
     const [workoutName, setWorkoutName] = useState('');
-    const { workoutId } = useParams();
-    const { userId, loading: userLoading, error: userError } = useFetchCurrentUser();
-    const { data, loading: workoutLoading, error: workoutError } = useFetchWorkout(workoutId);
-    const { deleteWorkout, loading: deleteLoading, error: deleteError } = useDeleteWorkout();
+    const {workoutId} = useParams();
+    const {userId, loading: userLoading, error: userError} = useFetchCurrentUser();
+    const {data, loading: workoutLoading, error: workoutError} = useFetchWorkout(workoutId);
+    const {deleteWorkout, loading: deleteLoading, error: deleteError} = useDeleteWorkout();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,8 +26,8 @@ const WorkoutPage = () => {
                 ...routineExercisesMap.get(we.exercise),
                 sets: we.sets || (
                     we.exercise.exercise_type === 'strength'
-                        ? [{ reps: 1, weight: 0 }]
-                        : [{ distance: 0.1, time: 1 }]
+                        ? [{reps: 1, weight: 0}]
+                        : [{distance: 0.1, time: 1}]
                 )
             }));
 
@@ -96,11 +97,15 @@ const WorkoutPage = () => {
         };
 
         try {
+            const csrfToken = await getCsrfToken();
+
             const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/${workoutId}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
                 },
+                credentials: 'include',
                 body: JSON.stringify(workoutData),
             });
 
@@ -144,7 +149,7 @@ const WorkoutPage = () => {
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
-            <UserHeader />
+            <UserHeader/>
             <main className="flex flex-col items-center flex-grow pt-24 pb-32">
                 <div className="w-full max-w-2xl px-6">
                     <h1 className="text-4xl text-center mb-10 text-white font-bold">{workoutName}</h1>
@@ -163,7 +168,8 @@ const WorkoutPage = () => {
                                                 {exercise.exercise_type === 'strength' ? (
                                                     <div className="flex space-x-4">
                                                         <div className="flex-1">
-                                                            <label className="block text-sm text-gray-300 mb-1">Weight (kg)</label>
+                                                            <label className="block text-sm text-gray-300 mb-1">Weight
+                                                                (kg)</label>
                                                             <input
                                                                 className="w-full p-2 bg-gray-800 text-white rounded"
                                                                 type="number"
@@ -180,7 +186,8 @@ const WorkoutPage = () => {
                                                             />
                                                         </div>
                                                         <div className="flex-1">
-                                                            <label className="block text-sm text-gray-300 mb-1">Reps</label>
+                                                            <label
+                                                                className="block text-sm text-gray-300 mb-1">Reps</label>
                                                             <input
                                                                 className="w-full p-2 bg-gray-800 text-white rounded"
                                                                 type="number"
@@ -200,7 +207,8 @@ const WorkoutPage = () => {
                                                 ) : (
                                                     <div className="flex space-x-4">
                                                         <div className="flex-1">
-                                                            <label className="block text-sm text-gray-300 mb-1">Distance (km)</label>
+                                                            <label className="block text-sm text-gray-300 mb-1">Distance
+                                                                (km)</label>
                                                             <input
                                                                 className="w-full p-2 bg-gray-800 text-white rounded"
                                                                 type="number"
@@ -217,7 +225,8 @@ const WorkoutPage = () => {
                                                             />
                                                         </div>
                                                         <div className="flex-1">
-                                                            <label className="block text-sm text-gray-300 mb-1">Time (min)</label>
+                                                            <label className="block text-sm text-gray-300 mb-1">Time
+                                                                (min)</label>
                                                             <input
                                                                 className="w-full p-2 bg-gray-800 text-white rounded"
                                                                 type="number"
@@ -258,7 +267,7 @@ const WorkoutPage = () => {
                     </div>
                 </div>
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 };
