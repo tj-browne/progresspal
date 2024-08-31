@@ -3,8 +3,9 @@ import UserHeader from "../components/UserHeader";
 import Footer from "../components/Footer";
 import AddExercisesModal from "../components/AddExercisesModal";
 import useFetchCurrentUser from "../hooks/useFetchCurrentUser";
-import useFetchRoutine from "../hooks/useFetchRoutine"; // Custom hook to fetch routine
+import useFetchRoutine from "../hooks/useFetchRoutine";
 import {useParams, useNavigate} from "react-router-dom";
+import {getCsrfToken} from "../services/csrfService";
 
 const RoutinePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,11 +99,14 @@ const RoutinePage = () => {
         };
 
         try {
-            const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/${routineId}/`, { // Correct URL with routineId
+            const csrfToken = await getCsrfToken();
+            const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/${routineId}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
                 },
+                credentials: 'include',
                 body: JSON.stringify(workoutData),
             });
 
