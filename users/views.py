@@ -151,16 +151,19 @@ class PasswordResetView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+logger = logging.getLogger(__name__)
+
+
 class GoogleAuthCallbackView(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data
         id_token_str = data.get('idToken')
-        logger.info("Received idToken: %s", id_token_str)
+        logger.debug("Received idToken: %s", id_token_str)
         idinfo = verify_google_token(id_token_str)
 
         if idinfo:
             email = idinfo.get('email')
-            logger.info("Google token info: %s", idinfo)
+            logger.debug("Google token info: %s", idinfo)
             email_prefix = email.split('@')[0]
 
             user, created = CustomUser.objects.get_or_create(email=email)
@@ -187,14 +190,11 @@ class GoogleAuthCallbackView(APIView):
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-logger = logging.getLogger(__name__)
-
-
 def verify_google_token(id_token_str):
     try:
         client_id = settings.SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID
         idinfo = id_token.verify_oauth2_token(id_token_str, requests.Request(), client_id)
-        logger.info("Google token verified successfully: %s", idinfo)
+        logger.debug("Google token verified successfully: %s", idinfo)
         return idinfo
     except ValueError as e:
         logger.error("Google token verification failed: %s", str(e))

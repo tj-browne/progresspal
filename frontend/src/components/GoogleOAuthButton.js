@@ -11,6 +11,7 @@ const GoogleOAuthButton = () => {
 
     const handleSuccess = async (response) => {
         const idToken = response.credential;
+        console.debug('Received Google OAuth token:', idToken);
 
         try {
             const csrfToken = await getCsrfToken();
@@ -24,6 +25,7 @@ const GoogleOAuthButton = () => {
                     withCredentials: true,
                 }
             );
+            console.debug('Server response:', serverResponse.data);
 
             navigate('/dashboard');
         } catch (error) {
