@@ -17,14 +17,14 @@ Follow these simple steps to get started with ProgressPal:
 To begin, you need to create an account. Click on the "Sign Up" button and provide the necessary details to set up your profile.
 
 ### 2. Create a Routine
-Once your account is set up, you can start creating workout routines. Navigate to the "Routines" section and click "Add New Routine." Here’s how you can set up your routines:
+Once your account is set up, you can start creating workout routines. Navigate to the "Routines" section and click "Create New Routine." Here’s how you can set up your routines:
 - **Pick Exercises**: Choose from various exercises categorized into Cardio and Strength.
 - **Set Number of Sets**: For each exercise, specify the number of sets you plan to perform.
 
 ### 3. Build Your Workouts
-With your routine in place, you can now create specific workouts. Go to the "Workouts" tab, select your routine, and customize your workout sessions:
-- **Strength Exercises**: Set the number of repetitions (reps) and the weight for each exercise.
-- **Cardio Exercises**: Set the duration (time) and distance you aim to cover.
+With your routine in place, you can now create specific workouts. Go to the "Dashboard" tab, click "Start Workout", select your routine, and customize your workout sessions:
+- **Strength Exercises**: Set the number of repetitions and the weight for each exercise.
+- **Cardio Exercises**: Set the duration and distance you have covered.
 
 ### 4. Set Your Goals
 To keep yourself motivated, set clear fitness goals. Access the "Goals" section, track your progress toward these goals and adjust your routines as needed to stay on track.
