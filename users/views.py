@@ -57,7 +57,9 @@ class UserListCreateView(generics.ListCreateAPIView):
                 return Response({'error': 'Username already in use.'}, status=status.HTTP_409_CONFLICT)
 
             # Create user
-            user = CustomUser.objects.create_user(username=username, email=email, password=password)
+            user = CustomUser(username=username, email=email)
+            user.set_password(password)  # This handles hashing
+            user.save()
             logger.warning("User created successfully with username: %s", username)
 
             # Log hashed password after user creation
