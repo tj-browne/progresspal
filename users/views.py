@@ -40,10 +40,6 @@ class UserListCreateView(generics.ListCreateAPIView):
 
             logger.warning("Attempting to create user with username: %s, email: %s", username, email)
 
-            # Log hashed password before user creation
-            hashed_password_before = make_password(password)
-            logger.warning("Hashed password before creating user: %s", hashed_password_before)
-
             if '@' in username:
                 logger.error("Invalid username format: %s", username)
                 return Response({'error': 'Invalid username.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -56,13 +52,17 @@ class UserListCreateView(generics.ListCreateAPIView):
                 logger.error("Username already in use: %s", username)
                 return Response({'error': 'Username already in use.'}, status=status.HTTP_409_CONFLICT)
 
-            # Create user
-            user = CustomUser.objects.create_user(username=username, email=email, password=password)
-            logger.warning("User created successfully with username: %s", username)
+            # Manually hash the password
+            hashed_password = make_password(password)
+            logger.warning("Hashed password: %s", hashed_password)
 
-            # Log hashed password after user creation
-            hashed_password_after = user.password
-            logger.warning("Hashed password after creating user: %s", hashed_password_after)
+            user = CustomUser.objects.create(
+                username=username,
+                email=email,
+                password=hashed_password
+            )
+
+            logger.warning("User created successfully with username: %s", username)
 
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
@@ -70,7 +70,6 @@ class UserListCreateView(generics.ListCreateAPIView):
 
         logger.error("User creation failed: %s", serializer.errors)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class UserLoginView(APIView):
     def post(self, request, *args, **kwargs):
