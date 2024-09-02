@@ -39,7 +39,7 @@ const Signup = () => {
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
             <Header />
-            <div className="flex flex-col items-center w-full max-w-md sm:max-w-lg lg:max-w-4xl mt-8 sm:mt-12 lg:mt-16">
+            <div className="flex flex-col items-center w-full max-w-md sm:max-w-lg lg:max-w-4xl mt-8 sm:mt-8 lg:mt-8">
                 <SignupForm
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}

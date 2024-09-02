@@ -40,7 +40,7 @@ const Login = () => {
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
             <Header />
-            <div className="flex justify-center items-center w-full max-w-6xl mt-20">
+            <div className="flex justify-center items-center w-full max-w-6xl mt-8">
                 <LoginForm
                     formData={formData}
                     handleChange={handleChange}
