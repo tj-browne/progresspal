@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.middleware.csrf import get_token
 from django.utils import timezone
@@ -37,20 +38,37 @@ class UserListCreateView(generics.ListCreateAPIView):
             username = data.get('username')
             password = data.get('password')
 
+            logger.debug("Attempting to create user with username: %s, email: %s", username, email)
+
+            # Log hashed password before user creation
+            hashed_password_before = make_password(password)
+            logger.debug("Hashed password before creating user: %s", hashed_password_before)
+
             if '@' in username:
+                logger.error("Invalid username format: %s", username)
                 return Response({'error': 'Invalid username.'}, status=status.HTTP_401_UNAUTHORIZED)
 
             if CustomUser.objects.filter(email=email).exists():
+                logger.error("Email already in use: %s", email)
                 return Response({'error': 'Email already in use.'}, status=status.HTTP_409_CONFLICT)
 
             if CustomUser.objects.filter(username=username).exists():
+                logger.error("Username already in use: %s", username)
                 return Response({'error': 'Username already in use.'}, status=status.HTTP_409_CONFLICT)
 
+            # Create user
             user = CustomUser.objects.create_user(username=username, email=email, password=password)
+            logger.info("User created successfully with username: %s", username)
+
+            # Log hashed password after user creation
+            hashed_password_after = user.password
+            logger.debug("Hashed password after creating user: %s", hashed_password_after)
+
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
+        logger.error("User creation failed: %s", serializer.errors)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -77,13 +95,13 @@ class UserLoginView(APIView):
 
             if user.check_password(password):
                 auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                logger.info("Login successful for user: %s", user.username)
 
                 if remember_me:
-                    request.session.set_expiry(1209600)  # 14 days
+                    request.session.set_expiry(1209600)
                 else:
-                    request.session.set_expiry(3600)  # Session expires when the user closes the browser
+                    request.session.set_expiry(3600)
 
-                logger.info("Login successful for user: %s", user.username)
                 return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
             else:
                 logger.warning("Invalid password for user: %s", user.username)
