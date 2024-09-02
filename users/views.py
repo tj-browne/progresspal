@@ -17,6 +17,8 @@ from progresspal import settings
 from .models import CustomUser
 from .serializers import CustomUserSerializer
 
+logger = logging.getLogger(__name__)
+
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
@@ -59,9 +61,20 @@ class UserLoginView(APIView):
         password = data.get('password')
         remember_me = data.get('rememberMe', False)
 
+        logger.debug("Login attempt with identifier: %s", identifier)
+
+        if not identifier or not password:
+            logger.error("Identifier or password missing.")
+            return Response({'error': 'Identifier and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            user = CustomUser.objects.get(email=identifier) if '@' in identifier else CustomUser.objects.get(
-                username=identifier)
+            if '@' in identifier:
+                user = CustomUser.objects.get(email=identifier)
+                logger.debug("User found by email: %s", user.username)
+            else:
+                user = CustomUser.objects.get(username=identifier)
+                logger.debug("User found by username: %s", user.username)
+
             if user.check_password(password):
                 auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
@@ -70,11 +83,17 @@ class UserLoginView(APIView):
                 else:
                     request.session.set_expiry(3600)  # Session expires when the user closes the browser
 
+                logger.info("Login successful for user: %s", user.username)
                 return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
             else:
-                return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+                logger.warning("Invalid password for user: %s", user.username)
+                return Response({'error': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
         except CustomUser.DoesNotExist:
-            return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+            logger.warning("User not found with identifier: %s", identifier)
+            return Response({'error': 'Invalid email or username.'}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            logger.error("Unexpected error during login: %s", str(e))
+            return Response({'error': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserLogoutView(APIView):
@@ -149,9 +168,6 @@ class PasswordResetView(APIView):
             return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-logger = logging.getLogger(__name__)
 
 
 class GoogleAuthCallbackView(APIView):
