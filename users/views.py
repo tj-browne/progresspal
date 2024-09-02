@@ -38,11 +38,11 @@ class UserListCreateView(generics.ListCreateAPIView):
             username = data.get('username')
             password = data.get('password')
 
-            logger.debug("Attempting to create user with username: %s, email: %s", username, email)
+            logger.warning("Attempting to create user with username: %s, email: %s", username, email)
 
             # Log hashed password before user creation
             hashed_password_before = make_password(password)
-            logger.debug("Hashed password before creating user: %s", hashed_password_before)
+            logger.warning("Hashed password before creating user: %s", hashed_password_before)
 
             if '@' in username:
                 logger.error("Invalid username format: %s", username)
@@ -58,11 +58,11 @@ class UserListCreateView(generics.ListCreateAPIView):
 
             # Create user
             user = CustomUser.objects.create_user(username=username, email=email, password=password)
-            logger.info("User created successfully with username: %s", username)
+            logger.warning("User created successfully with username: %s", username)
 
             # Log hashed password after user creation
             hashed_password_after = user.password
-            logger.debug("Hashed password after creating user: %s", hashed_password_after)
+            logger.warning("Hashed password after creating user: %s", hashed_password_after)
 
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
@@ -79,7 +79,7 @@ class UserLoginView(APIView):
         password = data.get('password')
         remember_me = data.get('rememberMe', False)
 
-        logger.debug("Login attempt with identifier: %s", identifier)
+        logger.warning("Login attempt with identifier: %s", identifier)
 
         if not identifier or not password:
             logger.error("Identifier or password missing.")
@@ -88,14 +88,14 @@ class UserLoginView(APIView):
         try:
             if '@' in identifier:
                 user = CustomUser.objects.get(email=identifier)
-                logger.debug("User found by email: %s", user.username)
+                logger.warning("User found by email: %s", user.username)
             else:
                 user = CustomUser.objects.get(username=identifier)
-                logger.debug("User found by username: %s", user.username)
+                logger.warning("User found by username: %s", user.username)
 
             if user.check_password(password):
                 auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                logger.info("Login successful for user: %s", user.username)
+                logger.warning("Login successful for user: %s", user.username)
 
                 if remember_me:
                     request.session.set_expiry(1209600)
@@ -192,12 +192,12 @@ class GoogleAuthCallbackView(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data
         id_token_str = data.get('idToken')
-        logger.debug("Received idToken: %s", id_token_str)
+        logger.warning("Received idToken: %s", id_token_str)
         idinfo = verify_google_token(id_token_str)
 
         if idinfo:
             email = idinfo.get('email')
-            logger.debug("Google token info: %s", idinfo)
+            logger.warning("Google token info: %s", idinfo)
             email_prefix = email.split('@')[0]
 
             user, created = CustomUser.objects.get_or_create(email=email)
@@ -228,7 +228,7 @@ def verify_google_token(id_token_str):
     try:
         client_id = settings.SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID
         idinfo = id_token.verify_oauth2_token(id_token_str, requests.Request(), client_id)
-        logger.debug("Google token verified successfully: %s", idinfo)
+        logger.warning("Google token verified successfully: %s", idinfo)
         return idinfo
     except ValueError as e:
         logger.error("Google token verification failed: %s", str(e))
