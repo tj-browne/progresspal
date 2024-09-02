@@ -6,6 +6,8 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+    env_file:
+      - ./progresspal/.env
     depends_on:
       - db
 
