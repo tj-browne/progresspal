@@ -1,11 +1,9 @@
 import os
 from pathlib import Path
 import environ
-from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent, '.env'))
@@ -178,7 +176,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend', 'build', 'static')]
 
-
-STATICFILES_STORAGE = ManifestStaticFilesStorage
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
