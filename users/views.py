@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.middleware.csrf import get_token
 from django.utils import timezone
 
-from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth import login as auth_login, logout as auth_logout, get_user_model
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status, generics
@@ -22,13 +22,8 @@ logger = logging.getLogger(__name__)
 
 
 class UserListCreateView(generics.ListCreateAPIView):
-    queryset = CustomUser.objects.all()
+    queryset = get_user_model().objects.all()
     serializer_class = CustomUserSerializer
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return [IsAdminUser()]
-        return []
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -44,32 +39,31 @@ class UserListCreateView(generics.ListCreateAPIView):
                 logger.error("Invalid username format: %s", username)
                 return Response({'error': 'Invalid username.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-            if CustomUser.objects.filter(email=email).exists():
+            if get_user_model().objects.filter(email=email).exists():
                 logger.error("Email already in use: %s", email)
                 return Response({'error': 'Email already in use.'}, status=status.HTTP_409_CONFLICT)
 
-            if CustomUser.objects.filter(username=username).exists():
+            if get_user_model().objects.filter(username=username).exists():
                 logger.error("Username already in use: %s", username)
                 return Response({'error': 'Username already in use.'}, status=status.HTTP_409_CONFLICT)
 
-            # Manually hash the password
-            hashed_password = make_password(password)
-            logger.warning("Hashed password: %s", hashed_password)
-
-            user = CustomUser.objects.create(
+            # Create user using the built-in create_user method which handles password hashing
+            user = get_user_model().objects.create_user(
                 username=username,
                 email=email,
-                password=hashed_password
+                password=password
             )
 
             logger.warning("User created successfully with username: %s", username)
 
+            # Optional: Log the user in immediately
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
         logger.error("User creation failed: %s", serializer.errors)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserLoginView(APIView):
     def post(self, request, *args, **kwargs):
