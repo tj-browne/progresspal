@@ -8,6 +8,7 @@ const GoogleOAuthButton = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const handleSuccess = async (response) => {
         const idToken = response.credential;
@@ -15,7 +16,7 @@ const GoogleOAuthButton = () => {
 
         try {
             const csrfToken = await getCsrfToken();
-            const serverResponse = await axios.post('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/google/',
+            const serverResponse = await axios.post(`${apiBaseUrl}api/auth/google/`,
                 { idToken },
                 {
                     headers: {
