@@ -8,6 +8,8 @@ import Header from "../components/Header";
 const Signup = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+
     const [formData, setFormData] = useState({
         email: '',
         username: '',
@@ -22,7 +24,7 @@ const Signup = () => {
         e.preventDefault();
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.post('https://progresspal-80ee75f05e5c.herokuapp.com/api/users/', formData, {
+            const response = await axios.post(`${apiBaseUrl}api/users/`, formData, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                 },

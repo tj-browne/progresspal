@@ -1,11 +1,9 @@
 import os
 from pathlib import Path
 import environ
-from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent, '.env'))
@@ -18,6 +16,7 @@ DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = [
     'progresspal-80ee75f05e5c.herokuapp.com',
+    "progresspal-a1ee6b02dcad.herokuapp.com",
     'localhost',
     '127.0.0.1',
 ]
@@ -82,13 +81,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ALLOWED_ORIGINS = [
-    "https://progresspal-80ee75f05e5c.herokuapp.com",
+    "progresspal-a1ee6b02dcad.herokuapp.com",
     "http://localhost:3000",
     "http://localhost:8000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://progresspal-80ee75f05e5c.herokuapp.com",
+    "progresspal-a1ee6b02dcad.herokuapp.com",
     'http://localhost:3000',
     "http://localhost:8000",
 ]
@@ -178,7 +177,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend', 'build', 'static')]
 
-
-STATICFILES_STORAGE = ManifestStaticFilesStorage
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -7,6 +7,7 @@ const PasswordResetPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
@@ -25,7 +26,7 @@ const PasswordResetPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8000/api/users/password-reset/${token}/`, {
+            const response = await fetch(`${apiBaseUrl}api/users/password-reset/${token}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

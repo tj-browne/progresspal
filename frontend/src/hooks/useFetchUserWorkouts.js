@@ -7,13 +7,14 @@ const useFetchUserWorkouts = () => {
     const [workouts, setWorkouts] = useState([]);
     const [workoutsLoading, setWorkoutsLoading] = useState(true);
     const [workoutsError, setWorkoutsError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (!userId) return;
 
         const fetchUserWorkouts = async () => {
             try {
-                const workoutsResponse = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/users/${userId}/workouts/`);
+                const workoutsResponse = await axios.get(`${apiBaseUrl}api/users/${userId}/workouts/`);
                 setWorkouts(workoutsResponse.data);
                 if (Array.isArray(workoutsResponse.data) && workoutsResponse.data.length === 0) {
                     setWorkoutsError(null);

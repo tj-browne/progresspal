@@ -8,10 +8,11 @@ const AuthCheck = ({ children, redirectTo }) => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const checkAuth = useCallback(async () => {
         try {
-            const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/check/', { withCredentials: true });
+            const response = await axios.get(`${apiBaseUrl}api/auth/check/`, { withCredentials: true });
 
             if (response.status === 200 && response.data.authenticated) {
                 setIsAuthenticated(true);

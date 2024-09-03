@@ -5,11 +5,12 @@ const useFetchCurrentUser = () => {
     const [userId, setUserId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
             try {
-                const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/current-user/', {
+                const response = await axios.get(`${apiBaseUrl}api/auth/current-user/`, {
                     withCredentials: true,
                 });
                 setUserId(response.data.id);
