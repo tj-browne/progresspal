@@ -10,13 +10,14 @@ const UserHeader = ({ user }) => {
     const dropdownRef = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
 
     const handleLogout = async () => {
         try {
             const csrfToken = await getCsrfToken();
-            await axios.post('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/logout/', {}, {
+            await axios.post(`${apiBaseUrl}api/auth/logout/`, {}, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                 },

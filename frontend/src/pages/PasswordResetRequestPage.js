@@ -5,6 +5,7 @@ import Header from "../components/Header";
 const PasswordResetRequestPage = () => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const handleChange = (e) => {
         setEmail(e.target.value);
@@ -15,7 +16,7 @@ const PasswordResetRequestPage = () => {
 
         try {
             const csrfToken = await getCsrfToken();
-            const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/users/password-reset-request/', {
+            const response = await fetch(`${apiBaseUrl}api/users/password-reset-request/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrfToken,

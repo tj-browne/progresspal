@@ -7,13 +7,14 @@ const useFetchUserGoals = () => {
     const [goals, setGoals] = useState([]);
     const [goalsLoading, setGoalsLoading] = useState(true);
     const [goalsError, setGoalsError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (!userId) return;
 
         const fetchUserGoals = async () => {
             try {
-                const goalsResponse = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/`);
+                const goalsResponse = await axios.get(`${apiBaseUrl}api/goals/`);
                 setGoals(goalsResponse.data);
 
                 if (Array.isArray(goalsResponse.data) && goalsResponse.data.length === 0) {

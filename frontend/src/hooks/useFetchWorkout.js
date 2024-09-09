@@ -2,9 +2,10 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 
 const useFetchWorkout = (workoutId) => {
-    const [data, setData] = useState(null); // Initialize as null for better handling of data absence
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -15,7 +16,7 @@ const useFetchWorkout = (workoutId) => {
             }
 
             try {
-                const response = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/${workoutId}/`, {
+                const response = await axios.get(`${apiBaseUrl}api/workouts/${workoutId}/`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

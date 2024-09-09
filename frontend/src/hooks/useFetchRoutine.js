@@ -4,11 +4,13 @@ const useFetchRoutine = (routineId) => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+
 
     useEffect(() => {
         const fetchRoutine = async () => {
             try {
-                const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/${routineId}/`);
+                const response = await fetch(`${apiBaseUrl}api/routines/${routineId}/`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch routine');
                 }

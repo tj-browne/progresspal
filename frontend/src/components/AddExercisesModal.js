@@ -10,13 +10,14 @@ const AddExercisesModal = ({ isOpen, onRequestClose, onAddExercise }) => {
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterOption, setFilterOption] = useState('all');
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const fetchExercises = useCallback(async () => {
         if (!isOpen) return;
 
         setLoading(true);
         try {
-            const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/exercises/', {
+            const response = await axios.get(`${apiBaseUrl}api/exercises/`, {
                 params: {
                     search: searchQuery,
                     filter: filterOption,

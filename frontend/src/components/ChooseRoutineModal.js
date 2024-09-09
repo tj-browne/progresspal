@@ -13,6 +13,7 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
     const closeButtonRef = useRef(null);
     const navigate = useNavigate();
     const userId = useFetchCurrentUser().userId;
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (isOpen) {
@@ -38,7 +39,7 @@ const ChooseRoutineModal = ({ isOpen, onRequestClose }) => {
         try {
             const csrfToken = await getCsrfToken();
 
-            const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/', {
+            const response = await fetch(`${apiBaseUrl}api/workouts/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

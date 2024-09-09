@@ -28,10 +28,10 @@ const LoginForm = ({ formData, handleChange, handleSubmit, errorMessage }) => {
             <div className="mb-4 sm:mb-6">
                 <Link to='/password-reset-request' className="text-gray-400 hover:text-gray-200 text-base sm:text-lg">Forgot password?</Link>
             </div>
-            <div className="flex flex-col items-center gap-4 sm:gap-6 mt-4 sm:mt-6">
-                <p className="text-gray-300 text-base sm:text-lg">or</p>
-                <GoogleOAuthButton />
-            </div>
+            {/*<div className="flex flex-col items-center gap-4 sm:gap-6 mt-4 sm:mt-6">*/}
+            {/*    <p className="text-gray-300 text-base sm:text-lg">or</p>*/}
+            {/*    <GoogleOAuthButton />*/}
+            {/*</div>*/}
         </form>
     );
 }

@@ -4,11 +4,12 @@ import axios from "axios";
 
 const useDeleteUser = () => {
     const [error, setError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const deleteUser = async (userId) => {
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.delete(`https://progresspal-80ee75f05e5c.herokuapp.com/api/users/${userId}/`, {
+            const response = await axios.delete(`${apiBaseUrl}api/users/${userId}/`, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json',

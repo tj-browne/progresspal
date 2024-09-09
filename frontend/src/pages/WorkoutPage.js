@@ -15,6 +15,7 @@ const WorkoutPage = () => {
     const {data, loading: workoutLoading, error: workoutError} = useFetchWorkout(workoutId);
     const {deleteWorkout, loading: deleteLoading, error: deleteError} = useDeleteWorkout();
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (data) {
@@ -99,7 +100,7 @@ const WorkoutPage = () => {
         try {
             const csrfToken = await getCsrfToken();
 
-            const response = await fetch(`https://progresspal-80ee75f05e5c.herokuapp.com/api/workouts/${workoutId}/`, {
+            const response = await fetch(`${apiBaseUrl}api/workouts/${workoutId}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

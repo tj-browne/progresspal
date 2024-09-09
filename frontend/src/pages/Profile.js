@@ -14,13 +14,14 @@ const Profile = () => {
     const [height, setHeight] = useState('');
     const [weight, setWeight] = useState('');
     const [bmi, setBmi] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/current-user/', {
+                const response = await axios.get(`${apiBaseUrl}api/auth/current-user/`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

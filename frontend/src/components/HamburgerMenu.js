@@ -86,9 +86,9 @@ const HamburgerMenu = ({ item, onEdit, onDelete, type }) => {
 
 HamburgerMenu.propTypes = {
     item: PropTypes.object.isRequired,
-    onEdit: PropTypes.func,  // Make onEdit optional
+    onEdit: PropTypes.func,
     onDelete: PropTypes.func.isRequired,
-    type: PropTypes.string.isRequired, // 'goal', 'workout', or 'routine'
+    type: PropTypes.string.isRequired,
 };
 
 export default HamburgerMenu;
