@@ -1,8 +1,9 @@
 import axios from 'axios';
+const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export const fetchCsrfToken = async () => {
     try {
-        const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/csrf-token/', {
+        const response = await axios.get(`${apiBaseUrl}api/csrf-token/`, {
             withCredentials: true
         });
         const token = response.data.csrfToken;

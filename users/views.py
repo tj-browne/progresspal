@@ -47,7 +47,6 @@ class UserListCreateView(generics.ListCreateAPIView):
                 logger.error("Username already in use: %s", username)
                 return Response({'error': 'Username already in use.'}, status=status.HTTP_409_CONFLICT)
 
-            # Create user using the built-in create_user method which handles password hashing
             user = get_user_model().objects.create_user(
                 username=username,
                 email=email,
@@ -56,7 +55,6 @@ class UserListCreateView(generics.ListCreateAPIView):
 
             logger.warning("User created successfully with username: %s", username)
 
-            # Optional: Log the user in immediately
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)

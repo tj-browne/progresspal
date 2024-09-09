@@ -5,11 +5,12 @@ const useFetchRoutines = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/', {
+                const response = await axios.get(`${apiBaseUrl}api/routines/`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

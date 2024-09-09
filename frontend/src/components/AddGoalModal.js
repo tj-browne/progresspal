@@ -11,6 +11,7 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
     const [cardioDistanceInWeek, setCardioDistanceInWeek] = useState('');
     const [totalWeightLiftedInWeek, setTotalWeightLiftedInWeek] = useState('');
     const [error, setError] = useState('');
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const { userId, loading, error: userError } = useFetchCurrentUser();
 
@@ -72,7 +73,7 @@ const GoalModal = ({ isOpen, onRequestClose, onGoalCreated, goal, isEditing }) =
         try {
             const csrfToken = await getCsrfToken();
             const method = isEditing ? 'PUT' : 'POST';
-            const url = isEditing ? `https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/${goal.id}/` : 'https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/';
+            const url = isEditing ? `${apiBaseUrl}api/goals/${goal.id}/` : `${apiBaseUrl}api/goals/`;
             const response = await fetch(url, {
                 method,
                 headers: {

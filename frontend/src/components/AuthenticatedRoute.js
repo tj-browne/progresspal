@@ -7,11 +7,12 @@ const AuthenticatedRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get('https://progresspal-80ee75f05e5c.herokuapp.com/api/auth/check/', { withCredentials: true });
+                const response = await axios.get(`${apiBaseUrl}api/auth/check/`, { withCredentials: true });
                 if (response.status === 200 && response.data.authenticated) {
                     setIsAuthenticated(true);
                     setUser(response.data.user);

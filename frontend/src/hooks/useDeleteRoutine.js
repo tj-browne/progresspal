@@ -4,11 +4,12 @@ import axios from "axios";
 
 const useDeleteRoutine = () => {
     const [error, setError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const deleteRoutine = async (routineId) => {
         try {
             const csrfToken = await getCsrfToken();
-            const response = await axios.delete(`https://progresspal-80ee75f05e5c.herokuapp.com/api/routines/${routineId}/`, {
+            const response = await axios.delete(`${apiBaseUrl}api/routines/${routineId}/`, {
                 headers: {
                     'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json',

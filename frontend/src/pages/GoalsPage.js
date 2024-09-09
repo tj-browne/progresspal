@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import AddGoalModal from '../components/AddGoalModal';
 import Footer from "../components/Footer";
 import UserHeader from "../components/UserHeader";
 import HamburgerMenu from '../components/HamburgerMenu';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import useDeleteGoal from "../hooks/useDeleteGoal";
 import useFetchUserGoals from '../hooks/useFetchUserGoals';
 
@@ -14,12 +14,13 @@ const goalTypeMapping = {
 };
 
 const GoalsPage = () => {
-    const { goals, setGoals, goalsLoading: loading, goalsError: error } = useFetchUserGoals();
+    const {goals, setGoals, goalsLoading: loading, goalsError: error} = useFetchUserGoals();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentGoal, setCurrentGoal] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const navigate = useNavigate();
-    const { deleteGoal } = useDeleteGoal();
+    const {deleteGoal} = useDeleteGoal();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const openModal = (goal = null) => {
         setCurrentGoal(goal);
@@ -48,7 +49,7 @@ const GoalsPage = () => {
 
     const fetchGoals = async () => {
         try {
-            const response = await fetch('https://progresspal-80ee75f05e5c.herokuapp.com/api/goals/');
+            const response = await fetch(`${apiBaseUrl}api/goals/`);
             const data = await response.json();
             return data;
         } catch (error) {
@@ -62,14 +63,15 @@ const GoalsPage = () => {
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col">
-            <UserHeader />
+            <UserHeader/>
             <div className="flex flex-col items-center text-center flex-grow px-4 mt-6 md:px-0 pt-20 md:pt-28">
                 <button
                     onClick={() => openModal()}
                     className="bg-green-600 hover:bg-green-800 text-white py-4 rounded-xl mb-6 text-lg md:text-2xl w-full md:w-80 transition-transform transform hover:scale-105 duration-300 shadow-lg flex items-center justify-center space-x-3"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="h-7 w-7">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                         className="h-7 w-7">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     <span className="text-xl md:text-2xl font-semibold">Set New Goal</span>
                 </button>
@@ -114,7 +116,7 @@ const GoalsPage = () => {
                                         <div className="w-full h-4 bg-gray-700 rounded-full">
                                             <div
                                                 className="h-full bg-green-400 rounded-full"
-                                                style={{ width: `${progress}%` }}
+                                                style={{width: `${progress}%`}}
                                             />
                                         </div>
                                         <p className="absolute inset-0 flex items-center justify-center text-white text-xs font-semibold">
@@ -129,7 +131,7 @@ const GoalsPage = () => {
                     )}
                 </div>
             </div>
-            <Footer />
+            <Footer/>
             <AddGoalModal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}

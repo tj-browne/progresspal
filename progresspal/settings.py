@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 import environ
@@ -9,7 +10,17 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+logger = logging.getLogger(__name__)
+
+
+def log_secret_key():
+    logger.warning(f"SECRET_KEY: {SECRET_KEY}")
+
+
+# Call the function to log the key
+log_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=True)
@@ -81,18 +92,18 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ALLOWED_ORIGINS = [
-    "progresspal-a1ee6b02dcad.herokuapp.com",
+    "https://progresspal-a1ee6b02dcad.herokuapp.com",
     "http://localhost:3000",
     "http://localhost:8000",
 ]
+CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "progresspal-a1ee6b02dcad.herokuapp.com",
+    "https://progresspal-a1ee6b02dcad.herokuapp.com",
     'http://localhost:3000',
     "http://localhost:8000",
 ]
 
-CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_NAME = 'csrfToken'
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
@@ -106,7 +117,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Google OAuth settings
-SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID = env('SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_CLIENT_ID')
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -136,7 +147,7 @@ WSGI_APPLICATION = 'progresspal.wsgi.application'
 import dj_database_url
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://localhost')
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
 AUTH_USER_MODEL = 'users.CustomUser'

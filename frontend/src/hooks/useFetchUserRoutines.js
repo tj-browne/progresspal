@@ -7,13 +7,14 @@ const useFetchUserRoutines = () => {
     const [routines, setRoutines] = useState([]);
     const [routinesLoading, setRoutinesLoading] = useState(true);
     const [routinesError, setRoutinesError] = useState(null);
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (!userId) return;
 
         const fetchUserRoutines = async () => {
             try {
-                const routinesResponse = await axios.get(`https://progresspal-80ee75f05e5c.herokuapp.com/api/users/${userId}/routines/`);
+                const routinesResponse = await axios.get(`${apiBaseUrl}api/users/${userId}/routines/`);
                 setRoutines(routinesResponse.data);
             } catch (error) {
                 if (error.response?.status === 401) {
