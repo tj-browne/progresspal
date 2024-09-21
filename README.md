@@ -28,3 +28,40 @@ With your routine in place, you can now create specific workouts. Go to the "Das
 
 ### 4. Set Your Goals
 To keep yourself motivated, set clear fitness goals. Access the "Goals" section, track your progress toward these goals and adjust your routines as needed to stay on track.
+
+## Development
+
+### Docker
+
+To run the project locally, you can use Docker. First, clone the repository and navigate to the project directory:
+
+```bash
+git clone
+cd progresspal
+```
+
+Create a `.env` file in the root directory and add the following environment variables:
+
+```bash
+DEBUG=1
+SECRET_KEY=your_secret_key
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+DATABASE_URL=postgres://progresspal:progresspalpass@db/progresspaldb
+```
+
+Then, run with Docker Compose:
+
+```bash
+docker compose up --build 
+```
+
+Note: ``--build`` is only required when you want to rebuild the image.
+
+You then need to migrate the database:
+
+```bash
+docker compose exec web python manage.py makemigrations
+docker compose exec web python manage.py migrate
+```
+
+The app will be available at `http://localhost:8000`.

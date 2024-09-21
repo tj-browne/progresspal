@@ -1,9 +1,10 @@
 # Frontend Build Stage
 FROM node:18 AS frontend-build
 WORKDIR /app/frontend
-COPY frontend/package*.json ./
-RUN npm install
 COPY frontend/ ./
+ARG REACT_APP_API_BASE_URL
+ENV REACT_APP_API_BASE_URL $REACT_APP_API_BASE_URL
+RUN npm install
 RUN npm run build
 
 # Backend Build Stage
@@ -12,7 +13,7 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-COPY --from=frontend-build /app/frontend/build /app/frontend/build
+COPY --from=frontend-build /app/frontend/build ./frontend/build
 RUN python manage.py collectstatic --noinput
 
 # Final Stage

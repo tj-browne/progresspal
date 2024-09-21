@@ -1,0 +1,24 @@
+services:
+    web:
+      container_name: "progresspalweb"
+      pull_policy: "always"
+      build:
+        context: .
+        args:
+            - REACT_APP_API_BASE_URL=http://localhost:8000/
+      ports:
+          - "8000:8000"
+      links:
+          - db
+      env_file:
+        - .env
+
+    db:
+        container_name: "progresspaldb"
+        image: postgres:latest
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: progresspal
+            POSTGRES_PASSWORD: progresspalpass
+            POSTGRES_DB: progresspaldb
