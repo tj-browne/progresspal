@@ -79,7 +79,7 @@ class UserLoginView(APIView):
         try:
             if '@' in identifier:
                 user = CustomUser.objects.get(email=identifier)
-                logger.warning("User found by email: %s", user.username)
+                logger.warning("User found by email: %s", user.email)
             else:
                 user = CustomUser.objects.get(username=identifier)
                 logger.warning("User found by username: %s", user.username)
