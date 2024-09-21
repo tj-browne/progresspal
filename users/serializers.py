@@ -5,19 +5,19 @@ from .models import CustomUser
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'date_joined']
+        fields = ['id', 'username', 'email', 'date_joined', 'password']
         read_only_fields = ['date_joined']
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    # password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
         fields = ['id', 'username', 'email', 'password']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        # extra_kwargs = {
+        #     'password': {'write_only': True}
+        # }
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(

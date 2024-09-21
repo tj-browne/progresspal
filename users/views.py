@@ -53,7 +53,7 @@ class UserListCreateView(generics.ListCreateAPIView):
                 password=password
             )
 
-            logger.warning("User created successfully with username: %s", username)
+            logger.warning("Attempting to create user with username: %s, email: %s, password: %s", username, email, password)
 
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
@@ -78,11 +78,19 @@ class UserLoginView(APIView):
 
         try:
             if '@' in identifier:
-                user = CustomUser.objects.get(email=identifier)
-                logger.warning("User found by email: %s", user.username)
+                try:
+                    user = CustomUser.objects.get(email=identifier)
+                    logger.warning("User found by email: %s", user.email)
+                except CustomUser.DoesNotExist:
+                    logger.warning("No user found with email: %s", identifier)
+                    return Response({'error': 'Invalid email or username.'}, status=status.HTTP_401_UNAUTHORIZED)
             else:
-                user = CustomUser.objects.get(username=identifier)
-                logger.warning("User found by username: %s", user.username)
+                try:
+                    user = CustomUser.objects.get(username=identifier)
+                    logger.warning("User found by username: %s", user.username)
+                except CustomUser.DoesNotExist:
+                    logger.warning("No user found with username: %s", identifier)
+                    return Response({'error': 'Invalid email or username.'}, status=status.HTTP_401_UNAUTHORIZED)
 
             if user.check_password(password):
                 auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
@@ -95,7 +103,6 @@ class UserLoginView(APIView):
 
                 return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
             else:
-                logger.warning("Invalid password for user: %s", user.username)
                 return Response({'error': 'Invalid password.'}, status=status.HTTP_401_UNAUTHORIZED)
         except CustomUser.DoesNotExist:
             logger.warning("User not found with identifier: %s", identifier)
